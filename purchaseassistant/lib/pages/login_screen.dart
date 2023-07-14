@@ -28,19 +28,19 @@ class _LoginScreenState extends State<LoginScreen> {
             horizontal: 30.0,
             vertical: 10.0,
           ),
-          child: Column(
+          child: ListView(
             children: [
               Image.asset(
                 "assets/logo.png",
-                height: 250,
-                width: 250,
-                fit: BoxFit.cover,
+                height: 200,
+                width: 200,
+                fit: BoxFit.scaleDown,
               ),
-              const Padding(
-                padding: EdgeInsets.only(
-                  top: 4.0,
-                  bottom: 2.0,
-                ),
+              const Center(
+                // padding: EdgeInsets.only(
+                //   top: 4.0,
+                //   bottom: 2.0,
+                // ),
                 child: Text(
                   "Login now",
                   style: TextStyle(
@@ -49,7 +49,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              const Text("please enter the details below to continue"),
+              const Center(
+                child: Text(
+                  "please enter the details below to continue",
+                ),
+              ),
               const SizedBox(
                 height: 30.0,
               ),

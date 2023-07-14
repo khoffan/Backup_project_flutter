@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import '../backend/register.dart';
@@ -21,22 +22,22 @@ class CustomFormRegister extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: 30.0,
-            vertical: 5.0,
+            horizontal: 25.0,
+            vertical: 10.0,
           ),
           child: ListView(
             children: [
-              // Image.asset(
-              //   "assets/logo.png",
-              //   height: 250,
-              //   width: 250,
-              //   fit: BoxFit.cover,
-              // ),
-              const Padding(
-                padding: EdgeInsets.only(
-                  top: 30.0,
-                  bottom: 2.0,
-                ),
+              Image.asset(
+                "assets/logo.png",
+                height: 200,
+                width: 200,
+                fit: BoxFit.scaleDown,
+              ),
+              const Center(
+                // padding: EdgeInsets.only(
+                //   top: 4.0,
+                //   bottom: 2.0,
+                // ),
                 child: Text(
                   "Register now",
                   style: TextStyle(
@@ -45,11 +46,14 @@ class CustomFormRegister extends StatelessWidget {
                   ),
                 ),
               ),
-              const Text("please enter the details below to continue"),
-              const SizedBox(
-                height: 20.0,
+              const Center(
+                child: Text(
+                  "please enter the details below to continue",
+                ),
               ),
-
+              const SizedBox(
+                height: 30.0,
+              ),
               Form(
                   key: formKey,
                   child: Column(
@@ -61,52 +65,29 @@ class CustomFormRegister extends StatelessWidget {
                           fillColor: Color.fromARGB(190, 255, 255, 255),
 
                           // icon: Icon(Icons.person),
-                          hintText: 'Username',
+                          hintText: 'Email',
                           border: OutlineInputBorder(),
                           labelText: "Username",
                         ),
                         onSaved: (String? username) {
-                          register.username = username;
+                          register.email = username;
                         },
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return "กรุณาใส่ Username";
+                          } else if (!value.contains('@')) {
+                            return "กรุณากรอก Email ให้ถูกต้อง";
                           } else {
                             return null;
                           }
                         },
                       ),
-                      const SizedBox(height: 8.0),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color.fromARGB(190, 255, 255, 255),
-
-                          // icon: Icon(Icons.person),
-                          hintText: 'StudentID',
-                          border: OutlineInputBorder(),
-                          labelText: "StudentID",
-                        ),
-                        onSaved: (String? studentID) {
-                          register.studentID = studentID;
-                        },
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return "กรุณาใส่ StudentID";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 8.0),
+                      const SizedBox(height: 15.0),
                       TextFormField(
                         obscureText: true,
-                        keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
                           filled: true,
                           fillColor: Color.fromARGB(190, 255, 255, 255),
-
                           // icon: Icon(Icons.person),
                           hintText: 'Password',
                           border: OutlineInputBorder(),
@@ -116,88 +97,15 @@ class CustomFormRegister extends StatelessWidget {
                           register.password = password;
                         },
                         validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return "กรุณาใส่ Password";
-                          } else {
-                            return null;
-                          }
+                          return (value == null || value.isEmpty)
+                              ? 'กรุณาใส่รหัสผ่าน'
+                              : null;
                         },
                       ),
-                      const SizedBox(height: 8.0),
-                      TextFormField(
-                        obscureText: true,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color.fromARGB(190, 255, 255, 255),
-
-                          // icon: Icon(Icons.person),
-                          hintText: 'ConfirmPassword',
-                          border: OutlineInputBorder(),
-                          labelText: "ConfirmPassword",
-                        ),
-                        onSaved: (String? confirmPassword) {
-                          register.confirmPassword = confirmPassword;
-                        },
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return "กรุณาใส่ Password";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 8.0),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color.fromARGB(190, 255, 255, 255),
-
-                          // icon: Icon(Icons.person),
-                          hintText: 'Email',
-                          border: OutlineInputBorder(),
-                          labelText: "Email",
-                        ),
-                        onSaved: (String? email) {
-                          register.email = email;
-                        },
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return "กรุณาใส่ Email";
-                          } else if (!value.contains('@')) {
-                            return "กรุณากรอก Email ให้ถูกต้อง";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 8.0),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color.fromARGB(190, 255, 255, 255),
-
-                          // icon: Icon(Icons.person),
-                          hintText: 'Phone',
-                          border: OutlineInputBorder(),
-                          labelText: "Phone",
-                        ),
-                        onSaved: (String? phone) {
-                          register.phone = phone;
-                        },
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return "กรุณาใส่เบอร์โทรศัพท์";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 8.0),
+                      const SizedBox(height: 20.0),
                       SizedBox(
                         height: 40.0,
+                        width: 600,
                         child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
@@ -206,22 +114,29 @@ class CustomFormRegister extends StatelessWidget {
                               ),
                               backgroundColor: Colors.red,
                               padding: const EdgeInsetsDirectional.symmetric(
-                                horizontal: 150,
+                                horizontal: 130,
                               ),
                               textStyle: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (formKey.currentState!.validate()) {
                                 formKey.currentState?.save();
-                                print(
-                                    "Username = ${register.username} password = ${register.password}");
-                                formKey.currentState?.reset();
+                                try {
+                                  await FirebaseAuth.instance
+                                      .createUserWithEmailAndPassword(
+                                    email: register.email!,
+                                    password: register.password!,
+                                  );
+                                  formKey.currentState?.reset();
+                                } on FirebaseAuthException catch (e) {
+                                  print(e.message);
+                                }
                               }
                             },
-                            child: const Text("Login")),
+                            child: const Text("Register")),
                       ),
                     ],
                   )),
