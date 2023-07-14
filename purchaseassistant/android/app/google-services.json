@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "6995275568",
+    "project_id": "purchaseassistantlogin",
+    "storage_bucket": "purchaseassistantlogin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:6995275568:android:0e75cef22cce33629862f5",
+        "android_client_info": {
+          "package_name": "com.example.purchaseassistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "6995275568-8831lqv76frhj0u6thk0cnkank8vlq3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc_Y8ccWWJ7CteEORAKpDnI4yKw7cMGmI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "6995275568-8831lqv76frhj0u6thk0cnkank8vlq3p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
