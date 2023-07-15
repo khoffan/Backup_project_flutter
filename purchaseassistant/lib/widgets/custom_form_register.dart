@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import '../backend/register.dart';
 import '../pages/login_screen.dart';
 
-class CustomFormRegister extends StatelessWidget {
+class CustomFormRegister extends StatefulWidget {
   const CustomFormRegister({
     super.key,
     required this.formKey,
@@ -14,6 +15,11 @@ class CustomFormRegister extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final Register register;
 
+  @override
+  State<CustomFormRegister> createState() => _CustomFormRegisterState();
+}
+
+class _CustomFormRegisterState extends State<CustomFormRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +61,7 @@ class CustomFormRegister extends StatelessWidget {
                 height: 30.0,
               ),
               Form(
-                  key: formKey,
+                  key: widget.formKey,
                   child: Column(
                     children: [
                       TextFormField(
@@ -70,7 +76,7 @@ class CustomFormRegister extends StatelessWidget {
                           labelText: "Username",
                         ),
                         onSaved: (String? username) {
-                          register.email = username;
+                          widget.register.email = username;
                         },
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
@@ -94,7 +100,7 @@ class CustomFormRegister extends StatelessWidget {
                           labelText: "Password",
                         ),
                         onSaved: (String? password) {
-                          register.password = password;
+                          widget.register.password = password;
                         },
                         validator: (String? value) {
                           return (value == null || value.isEmpty)
@@ -122,17 +128,36 @@ class CustomFormRegister extends StatelessWidget {
                               ),
                             ),
                             onPressed: () async {
-                              if (formKey.currentState!.validate()) {
-                                formKey.currentState?.save();
+                              if (widget.formKey.currentState!.validate()) {
+                                widget.formKey.currentState?.save();
                                 try {
                                   await FirebaseAuth.instance
                                       .createUserWithEmailAndPassword(
-                                    email: register.email!,
-                                    password: register.password!,
+                                    email: widget.register.email!,
+                                    password: widget.register.password!,
                                   );
-                                  formKey.currentState?.reset();
+                                  widget.formKey.currentState?.reset();
+                                  if (context.mounted) {
+                                    // Navigator.pop(context);
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return LoginScreen();
+                                        },
+                                      ),
+                                    );
+                                  }
+                                  Fluttertoast.showToast(
+                                    msg: "สร้างบัญชีผู้ใช้สำเร็จ",
+                                    gravity: ToastGravity.CENTER,
+                                  );
                                 } on FirebaseAuthException catch (e) {
-                                  print(e.message);
+                                  // print(e.code);
+                                  // print(e.message);
+                                  Fluttertoast.showToast(
+                                      msg: e.message!,
+                                      gravity: ToastGravity.CENTER);
                                 }
                               }
                             },
