@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import '../backend/register.dart';
+import 'package:purchaseassistant/backend/login.dart';
 import '../widgets/custom_form_register.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -12,7 +12,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
-  Register register = Register();
+  Login register = Login();
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
 
   @override
