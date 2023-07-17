@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/backend/login.dart';
 import '../utils/constants.dart';
-import '../backend/register.dart';
 import '../pages/login_screen.dart';
 
 class CustomFormRegister extends StatefulWidget {
@@ -13,7 +13,7 @@ class CustomFormRegister extends StatefulWidget {
   });
 
   final GlobalKey<FormState> formKey;
-  final Register register;
+  final Login register;
 
   @override
   State<CustomFormRegister> createState() => _CustomFormRegisterState();
@@ -135,28 +135,39 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                                       .createUserWithEmailAndPassword(
                                     email: widget.register.email!,
                                     password: widget.register.password!,
-                                  );
-                                  widget.formKey.currentState?.reset();
-                                  if (context.mounted) {
-                                    // Navigator.pop(context);
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return LoginScreen();
-                                        },
-                                      ),
+                                  )
+                                      .then((value) {
+                                    widget.formKey.currentState?.reset();
+                                    if (context.mounted) {
+                                      // Navigator.pop(context);
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return const LoginScreen();
+                                          },
+                                        ),
+                                      );
+                                    }
+                                    Fluttertoast.showToast(
+                                      msg: "สร้างบัญชีผู้ใช้สำเร็จ",
+                                      gravity: ToastGravity.CENTER,
                                     );
-                                  }
-                                  Fluttertoast.showToast(
-                                    msg: "สร้างบัญชีผู้ใช้สำเร็จ",
-                                    gravity: ToastGravity.CENTER,
-                                  );
+                                  });
                                 } on FirebaseAuthException catch (e) {
-                                  // print(e.code);
+                                  print(e.code);
+                                  String message = '';
+                                  if (e.code == 'email-already-in-use') {
+                                    message = 'มีชื่อบัญชีผู้ใช้นี้แล้ว';
+                                  } else if (e.code == 'weak-password') {
+                                    message =
+                                        'รหัสผ่านต้องมีความยาว 6 ตัวอักษรขึ้นไป';
+                                  } else {
+                                    message = e.message!;
+                                  }
                                   // print(e.message);
                                   Fluttertoast.showToast(
-                                      msg: e.message!,
+                                      msg: message,
                                       gravity: ToastGravity.CENTER);
                                 }
                               }
