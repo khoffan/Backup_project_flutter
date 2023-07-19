@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
 final FirebaseStorage _storage = FirebaseStorage.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -23,7 +23,7 @@ class AddProfile {
     String resp = "some Error";
     try {
       print("Attempting to save data...");
-      if (name.isNotEmpty && bio.isNotEmpty && file != null) {
+      if (name.isNotEmpty && bio.isNotEmpty && file.isNotEmpty) {
         String imageURL = await uploadImagetoStorage('profileImage', file);
         await _firestore.collection("userProfile").add({
           'name': name,
