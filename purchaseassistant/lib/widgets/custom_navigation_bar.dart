@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../pages/service_screen.dart';
 import '../pages/dashboard_screen.dart';
 import '../pages/test_setting.dart';
+import '../pages/profilePage.dart';
 // import '../utils/constants.dart';
 
 class BottomNavigationBarExample extends StatefulWidget {
@@ -34,7 +35,7 @@ class _BottomNavigationBarExampleState
     ),
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SettingUI(),
+      home: ProfileScreenApp(),
     ),
   ];
 
