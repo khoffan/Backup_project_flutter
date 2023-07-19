@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import '../widgets/custom_radio.dart';
+import '../widgets/dropdown_location.dart';
 
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});
@@ -17,7 +18,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
         appBar: AppBar(
           backgroundColor: themeBg,
           title: const Text(
-            "Test service",
+            "service",
             style: TextStyle(color: Colors.black),
           ),
         ),
@@ -36,7 +37,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   ),
                 ),
               ),
-              const Divider(height: 1.0, thickness: 1),
               SizedBox(
                 height: 40.0,
                 child: Row(children: [
@@ -72,6 +72,34 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     },
                   ),
                 ]),
+              ),
+              // const Divider(
+              //   height: 1.0,
+              //   thickness: 1,
+              //   color: Colors.black54,
+              // ),
+              const SizedBox(
+                height: 10,
+              ),
+              const SizedBox(
+                height: 40.0,
+                child: Text(
+                  "เลือกสถานที่",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 40.0,
+                child: Card(
+                  child: DropdownButtonApp(),
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(
+                height: 10.0,
               ),
             ],
           ),
