@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/backend/authServices.dart';
 import 'package:purchaseassistant/backend/login.dart';
 import '../utils/constants.dart';
 import '../pages/login_screen.dart';
@@ -14,12 +15,16 @@ class CustomFormRegister extends StatefulWidget {
 
   final GlobalKey<FormState> formKey;
   final Login register;
+  
+
 
   @override
   State<CustomFormRegister> createState() => _CustomFormRegisterState();
 }
 
 class _CustomFormRegisterState extends State<CustomFormRegister> {
+
+  bool? status;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,11 +136,7 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                               if (widget.formKey.currentState!.validate()) {
                                 widget.formKey.currentState?.save();
                                 try {
-                                  await FirebaseAuth.instance
-                                      .createUserWithEmailAndPassword(
-                                    email: widget.register.email!,
-                                    password: widget.register.password!,
-                                  )
+                                  await AuthUsers().signUpWithEmailpass(widget.register.email.toString(), widget.register.password.toString(), status)
                                       .then((value) {
                                     widget.formKey.currentState?.reset();
                                     if (context.mounted) {

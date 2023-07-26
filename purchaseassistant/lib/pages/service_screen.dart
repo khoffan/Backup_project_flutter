@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../backend/authServices.dart';
 import '../utils/constants.dart';
 import '../widgets/custom_radio.dart';
 import '../widgets/dropdown_location.dart';
+import 'chatpage.dart';
+import 'home_screen.dart';
 
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});
@@ -11,7 +15,9 @@ class ServiceScreen extends StatefulWidget {
 }
 
 class _ServiceScreenState extends State<ServiceScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   int _value = 1;
+  int _count = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +55,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     groupValue: _value,
                     onChanged: (int? value) {
                       setState(() {
+                        _count = 0;
                         _value = value!;
                       });
                     },
@@ -67,6 +74,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     groupValue: _value,
                     onChanged: (int? value) {
                       setState(() {
+                        _count = 1;
                         _value = value!;
                       });
                     },
@@ -100,6 +108,30 @@ class _ServiceScreenState extends State<ServiceScreen> {
               ),
               const SizedBox(
                 height: 10.0,
+              ),
+              Divider(),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    String uid = _auth.currentUser!.uid;
+                    if (_count == 0 && uid != '') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => HomeScreen(),
+                        ),
+                      );
+                      AuthUsers().updateStatus(false,uid);
+                    } else if(_count == 1 && uid != '') {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => ChatPage(reciveUserEmail: _auth.currentUser?.email ?? '', reciveUseruid: _auth.currentUser!.uid,),
+                        ),
+                      );
+                      AuthUsers().updateStatus(true,uid);
+                    }
+                  },
+                  child: Text("Matching"),
+                ),
               ),
             ],
           ),

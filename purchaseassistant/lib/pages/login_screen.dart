@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:purchaseassistant/backend/authServices.dart';
 // import 'package:form_validation/form_validation.dart';
 import 'package:purchaseassistant/backend/login.dart';
 import 'package:purchaseassistant/pages/home_screen.dart';
@@ -166,10 +167,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (formKey.currentState!.validate()) {
                                       formKey.currentState?.save();
                                       try {
-                                        await FirebaseAuth.instance
-                                            .signInWithEmailAndPassword(
-                                          email: login.email!,
-                                          password: login.password!,
+                                        await AuthUsers()
+                                            .signInwithEmailpassword(
+                                          login.email.toString(),
+                                          login.password.toString(),
                                         )
                                             .then((value) {
                                           formKey.currentState?.reset();

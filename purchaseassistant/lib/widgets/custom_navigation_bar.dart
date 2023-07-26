@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../pages/profilePage.dart';
 import '../pages/service_screen.dart';
 import '../pages/dashboard_screen.dart';
 import '../pages/test_setting.dart';
@@ -34,7 +35,7 @@ class _BottomNavigationBarExampleState
     ),
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SettingUI(),
+      home: ProfileScreenApp(),
     ),
   ];
 
