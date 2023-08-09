@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
-import 'package:purchaseassistant/backend/login.dart';
+import 'package:email_validator/email_validator.dart';
+import '../models/login.dart';
 import '../utils/constants.dart';
 import '../pages/login_screen.dart';
 
@@ -81,7 +82,7 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return "กรุณาใส่ Username";
-                          } else if (!value.contains('@')) {
+                          } else if (!EmailValidator.validate(value)) {
                             return "กรุณากรอก Email ให้ถูกต้อง";
                           } else {
                             return null;

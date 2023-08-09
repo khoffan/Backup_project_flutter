@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import '../pages/service_screen.dart';
 import '../pages/dashboard_screen.dart';
-import '../pages/test_setting.dart';
-import '../pages/profilePage.dart';
+// import '../pages/test_setting.dart';
+import '../pages/profile_screen.dart';
 // import '../utils/constants.dart';
 
-class BottomNavigationBarExample extends StatefulWidget {
-  const BottomNavigationBarExample({super.key});
+class BottomNavigation extends StatefulWidget {
+  const BottomNavigation({super.key});
 
   @override
-  State<BottomNavigationBarExample> createState() =>
-      _BottomNavigationBarExampleState();
+  State<BottomNavigation> createState() => _BottomNavigationState();
 }
 
-class _BottomNavigationBarExampleState
-    extends State<BottomNavigationBarExample> {
+class _BottomNavigationState extends State<BottomNavigation> {
   int _selectedIndex = 0;
 
   static const TextStyle optionStyle =
@@ -168,59 +166,3 @@ class _BottomNavigationBarExampleState
         ));
   }
 }
-
-
-
-
-
-      // bottomNavigationBar: BottomNavigationBar(
-      //   items: const <BottomNavigationBarItem>[
-      //     BottomNavigationBarItem(
-      //       // backgroundColor: Color.fromARGB(255, 243, 237, 170),
-      //       icon: Icon(
-      //         Icons.home_outlined,
-      //         // color: Colors.blue,
-      //       ),
-      //       label: 'Home',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       // backgroundColor: Color.fromARGB(255, 243, 237, 170),
-      //       icon: Icon(
-      //         Icons.qr_code_scanner_rounded,
-      //         // color: Colors.blue,
-      //       ),
-      //       label: 'scan',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       // backgroundColor: Color.fromARGB(255, 243, 237, 170),
-      //       icon: Icon(
-      //         Icons.chat_outlined,
-      //         // color: Colors.blue,
-      //       ),
-      //       label: 'chat',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       // backgroundColor: Color.fromARGB(255, 243, 237, 170),
-      //       icon: Icon(
-      //         Icons.notifications_outlined,
-      //         // color: Colors.blue,
-      //       ),
-      //       label: 'notification',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       // backgroundColor: Color.fromARGB(255, 243, 237, 170),
-      //       icon: Icon(
-      //         Icons.sensor_occupied_rounded,
-      //         // color: Colors.grey,
-      //       ),
-      //       label: 'profile',
-      //     ),
-      //   ],
-      //   currentIndex: _selectedIndex,
-      //   selectedItemColor: Colors.amber[800],
-      //   unselectedItemColor: themeIcon,
-      //   onTap: _onItemTapped,
-      // ),
-//     );
-//   }
-// }

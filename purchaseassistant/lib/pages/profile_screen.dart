@@ -2,12 +2,16 @@
 import 'dart:typed_data';
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+// import 'package:purchaseassistant/models/login.dart';
+// import 'package:purchaseassistant/pages/home_screen.dart';
 
 import '../utils/pickerimg.dart';
 import 'editProfile.dart';
+import 'login_screen.dart';
 
 class ProfileScreenApp extends StatefulWidget {
   const ProfileScreenApp({super.key});
@@ -18,6 +22,7 @@ class ProfileScreenApp extends StatefulWidget {
 
 class _ProfileScreenAppState extends State<ProfileScreenApp> {
   final Future<FirebaseApp> _firebase = Firebase.initializeApp();
+  final auth = FirebaseAuth.instance;
   Uint8List? _image;
   void selectImage() async {
     Uint8List img = await pickerImage(ImageSource.gallery);
@@ -62,7 +67,11 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                   Positioned(
                     child: IconButton(
                       onPressed: () {
-                        selectImage();
+                        // selectImage();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => EditProfile()),
+                        );
                       },
                       icon: Icon(
                         Icons.add_a_photo,
@@ -77,24 +86,34 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
               const SizedBox(
                 height: 20,
               ),
-              const Center(
-                child: Column(children: [Text("Name"), Text("company")]),
+              // Center(
+              //   child: SizedBox(
+              //     width: 200,
+              //     child: ElevatedButton(
+              //       onPressed: () {
+              //         Navigator.of(context).push(
+              //           MaterialPageRoute(builder: (context) => EditProfile()),
+              //         );
+              //       },
+              //       child: Text("Edit profile"),
+              //     ),
+              //   ),
+              // ),
+              Center(
+                child: Column(children: [
+                  Text(
+                    "ข้อมูลผู้ใช้",
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  // Text(auth.currentUser.email!),
+                ]),
               ),
               const SizedBox(
                 height: 10,
-              ),
-              Center(
-                child: SizedBox(
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => EditProfile()),
-                      );
-                    },
-                    child: Text("Edit profile"),
-                  ),
-                ),
               ),
             ],
           ),
@@ -118,7 +137,6 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                   buildContentMedia(context, "change password"),
                   buildContentMedia(context, "About me"),
                   buildContentMedia(context, "Delete Account"),
-                  buildContentMedia(context, "somthing else"),
                   const SizedBox(
                     height: 10,
                   ),
@@ -127,6 +145,16 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                     child: Center(
                       child: ElevatedButton(
                         onPressed: () {
+                          auth.signOut().then((value) {
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: (context) {
+                              return const LoginScreen();
+                            }));
+                            // Navigator.of(context).pushAndRemoveUntil(
+                            //     MaterialPageRoute(
+                            //         builder: (context) => const LoginScreen()),
+                            //     (route) => false);
+                          });
                           // Add authen logout hare
                         },
                         child: Text("Sign Out"),

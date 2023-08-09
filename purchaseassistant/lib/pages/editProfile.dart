@@ -7,9 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import '../utils/add_profile.dart';
 import '../utils/pickerimg.dart';
 
-
-
-
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
 
