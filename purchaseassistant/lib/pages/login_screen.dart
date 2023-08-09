@@ -2,12 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:form_validation/form_validation.dart';
-import 'package:purchaseassistant/backend/login.dart';
-import 'package:purchaseassistant/pages/home_screen.dart';
+import 'package:email_validator/email_validator.dart';
+import '../models/login.dart';
+import '../pages/home_screen.dart';
 import '../utils/constants.dart';
-// import '../widgets/custom_button_login.dart';
-// import '../widgets/text_field_title.dart';
 import './register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(
-              title: Text("Error"),
+              title: const Text("Error"),
             ),
             body: Center(
               child: Text("${snapshot.error}"),
@@ -57,10 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       fit: BoxFit.scaleDown,
                     ),
                     const Center(
-                      // padding: EdgeInsets.only(
-                      //   top: 4.0,
-                      //   bottom: 2.0,
-                      // ),
                       child: Text(
                         "Login now",
                         style: TextStyle(
@@ -98,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
                                   return "กรุณาใส่ Username";
-                                } else if (!value.contains('@')) {
+                                } else if (!EmailValidator.validate(value)) {
                                   return "กรุณากรอก Email ให้ถูกต้อง";
                                 } else {
                                   return null;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import '../widgets/custom_radio.dart';
+import '../widgets/dropdown_location.dart';
 
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});
@@ -17,7 +18,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
         appBar: AppBar(
           backgroundColor: themeBg,
           title: const Text(
-            "Test service",
+            "service",
             style: TextStyle(color: Colors.black),
           ),
         ),
@@ -36,7 +37,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   ),
                 ),
               ),
-              const Divider(height: 1.0, thickness: 1),
               SizedBox(
                 height: 40.0,
                 child: Row(children: [
@@ -73,6 +73,66 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   ),
                 ]),
               ),
+              // const Divider(
+              //   height: 1.0,
+              //   thickness: 1,
+              //   color: Colors.black54,
+              // ),
+              const SizedBox(
+                height: 10,
+              ),
+              const SizedBox(
+                height: 40.0,
+                child: Text(
+                  "เลือกสถานที่",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20.0,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 40.0,
+                child: Card(
+                  child: DropdownLocation(),
+                  color: Colors.white,
+                ),
+              ),
+              // SizedBox(
+              //     height: 10.0,
+              //     child: TextButton(
+              //       onPressed: () {
+              //         Navigator.of(context).push(
+              //           MaterialPageRoute(
+              //             builder: (ctx) => const LoginScreen(),
+              //           ),
+              //         );
+              //       },
+              //       child: Text(
+              //         "Login",
+              //         style: TextStyle(
+              //           color: themeError,
+              //         ),
+              //       ),
+              //     )),
+              Spacer(),
+              SizedBox(
+                height: 120.0,
+                child: Center(
+                  child: TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      "     yesssss    ",
+                      style: TextStyle(fontSize: 20, color: Colors.black),
+                    ),
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.purple[100],
+                        shape: const BeveledRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5)))),
+                  ),
+                ),
+              )
             ],
           ),
         )
