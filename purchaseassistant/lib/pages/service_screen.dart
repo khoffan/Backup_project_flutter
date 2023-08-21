@@ -18,7 +18,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
         appBar: AppBar(
           backgroundColor: themeBg,
           title: const Text(
-            "service",
+            "Service Selection",
             style: TextStyle(color: Colors.black),
           ),
         ),
@@ -40,7 +40,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
               SizedBox(
                 height: 40.0,
                 child: Row(children: [
-                  const Text("ฝากซื้อ  "),
+                  const Text("ลูกค้า  "),
                   const SizedBox(
                     width: 40.0,
                   ),
@@ -58,7 +58,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
               SizedBox(
                 height: 40.0,
                 child: Row(children: [
-                  const Text("รับฝากซื้อ"),
+                  const Text("ผู้ส่งสินค้า"),
                   const SizedBox(
                     width: 30.0,
                   ),
@@ -122,7 +122,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   child: TextButton(
                     onPressed: () {},
                     child: Text(
-                      "     yesssss    ",
+                      "     Matching    ",
                       style: TextStyle(fontSize: 20, color: Colors.black),
                     ),
                     style: TextButton.styleFrom(
