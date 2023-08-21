@@ -148,7 +148,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                           auth.signOut().then((value) {
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
-                              return const LoginScreen();
+                              return  LoginScreen();
                             }));
                             // Navigator.of(context).pushAndRemoveUntil(
                             //     MaterialPageRoute(

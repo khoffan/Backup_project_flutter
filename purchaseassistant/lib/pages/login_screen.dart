@@ -6,6 +6,7 @@ import 'package:email_validator/email_validator.dart';
 import '../models/login.dart';
 import '../pages/home_screen.dart';
 import '../utils/constants.dart';
+import '../widgets/custom_navigation_bar.dart';
 import './register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -172,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) {
-                                                  return const HomeScreen();
+                                                  return BottomNavigation();
                                                 },
                                               ),
                                             );
