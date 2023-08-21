@@ -35,7 +35,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 74, 183, 0),
+        backgroundColor: Color.fromARGB(255, 242, 195, 245),
         actions: [
           IconButton(
             onPressed: () {

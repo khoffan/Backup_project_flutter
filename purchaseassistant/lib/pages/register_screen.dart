@@ -17,30 +17,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: firebase,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text("Error"),
-            ),
+    return Scaffold(
+      body: FutureBuilder(
+        future: firebase,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text("Error"),
+              ),
+              body: Center(
+                child: Text("${snapshot.error}"),
+              ),
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.done) {
+            return CustomFormRegister(formKey: formKey, register: register);
+          }
+
+          return const Scaffold(
             body: Center(
-              child: Text("${snapshot.error}"),
+              child: CircularProgressIndicator(),
             ),
           );
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          return CustomFormRegister(formKey: formKey, register: register);
-        }
-
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 }

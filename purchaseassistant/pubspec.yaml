@@ -43,6 +43,7 @@ dependencies:
   firebase_storage: ^11.2.5
   cloud_firestore: ^4.8.3
   email_validator: ^2.1.17
+  never_behind_keyboard: ^1.0.2
 
 dev_dependencies:
   flutter_test:
