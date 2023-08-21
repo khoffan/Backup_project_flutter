@@ -94,13 +94,45 @@ class _ServiceScreenState extends State<ServiceScreen> {
               const SizedBox(
                 height: 40.0,
                 child: Card(
-                  child: DropdownButtonApp(),
+                  child: DropdownLocation(),
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(
-                height: 10.0,
-              ),
+              // SizedBox(
+              //     height: 10.0,
+              //     child: TextButton(
+              //       onPressed: () {
+              //         Navigator.of(context).push(
+              //           MaterialPageRoute(
+              //             builder: (ctx) => const LoginScreen(),
+              //           ),
+              //         );
+              //       },
+              //       child: Text(
+              //         "Login",
+              //         style: TextStyle(
+              //           color: themeError,
+              //         ),
+              //       ),
+              //     )),
+              Spacer(),
+              SizedBox(
+                height: 120.0,
+                child: Center(
+                  child: TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      "     yesssss    ",
+                      style: TextStyle(fontSize: 20, color: Colors.black),
+                    ),
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.purple[100],
+                        shape: const BeveledRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5)))),
+                  ),
+                ),
+              )
             ],
           ),
         )

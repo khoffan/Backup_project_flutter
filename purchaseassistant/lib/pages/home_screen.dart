@@ -13,7 +13,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: BottomNavigationBarExample(),
+      home: BottomNavigation(),
     );
   }
 }

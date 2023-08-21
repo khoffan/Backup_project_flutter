@@ -10,25 +10,25 @@ const List<String> list = <String>[
   'เซนทรัลเฟตติวัลหาดใหญ่'
 ];
 
-void main() => runApp(const DropdownButtonApp());
+void main() => runApp(const DropdownLocation());
 
-class DropdownButtonApp extends StatelessWidget {
-  const DropdownButtonApp({super.key});
+class DropdownLocation extends StatelessWidget {
+  const DropdownLocation({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const DropdownButtonExample();
+    return const DropdownButtonLoca();
   }
 }
 
-class DropdownButtonExample extends StatefulWidget {
-  const DropdownButtonExample({super.key});
+class DropdownButtonLoca extends StatefulWidget {
+  const DropdownButtonLoca({super.key});
 
   @override
-  State<DropdownButtonExample> createState() => _DropdownButtonExampleState();
+  State<DropdownButtonLoca> createState() => _DropdownButtonLocaState();
 }
 
-class _DropdownButtonExampleState extends State<DropdownButtonExample> {
+class _DropdownButtonLocaState extends State<DropdownButtonLoca> {
   String dropdownValue = list.first;
 
   @override
@@ -37,7 +37,10 @@ class _DropdownButtonExampleState extends State<DropdownButtonExample> {
       value: dropdownValue,
       menuMaxHeight: 150,
       elevation: 16,
-      style: const TextStyle(color: Colors.deepPurple, fontSize: 14.0),
+      style: const TextStyle(
+        color: Colors.deepPurple,
+        fontSize: 16.0,
+      ),
       // underline: Container(
       isExpanded: true,
       onChanged: (String? value) {
