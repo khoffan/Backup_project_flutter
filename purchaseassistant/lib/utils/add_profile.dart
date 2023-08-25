@@ -18,16 +18,33 @@ class AddProfile {
 
   Future<String> saveProfile(
       {required String name,
-      required String bio,
-      required Uint8List file}) async {
+      required String room,
+      required String stdid,
+      required String lname,
+      required String dorm,
+      required String gender,
+      required String phone,
+      required Uint8List file,}) async {
     String resp = "some Error";
     try {
       print("Attempting to save data...");
-      if (name.isNotEmpty && bio.isNotEmpty && file.isNotEmpty) {
+      if (name.isNotEmpty &&
+          room.isNotEmpty &&
+          file.isNotEmpty &&
+          lname.isNotEmpty &&
+          dorm.isNotEmpty &&
+          stdid.isNotEmpty &&
+          gender.isNotEmpty &&
+          phone.isNotEmpty) {
         String imageURL = await uploadImagetoStorage('profileImage', file);
         await _firestore.collection("userProfile").add({
           'name': name,
-          'bio': bio,
+          'lname': lname,
+          'room': room,
+          'stdid': stdid,
+          'dorm': dorm,
+          'gender': gender,
+          'phone': phone,
           'imageLink': imageURL,
         });
         print("Data saved successfully!");

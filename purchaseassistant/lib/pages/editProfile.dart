@@ -14,11 +14,19 @@ class EditProfile extends StatefulWidget {
   State<EditProfile> createState() => _EditProfileState();
 }
 
+TextEditingController nameController = TextEditingController();
+TextEditingController lastnameController = TextEditingController();
+TextEditingController rommController = TextEditingController();
+TextEditingController stdidController = TextEditingController();
+TextEditingController dormController = TextEditingController();
+TextEditingController genderController = TextEditingController();
+TextEditingController phoneController = TextEditingController();
+
 class _EditProfileState extends State<EditProfile> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final _formKey = GlobalKey<FormState>();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController bioController = TextEditingController();
+
+  
 
   Uint8List? _image;
   void selectImage() async {
@@ -30,9 +38,23 @@ class _EditProfileState extends State<EditProfile> {
 
   void saveFile() async {
     String name = nameController.text;
-    String bio = bioController.text;
+    String room = rommController.text;
+    String stdid = stdidController.text;
+    String dorm = dormController.text;
+    String gender = genderController.text;
+    String phone = phoneController.text;
+    String lname = lastnameController.text;
 
-    await AddProfile().saveProfile(name: name, bio: bio, file: _image!);
+    await AddProfile().saveProfile(
+      name: name,
+      room: room,
+      file: _image!,
+      stdid: stdid,
+      dorm: dorm,
+      gender: gender,
+      phone: phone,
+      lname: lname,
+    );
   }
 
   @override
@@ -89,47 +111,15 @@ class _EditProfileState extends State<EditProfile> {
                         height: 20,
                       ),
                       Container(
-                        padding: const EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(8),
                         child: Column(children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  hintText: "name"),
-                              controller: nameController,
-                              validator: (val) {
-                                if (val == null || val.isEmpty) {
-                                  return "please enter your name";
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  hintText: "bio"),
-                              controller: bioController,
-                              validator: (val) {
-                                if (val == null || val.isEmpty) {
-                                  return "Please add a bio";
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
+                          _buildTextFeildOrder(context, "รหัสนักศึกษา"),
+                          _buildTextFeildOrder(context, "ชื่อ"),
+                          _buildTextFeildOrder(context, "นามสกุล"),
+                          _buildTextFeildOrder(context, "หอพัก"),
+                          _buildTextFeildOrder(context, "ห้อง"),
+                          _buildTextFeildOrder(context, "เพศ"),
+                          _buildTextFeildOrder(context, "โทรศัพท์"),
                         ]),
                       ),
                       SizedBox(
@@ -163,4 +153,142 @@ class _EditProfileState extends State<EditProfile> {
       },
     );
   }
+}
+
+
+Widget _buildTextFeildOrder(context, title) {
+  if (title == 'รหัสนักศึกษา') {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: stdidController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "Please add a stdid";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'ชื่อ') {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: stdidController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "Please add a stdid";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'นามสกุล') {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: stdidController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "Please add a stdid";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'ห้อง') {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: stdidController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "Please add a stdid";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'หอพัก') {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: stdidController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "Please add a stdid";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'เพศ') {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: stdidController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "Please add a stdid";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'โทรศัพท์') {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: stdidController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "Please add a stdid";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  return Container();
 }
