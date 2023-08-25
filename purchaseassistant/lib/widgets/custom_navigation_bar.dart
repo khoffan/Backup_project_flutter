@@ -19,10 +19,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   static const List<Widget> _widgetOptions = <Widget>[
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: DashboardScreen(),
-    ),
+    DashboardScreen(),
     Text(
       'Index 1: Chat',
       style: optionStyle,
@@ -31,10 +28,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       'Index 2: Scan',
       style: optionStyle,
     ),
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ProfileScreenApp(),
-    ),
+    ProfileScreenApp(),
   ];
 
   void _onItemTapped(int index) {
