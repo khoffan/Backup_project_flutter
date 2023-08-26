@@ -98,23 +98,85 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   color: Colors.white,
                 ),
               ),
-              // SizedBox(
-              //     height: 10.0,
-              //     child: TextButton(
-              //       onPressed: () {
-              //         Navigator.of(context).push(
-              //           MaterialPageRoute(
-              //             builder: (ctx) => const LoginScreen(),
-              //           ),
-              //         );
-              //       },
-              //       child: Text(
-              //         "Login",
-              //         style: TextStyle(
-              //           color: themeError,
-              //         ),
-              //       ),
-              //     )),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                      width: 150,
+                      height: 80,
+                      child: InkWell(
+                        onTap: () {
+                          print("Custommer");
+                        },
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(2.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: const Icon(
+                                    Icons.face,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 5.0,
+                                ),
+                                const Text(
+                                  "ลูกค้า",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      )),
+                  SizedBox(
+                      width: 150,
+                      height: 80,
+                      child: InkWell(
+                        onTap: () {
+                          print("Rider");
+                        },
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(2.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: const Icon(
+                                    Icons.electric_moped,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 5.0,
+                                ),
+                                const Text(
+                                  "ผู้ส่งสินค้า",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      )),
+                ],
+              ),
               Spacer(),
               SizedBox(
                 height: 120.0,

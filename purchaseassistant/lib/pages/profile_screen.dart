@@ -93,7 +93,13 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                 ),
                           Positioned(
                             child: IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => EditProfile(),
+                                  ),
+                                );
+                              },
                               icon: Icon(
                                 Icons.add_a_photo,
                                 size: 28,
@@ -107,49 +113,44 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                       SizedBox(
                         height: 20,
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => EditProfile(),
-                                ),
-                              );
-                            },
-                            child: Text("Edit profile"),
-                          ),
-                        ],
-                      ),
+                      // Column(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: [
+                      //     ElevatedButton(
+                      //       onPressed: () {
+                      //         Navigator.of(context).push(
+                      //           MaterialPageRoute(
+                      //             builder: (context) => EditProfile(),
+                      //           ),
+                      //         );
+                      //       },
+                      //       child: Text("Edit profile"),
+                      //     ),
+                      //   ],
+                      // ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            "ข้อมูลผู้ใช้",
-                            style: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "ชื่อ ${name}",
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: 20.0,
+                              ),
+                              Text(
+                                "bio ${bio}",
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            height: 20.0,
-                          ),
-                          Text(
-                            "ชื่อ ${name}",
-                            style: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: 20.0,
-                          ),
-                          Text(
-                            "bio ${bio}",
-                            style: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: 20.0,
-                          ),
-                          // Text(auth.currentUser.email!),
                         ],
                       ),
                       const SizedBox(

@@ -16,7 +16,7 @@ class EditProfile extends StatefulWidget {
 
 TextEditingController nameController = TextEditingController();
 TextEditingController lastnameController = TextEditingController();
-TextEditingController rommController = TextEditingController();
+TextEditingController roomController = TextEditingController();
 TextEditingController stdidController = TextEditingController();
 TextEditingController dormController = TextEditingController();
 TextEditingController genderController = TextEditingController();
@@ -24,7 +24,7 @@ TextEditingController phoneController = TextEditingController();
 
 List<String> list = <String>['ชาย', 'หญิง'];
 
-String dropdowmValue = list.first; // Default value for dropdown
+String dropdownValue = list.first; // Default value for dropdown
 
 class _EditProfileState extends State<EditProfile> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
@@ -32,7 +32,7 @@ class _EditProfileState extends State<EditProfile> {
 
   void valueItem(value) {
     setState(() {
-      dropdowmValue = value;
+      dropdownValue = value;
     });
   }
 
@@ -46,7 +46,7 @@ class _EditProfileState extends State<EditProfile> {
 
   void saveFile() async {
     String name = nameController.text;
-    String room = rommController.text;
+    String room = roomController.text;
     String stdid = stdidController.text;
     String dorm = dormController.text;
     String gender = genderController.text;
@@ -99,7 +99,7 @@ class _EditProfileState extends State<EditProfile> {
                                 : CircleAvatar(
                                     radius: 64,
                                     backgroundImage: NetworkImage(
-                                        'https://www.google.com/imgres?imgurl=https%3A%2F%2Fw7.pngwing.com%2Fpngs%2F205%2F731%2Fpng-transparent-default-avatar-thumbnail.png&tbnid=vj1POnmqwlZL-M&vet=12ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ..i&imgrefurl=https%3A%2F%2Fwww.pngwing.com%2Fen%2Fsearch%3Fq%3Ddefault&docid=J354HYBi_egj6M&w=360&h=360&q=default%20avatar%20in%20png&hl=en&ved=2ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ'),
+                                        'https://i.pinimg.com/564x/37/c6/ee/37c6ee12369d470152c3cbe592477703.jpg'),
                                   ),
                             Positioned(
                               child: IconButton(
@@ -121,32 +121,60 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         Container(
                           padding: const EdgeInsets.all(8),
-                          child: Column(children: [
-                            _buildTextFeildOrder(
-                                context, "รหัสนักศึกษา", valueItem),
-                            _buildTextFeildOrder(context, "ชื่อ", valueItem),
-                            _buildTextFeildOrder(context, "นามสกุล", valueItem),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                _buildTextFeildOrder(
-                                    context, "หอพัก", valueItem),
-                                _buildTextFeildOrder(
-                                    context, "ห้อง", valueItem),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                _buildTextFeildOrder(context, "เพศ", valueItem),
-                                _buildTextFeildOrder(
-                                    context, "โทรศัพท์", valueItem),
-                              ],
-                            ),
-                          ]),
+                          width: double.infinity,
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  _buildTextFieldOrder(
+                                      context, "รหัสนักศึกษา", valueItem),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildTextFieldOrder(
+                                      context, "ชื่อ", valueItem),
+                                  _buildTextFieldOrder(
+                                      context, "นามสกุล", valueItem),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildTextFieldOrder(
+                                      context, "หอ", valueItem),
+                                  _buildTextFieldOrder(
+                                      context, "หมายเลขห้อง", valueItem),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildTextFieldOrder(
+                                      context, "เพศ", valueItem),
+                                  _buildTextFieldOrder(
+                                      context, "โทรศัพท์", valueItem),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         SizedBox(
-                          height: 10,
+                          height: 20,
                         ),
                         Container(
                           width: 150,
@@ -178,10 +206,11 @@ class _EditProfileState extends State<EditProfile> {
   }
 }
 
-Widget _buildTextFeildOrder(
+Widget _buildTextFieldOrder(
     context, String title, Function(String) valueItemCallback) {
   if (title == 'รหัสนักศึกษา') {
     return Container(
+      width: 390,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -189,10 +218,10 @@ Widget _buildTextFeildOrder(
               borderRadius: BorderRadius.circular(10),
             ),
             hintText: title),
-        controller: stdidController,
+        controller: lastnameController,
         validator: (val) {
           if (val == null || val.isEmpty) {
-            return "Please add a stdid";
+            return "กรุณาใส่ข้อมูล";
           }
           return null;
         },
@@ -201,6 +230,7 @@ Widget _buildTextFeildOrder(
   }
   if (title == 'ชื่อ') {
     return Container(
+      width: 190,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -211,7 +241,7 @@ Widget _buildTextFeildOrder(
         controller: stdidController,
         validator: (val) {
           if (val == null || val.isEmpty) {
-            return "Please add a stdid";
+            return "กรุณาใส่ข้อมูล";
           }
           return null;
         },
@@ -220,6 +250,7 @@ Widget _buildTextFeildOrder(
   }
   if (title == 'นามสกุล') {
     return Container(
+      width: 190,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -227,19 +258,20 @@ Widget _buildTextFeildOrder(
               borderRadius: BorderRadius.circular(10),
             ),
             hintText: title),
-        controller: stdidController,
+        controller: nameController,
         validator: (val) {
           if (val == null || val.isEmpty) {
-            return "Please add a stdid";
+            return "กรุณาใส่ข้อมูล";
           }
           return null;
         },
       ),
     );
   }
-  if (title == 'ห้อง') {
+
+  if (title == 'หอ') {
     return Container(
-      width: 140,
+      width: 190,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -247,19 +279,19 @@ Widget _buildTextFeildOrder(
               borderRadius: BorderRadius.circular(10),
             ),
             hintText: title),
-        controller: stdidController,
+        controller: dormController,
         validator: (val) {
           if (val == null || val.isEmpty) {
-            return "Please add a stdid";
+            return "กรุณาใส่ข้อมูล";
           }
           return null;
         },
       ),
     );
   }
-  if (title == 'หอพัก') {
+  if (title == 'หมายเลขห้อง') {
     return Container(
-      width: 140,
+      width: 190,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -267,10 +299,10 @@ Widget _buildTextFeildOrder(
               borderRadius: BorderRadius.circular(10),
             ),
             hintText: title),
-        controller: stdidController,
+        controller: roomController,
         validator: (val) {
           if (val == null || val.isEmpty) {
-            return "Please add a stdid";
+            return "กรุณาใส่ข้อมูล";
           }
           return null;
         },
@@ -278,9 +310,11 @@ Widget _buildTextFeildOrder(
     );
   }
   if (title == 'เพศ') {
-    return Card(
+    return Container(
+      width: 140,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: DropdownButton<String>(
-        value: dropdowmValue,
+        value: dropdownValue,
         elevation: 10,
         isExpanded: true,
         onChanged: (String? value) {
@@ -301,7 +335,7 @@ Widget _buildTextFeildOrder(
   }
   if (title == 'โทรศัพท์') {
     return Container(
-      width: 140,
+      width: 190,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -309,10 +343,10 @@ Widget _buildTextFeildOrder(
               borderRadius: BorderRadius.circular(10),
             ),
             hintText: title),
-        controller: stdidController,
+        controller: phoneController,
         validator: (val) {
           if (val == null || val.isEmpty) {
-            return "Please add a stdid";
+            return "กรุณาใส่ข้อมูล";
           }
           return null;
         },
