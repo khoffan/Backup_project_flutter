@@ -278,9 +278,7 @@ Widget _buildTextFeildOrder(
     );
   }
   if (title == 'เพศ') {
-    return Container(
-      width: 140,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+    return Card(
       child: DropdownButton<String>(
         value: dropdowmValue,
         elevation: 10,
