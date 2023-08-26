@@ -139,20 +139,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(),
-                              SizedBox(
+                              SizedBox(),
+                              Container(
                                 height: 40.0,
+                                width: 160,
                                 child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
                                             20), // <-- Radius
                                       ),
+
                                       backgroundColor: Colors.red,
-                                      padding:
-                                          const EdgeInsetsDirectional.symmetric(
-                                        horizontal: 150,
-                                      ),
                                       textStyle: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -188,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         //   formKey.currentState?.reset();
                                       }
                                     },
-                                    child: const Text("Login")),
+                                    child: Text("Login")),
                               ),
                             ],
                           )),

@@ -30,13 +30,13 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   String bio = "";
   String image = "";
 
-  Uint8List? _image;
-  void selectImage() async {
-    Uint8List img = await pickerImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
-  }
+  // Uint8List? _image;
+  // void selectImage() async {
+  //   Uint8List img = await pickerImage(ImageSource.gallery);
+  //   setState(() {
+  //     _image = img;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                       Stack(
                         alignment: AlignmentDirectional.bottomCenter,
                         children: [
-                          _image != null
+                          image != ''
                               ? CircleAvatar(
                                   radius: 64,
                                   backgroundImage: NetworkImage(image),
