@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/pages/deliverer_screen.dart';
 import '../utils/constants.dart';
 import '../widgets/custom_radio.dart';
 import '../widgets/dropdown_location.dart';
@@ -102,8 +103,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   SizedBox(
-                      width: 150,
-                      height: 80,
+                      width: 170,
+                      height: 100,
                       child: InkWell(
                         onTap: () {
                           print("Custommer");
@@ -139,8 +140,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         ),
                       )),
                   SizedBox(
-                      width: 150,
-                      height: 80,
+                      width: 170,
+                      height: 100,
                       child: InkWell(
                         onTap: () {
                           print("Rider");
@@ -148,29 +149,39 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         child: Card(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(2.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                    borderRadius: BorderRadius.circular(20.0),
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return const DelivererScreen();
+                                }));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(2.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    ),
+                                    child: const Icon(
+                                      Icons.electric_moped,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                  child: const Icon(
-                                    Icons.electric_moped,
-                                    color: Colors.white,
+                                  const SizedBox(
+                                    height: 5.0,
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 5.0,
-                                ),
-                                const Text(
-                                  "ผู้ส่งสินค้า",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )
-                              ],
+                                  const Text(
+                                    "ผู้ส่งสินค้า",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
