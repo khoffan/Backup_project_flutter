@@ -16,7 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Login register = Login();
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
 
-
+  
 
 
   @override

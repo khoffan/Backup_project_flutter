@@ -46,7 +46,10 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: _firestore.collection('userProfile').snapshots(),
+        stream: _firestore
+            .collection('userProfile')
+            .doc(auth.currentUser?.uid ?? '')
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -57,18 +60,16 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasData) {
-            List<QueryDocumentSnapshot> document = snapshot.data!.docs;
-            for (var doc in document) {
-              Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-              name = data?["name"] ?? '';
-              lname = data?["lname"] ?? '';
-              stdid = data?["stdid"] ?? '';
-              room = data?["room"] ?? '';
-              dorm = data?["dorm"] ?? '';
-              gender = data?["gender"] ?? '';
-              phone = data?["phone"] ?? '';
-              image = data?["imageLink"] ?? '';
-            }
+            var data = snapshot.data!.data();
+            name = data?["name"] ?? '';
+            lname = data?["lname"] ?? '';
+            stdid = data?["stdid"] ?? '';
+            room = data?["room"] ?? '';
+            dorm = data?["dorm"] ?? '';
+            gender = data?["gender"] ?? '';
+            phone = data?["phone"] ?? '';
+            image = data?["imageLink"] ?? '';
+
             return Scaffold(
               appBar: AppBar(
                 backgroundColor: Color.fromARGB(255, 242, 195, 245),
