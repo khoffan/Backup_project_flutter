@@ -27,7 +27,12 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   final auth = FirebaseAuth.instance;
 
   String name = "";
-  String bio = "";
+  String lname = "";
+  String phone = "";
+  String stdid = "";
+  String gender = "";
+  String room = "";
+  String dorm = "";
   String image = "";
 
   // Uint8List? _image;
@@ -56,7 +61,12 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
             for (var doc in document) {
               Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
               name = data?["name"] ?? '';
-              bio = data?["bio"] ?? '';
+              lname = data?["lname"] ?? '';
+              stdid = data?["stdid"] ?? '';
+              room = data?["room"] ?? '';
+              dorm = data?["dorm"] ?? '';
+              gender = data?["gender"] ?? '';
+              phone = data?["phone"] ?? '';
               image = data?["imageLink"] ?? '';
             }
             return Scaffold(
@@ -103,6 +113,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                               icon: Icon(
                                 Icons.add_a_photo,
                                 size: 28,
+                                color: Colors.blue,
                               ),
                             ),
                             bottom: -10,
@@ -129,22 +140,30 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                       //   ],
                       // ),
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Row(
+                          Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "ชื่อ ${name}",
+                                "รหัสนักศึกษา ${stdid}",
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     fontWeight: FontWeight.bold),
                               ),
-                              SizedBox(
-                                height: 20.0,
+                              Text(
+                                "ชื่อ ${name} ${lname}",
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                "bio ${bio}",
+                                "หอพัก ${dorm} ห้องพัก ${room}",
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                "โทรศัพท์ ${phone}",
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     fontWeight: FontWeight.bold),

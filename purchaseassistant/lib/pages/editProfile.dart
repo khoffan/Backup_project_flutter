@@ -70,13 +70,20 @@ class _EditProfileState extends State<EditProfile> {
         lname: lname,
       );
     }
-
+    print(room);
+    print(name);
+    print(lname);
+    print(dorm);
+    print(phone);
+    print(dropdownValue);
     nameController.clear();
     roomController.clear();
     stdidController.clear();
     dormController.clear();
     lastnameController.clear();
     phoneController.clear();
+
+    Navigator.pop(context);
   }
 
   @override
@@ -224,7 +231,7 @@ Widget _buildTextFieldOrder(
     context, String title, Function(String) valueItemCallback) {
   if (title == 'รหัสนักศึกษา') {
     return Container(
-      width: MediaQuery.of(context).size.width - 10,
+      width: MediaQuery.of(context).size.width - 20,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -244,7 +251,7 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'ชื่อ') {
     return Container(
-      width: 180,
+      width: MediaQuery.of(context).size.width / 2.2,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -264,7 +271,7 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'นามสกุล') {
     return Container(
-      width: 180,
+      width: MediaQuery.of(context).size.width / 2.1,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(

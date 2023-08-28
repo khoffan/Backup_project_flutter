@@ -1,19 +1,28 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 // import 'package:flutter/material.dart';
 
 final FirebaseStorage _storage = FirebaseStorage.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+final FirebaseAuth _auth = FirebaseAuth.instance;
+final User _user = _auth.currentUser!;
 
 class AddProfile {
   Future<String> uploadImagetoStorage(String name, Uint8List file) async {
-    Reference ref = _storage.ref().child(name);
-    UploadTask uploadTask = ref.putData(file);
-    TaskSnapshot snapshot = await uploadTask;
-    String dowloadURL = await snapshot.ref.getDownloadURL();
-    return dowloadURL;
+   try {
+      Reference ref =
+          _storage.ref().child(name).child(DateTime.now().toString());
+      UploadTask uploadTask = ref.putData(file);
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadURL = await snapshot.ref.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print("Error uploading image to Firebase Storage: $e");
+      throw e;
+    }
   }
 
   Future<String> saveProfile(
@@ -36,8 +45,8 @@ class AddProfile {
           stdid.isNotEmpty &&
           gender.isNotEmpty &&
           phone.isNotEmpty) {
-        String imageURL = await uploadImagetoStorage('profileImage', file);
-        await _firestore.collection("userProfile").add({
+        String imageURL = await uploadImagetoStorage('/profileImage', file);
+        await _firestore.collection("userProfile").doc(_user.uid ?? '').set({
           'name': name,
           'lname': lname,
           'room': room,
