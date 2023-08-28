@@ -67,4 +67,13 @@ class AddProfile {
 
     return resp;
   }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getDataProfile() async { 
+    try{
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _firestore.collection('userProfile').doc(_user.uid ?? '').get();
+      return snapshot;
+    } catch (e){
+      throw e.toString();
+    }
+  }
 }
