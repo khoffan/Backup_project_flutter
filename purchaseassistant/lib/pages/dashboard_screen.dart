@@ -46,7 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
-      body: const Center(
+      body: Center(
         child: Text(
           'Index 0: Home',
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),

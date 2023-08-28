@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import '../models/login.dart';
@@ -14,6 +15,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
   Login register = Login();
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
+
+
+
 
   @override
   Widget build(BuildContext context) {

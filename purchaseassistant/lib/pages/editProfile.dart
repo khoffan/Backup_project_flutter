@@ -49,20 +49,41 @@ class _EditProfileState extends State<EditProfile> {
     String room = roomController.text;
     String stdid = stdidController.text;
     String dorm = dormController.text;
-    String gender = genderController.text;
     String phone = phoneController.text;
     String lname = lastnameController.text;
 
-    await AddProfile().saveProfile(
-      name: name,
-      room: room,
-      file: _image!,
-      stdid: stdid,
-      dorm: dorm,
-      gender: gender,
-      phone: phone,
-      lname: lname,
-    );
+    if (name.isNotEmpty &&
+        room.isNotEmpty &&
+        stdid.isNotEmpty &&
+        dorm.isNotEmpty &&
+        lname.isNotEmpty &&
+        room.isNotEmpty &&
+        phone.isNotEmpty && dropdownValue.isNotEmpty) {
+      await AddProfile().saveProfile(
+        name: name,
+        room: room,
+        file: _image ?? Uint8List(0),
+        stdid: stdid,
+        dorm: dorm,
+        gender: dropdownValue,
+        phone: phone,
+        lname: lname,
+      );
+    }
+    print(room);
+    print(name);
+    print(lname);
+    print(dorm);
+    print(phone);
+    print(dropdownValue);
+    nameController.clear();
+    roomController.clear();
+    stdidController.clear();
+    dormController.clear();
+    lastnameController.clear();
+    phoneController.clear();
+
+    Navigator.pop(context);
   }
 
   @override
@@ -210,27 +231,7 @@ Widget _buildTextFieldOrder(
     context, String title, Function(String) valueItemCallback) {
   if (title == 'รหัสนักศึกษา') {
     return Container(
-      width: 390,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-      child: TextFormField(
-        decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            hintText: title),
-        controller: lastnameController,
-        validator: (val) {
-          if (val == null || val.isEmpty) {
-            return "กรุณาใส่ข้อมูล";
-          }
-          return null;
-        },
-      ),
-    );
-  }
-  if (title == 'ชื่อ') {
-    return Container(
-      width: 190,
+      width: MediaQuery.of(context).size.width - 20,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -248,9 +249,9 @@ Widget _buildTextFieldOrder(
       ),
     );
   }
-  if (title == 'นามสกุล') {
+  if (title == 'ชื่อ') {
     return Container(
-      width: 190,
+      width: MediaQuery.of(context).size.width / 2.2,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -268,10 +269,30 @@ Widget _buildTextFieldOrder(
       ),
     );
   }
+  if (title == 'นามสกุล') {
+    return Container(
+      width: MediaQuery.of(context).size.width / 2.1,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: lastnameController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "กรุณาใส่ข้อมูล";
+          }
+          return null;
+        },
+      ),
+    );
+  }
 
   if (title == 'หอ') {
     return Container(
-      width: 190,
+      width: 180,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -291,7 +312,7 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'หมายเลขห้อง') {
     return Container(
-      width: 190,
+      width: 180,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -311,7 +332,7 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'เพศ') {
     return Container(
-      width: 190,
+      width: 140,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: DropdownButton<String>(
         value: dropdownValue,
