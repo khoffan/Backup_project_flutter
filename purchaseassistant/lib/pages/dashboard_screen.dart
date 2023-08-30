@@ -47,50 +47,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
         ),
-        body: ListView(
-          children: [
-            Container(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
-                  child: ShowPost(),
-                ),
-              ),
-            ),
-            Container(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
-                  child: ShowPost(),
-                ),
-              ),
-            ),
-            Container(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
-                  child: ShowPost(),
-                ),
-              ),
-            ),
-            Container(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
-                  child: ShowPost(),
-                ),
-              ),
-            ),
-            Container(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
-                  child: ShowPost(),
-                ),
-              ),
-            ),
-          ],
-        )
+        body: ShowPost(),
+        // body: ListView(
+        //   children: [
+        //     Container(
+        //       child: Card(
+        //         child: Padding(
+        //           padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+        //           child: ShowPost(),
+        //         ),
+        //       ),
+        //     ),
+        //     Container(
+        //       child: Card(
+        //         child: Padding(
+        //           padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+        //           child: ShowPost(),
+        //         ),
+        //       ),
+        //     ),
+        //     Container(
+        //       child: Card(
+        //         child: Padding(
+        //           padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+        //           child: ShowPost(),
+        //         ),
+        //       ),
+        //     ),
+        //     Container(
+        //       child: Card(
+        //         child: Padding(
+        //           padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+        //           child: ShowPost(),
+        //         ),
+        //       ),
+        //     ),
+        //     Container(
+        //       child: Card(
+        //         child: Padding(
+        //           padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+        //           child: ShowPost(),
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // )
 
         // Center(
         //   child: Column(children: [
