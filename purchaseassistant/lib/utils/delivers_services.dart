@@ -62,10 +62,10 @@ class ServiceDeliver {
     }
   }
 
-  Future<void> setStatus(bool status, String uid) async {
+  Future<void> updateStatus(bool status, String uid) async {
     try {
       if (uid != '' && status != null) {
-        await _firestore.collection('deliverPost').doc(uid).set({
+        await _firestore.collection('deliverPost').doc(uid).update({
           'status': status,
         });
       }

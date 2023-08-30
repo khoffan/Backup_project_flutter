@@ -162,7 +162,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                             padding: const EdgeInsets.all(8.0),
                             child: TextButton(
                               onPressed: () async {
-                                await ServiceDeliver().setStatus(true, uid);
+                                await ServiceDeliver().updateStatus(true, uid);
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(builder: (context) {
