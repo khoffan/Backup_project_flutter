@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/pages/deliverer_screen.dart';
+import 'package:purchaseassistant/utils/delivers_services.dart';
 import '../utils/constants.dart';
 import '../widgets/custom_radio.dart';
 import '../widgets/dropdown_location.dart';
@@ -12,7 +14,16 @@ class ServiceScreen extends StatefulWidget {
 }
 
 class _ServiceScreenState extends State<ServiceScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String uid = "";
+
   int _value = 1;
+
+  @override
+  void InitState(){
+    super.initState();
+    uid = _auth.currentUser?.uid ?? '';
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,11 +161,14 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return const DelivererScreen();
-                                }));
+                              onPressed: () async {
+                                await ServiceDeliver().setStatus(true, uid);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) {
+                                    return DelivererScreen();
+                                  }),
+                                );
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -16,7 +17,9 @@ class DelivererScreen extends StatefulWidget {
 class _DelivererScreenState extends State<DelivererScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _txtControllerBody = TextEditingController();
-
+  
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  String uid = '';
   Uint8List? _image;
   void selecImage() async {
     Uint8List img = await pickerImage(ImageSource.gallery);
@@ -33,7 +36,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
     try {
       String title = _txtControllerBody.text;
 
-      await ServiceDeliver().saveDeliver(title: title, file: _image!);
+      await ServiceDeliver().saveDeliver(title: title, file: _image!, uid: uid);
       _txtControllerBody.clear();
       print('success');
     } catch (e) {
@@ -42,10 +45,19 @@ class _DelivererScreenState extends State<DelivererScreen> {
   }
 
   @override
+  void initState(){
+    super.initState();
+    uid = _auth.currentUser?.uid ?? '';
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Deliverer'),
+        actions: [
+          
+        ],
       ),
       body: ListView(
         children: [
@@ -109,9 +121,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.blue),
               onPressed: () => {
-                if (_formKey.currentState!.validate()) {
-                  saveData()
-                }
+                if (_formKey.currentState!.validate()) {saveData()}
               },
               child: Text('อัปโหลด'),
             ),
