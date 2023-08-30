@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/pages/testPage.dart';
 import '../utils/constants.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -16,42 +17,91 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: themeBg,
-        title: const Text(
-          'Purchase Assistant',
-          style: TextStyle(
-            color: Colors.black,
+        appBar: AppBar(
+          backgroundColor: themeBg,
+          title: const Text(
+            'Purchase Assistant',
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.search_outlined),
+              color: Colors.amber[800],
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.notifications_outlined),
+              color: Colors.amber[800],
+            ),
+          ],
+          leading: IconButton(
+            onPressed: () {},
+            icon: IconButton(
+              color: Colors.amber[800],
+              icon: const Icon(Icons.sensor_occupied_rounded),
+              onPressed: () {},
+            ),
           ),
         ),
-        centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search_outlined),
-            color: Colors.amber[800],
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_outlined),
-            color: Colors.amber[800],
-          ),
-        ],
-        leading: IconButton(
-          onPressed: () {},
-          icon: IconButton(
-            color: Colors.amber[800],
-            icon: const Icon(Icons.sensor_occupied_rounded),
-            onPressed: () {},
-          ),
-        ),
-      ),
-      body: Center(
-        child: Text(
-          'Index 0: Home',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
+        body: ListView(
+          children: [
+            Container(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                  child: ShowPost(),
+                ),
+              ),
+            ),
+            Container(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                  child: ShowPost(),
+                ),
+              ),
+            ),
+            Container(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                  child: ShowPost(),
+                ),
+              ),
+            ),
+            Container(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                  child: ShowPost(),
+                ),
+              ),
+            ),
+            Container(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                  child: ShowPost(),
+                ),
+              ),
+            ),
+          ],
+        )
+
+        // Center(
+        //   child: Column(children: [
+        //     Card(
+        //       child: ShowPost(),
+        //     ),
+        //     Card(
+        //       child: ShowPost(),
+        //     ),
+        //   ]),
+        // ),
+        );
   }
 }

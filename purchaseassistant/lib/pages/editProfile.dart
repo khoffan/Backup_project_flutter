@@ -58,7 +58,8 @@ class _EditProfileState extends State<EditProfile> {
         dorm.isNotEmpty &&
         lname.isNotEmpty &&
         room.isNotEmpty &&
-        phone.isNotEmpty && dropdownValue.isNotEmpty) {
+        phone.isNotEmpty &&
+        dropdownValue.isNotEmpty) {
       await AddProfile().saveProfile(
         name: name,
         room: room,
@@ -251,7 +252,8 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'ชื่อ') {
     return Container(
-      width: MediaQuery.of(context).size.width / 2.2,
+      width: 180,
+      // width: MediaQuery.of(context).size.width / 2.2,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -271,7 +273,8 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'นามสกุล') {
     return Container(
-      width: MediaQuery.of(context).size.width / 2.1,
+      width: 190,
+      // width: MediaQuery.of(context).size.width / 2.1,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -312,7 +315,7 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'หมายเลขห้อง') {
     return Container(
-      width: 180,
+      width: 190,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -332,8 +335,12 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'เพศ') {
     return Container(
-      width: 140,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      width: 180,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      height: 60,
       child: DropdownButton<String>(
         value: dropdownValue,
         elevation: 10,
@@ -348,7 +355,10 @@ Widget _buildTextFieldOrder(
         items: list.map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
-            child: Text(value),
+            child: Text(
+              "  " + value,
+              style: TextStyle(color: Colors.black54),
+            ),
           );
         }).toList(),
       ),
