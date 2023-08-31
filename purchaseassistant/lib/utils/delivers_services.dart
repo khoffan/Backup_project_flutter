@@ -34,7 +34,7 @@ class ServiceDeliver {
 
       bool? status = await getStatus(uid);
 
-      if (getProfilesnapshot.exists && status != null) {
+      if (getProfilesnapshot.exists) {
         Map<String, dynamic> data =
             getProfilesnapshot.data() as Map<String, dynamic>;
 
@@ -62,10 +62,10 @@ class ServiceDeliver {
     }
   }
 
-  Future<void> setStatus(bool status, String uid) async {
+  Future<void> updateStatus(bool status, String uid) async {
     try {
-      if (uid != '' && status != null) {
-        await _firestore.collection('deliverPost').doc(uid).set({
+      if (uid != '') {
+        await _firestore.collection('deliverPost').doc(uid).update({
           'status': status,
         });
       }

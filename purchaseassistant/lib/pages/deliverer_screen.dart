@@ -56,7 +56,10 @@ class _DelivererScreenState extends State<DelivererScreen> {
       appBar: AppBar(
         title: Text('Deliverer'),
         actions: [
-          
+          IconButton(onPressed: () async{
+            await ServiceDeliver().updateStatus(false, uid);
+            Navigator.pop(context);
+          }, icon: Icon(Icons.arrow_back)),
         ],
       ),
       body: ListView(
