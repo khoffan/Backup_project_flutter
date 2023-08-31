@@ -84,12 +84,15 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
               ),
               body: Container(
                 alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Stack(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      color: Colors.amber.withOpacity(0.1),
+                      padding: const EdgeInsets.only(top: 40, bottom: 40),
+                      margin: const EdgeInsets.only(bottom: 20.0),
+                      width: double.infinity,
+                      child: Stack(
                         alignment: AlignmentDirectional.bottomCenter,
                         children: [
                           image != ''
@@ -118,66 +121,85 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                               ),
                             ),
                             bottom: -10,
-                            left: 80,
+                            left: 230,
                           )
                         ],
                       ),
-                      SizedBox(
-                        height: 20,
+                    ),
+                    Center(
+                      child: Text(
+                        "ข้อมูลโปรไฟล์",
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
                       ),
-                      // Column(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //     ElevatedButton(
-                      //       onPressed: () {
-                      //         Navigator.of(context).push(
-                      //           MaterialPageRoute(
-                      //             builder: (context) => EditProfile(),
-                      //           ),
-                      //         );
-                      //       },
-                      //       child: Text("Edit profile"),
-                      //     ),
-                      //   ],
-                      // ),
-                      Column(
+                    ),
+                    Center(
+                        child: Container(
+                      padding: EdgeInsets.only(left: 40, top: 30),
+                      child: Column(
                         children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Row(
                             children: [
                               Text(
-                                "รหัสนักศึกษา ${stdid}",
-                                style: TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold),
+                                "ชื่อ :  ${name}  ${lname}",
+                                style: TextStyle(fontSize: 18),
                               ),
+                              SizedBox(
+                                height: 40,
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
                               Text(
-                                "ชื่อ ${name} ${lname}",
-                                style: TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold),
+                                "รหัสนักศึกษา :  ${stdid}",
+                                style: TextStyle(fontSize: 18),
                               ),
+                              SizedBox(
+                                height: 40,
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
                               Text(
-                                "หอพัก ${dorm} ห้องพัก ${room}",
-                                style: TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold),
+                                "ที่อยู่ :  หอพักอาคาร ${dorm}  ห้อง ${room}",
+                                style: TextStyle(fontSize: 18),
                               ),
+                              SizedBox(
+                                height: 40,
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
                               Text(
-                                "โทรศัพท์ ${phone}",
-                                style: TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold),
+                                "เพศ :  ${gender}",
+                                style: TextStyle(fontSize: 18),
                               ),
+                              SizedBox(
+                                height: 40,
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                "เบอร์โทรศัพท์ :  ${phone}",
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              SizedBox(
+                                height: 40,
+                              )
                             ],
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  ),
+                    )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  ],
                 ),
               ),
             );
