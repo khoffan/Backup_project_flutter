@@ -5,6 +5,7 @@ import 'package:purchaseassistant/utils/delivers_services.dart';
 import '../utils/constants.dart';
 import '../widgets/custom_radio.dart';
 import '../widgets/dropdown_location.dart';
+import 'deliverer_history.dart';
 
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});
@@ -14,15 +15,16 @@ class ServiceScreen extends StatefulWidget {
 }
 
 class _ServiceScreenState extends State<ServiceScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = "";
 
   int _value = 1;
 
   @override
-  void InitState(){
+  void initState(){
     super.initState();
     uid = _auth.currentUser?.uid ?? '';
+    print(uid);
   }
   @override
   Widget build(BuildContext context) {
@@ -161,14 +163,15 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextButton(
-                              onPressed: () async {
-                                Navigator.pushReplacement(
+                              onPressed: ()  {
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) {
-                                    return DelivererScreen();
+                                    return DeliverHistory();
                                   }),
                                 );
-                                await ServiceDeliver().updateStatus(true, uid);
+                                ServiceDeliver().setStatus(true, uid);
+                                ServiceDeliver().updateStatus(true, uid);
                                 print("save status success");
                               },
                               child: Column(

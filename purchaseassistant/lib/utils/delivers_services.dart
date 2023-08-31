@@ -32,12 +32,12 @@ class ServiceDeliver {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
           await AddProfile().getDataProfile();
 
-      bool? status = await getStatus(uid);
 
       if (getProfilesnapshot.exists) {
         Map<String, dynamic> data =
             getProfilesnapshot.data() as Map<String, dynamic>;
 
+        bool? status = await getStatus(uid);
         String name = data['name'] ?? '';
         String lname = data['lname'] ?? '';
         String stdid = data['stdid'] ?? '';
@@ -76,12 +76,12 @@ class ServiceDeliver {
         await AddProfile().getDataProfile();
 
     // Get user status
-    bool? status = await getStatus(uid);
 
     if (getProfilesnapshot.exists) {
       Map<String, dynamic> data =
           getProfilesnapshot.data() as Map<String, dynamic>;
 
+      bool? status = await getStatus(uid);
       String name = data['name'] ?? '';
       String lname = data['lname'] ?? '';
       String stdid = data['stdid'] ?? '';
@@ -117,11 +117,25 @@ class ServiceDeliver {
 
   Future<void> updateStatus(bool status, String uid) async {
     try {
-      if (uid != '') {
+      if (uid != '' && status != null) {
         await _firestore.collection('deliverPost').doc(uid).update({
           'status': status,
         });
       }
+      print("update success");
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> setStatus(bool status, String uid) async{
+    try {
+      if (uid != '' && status != null) {
+        await _firestore.collection('deliverPost').doc(uid).set({
+          'status': status,
+        });
+      }
+      print("update success");
     } catch (e) {
       throw e.toString();
     }
@@ -136,6 +150,7 @@ class ServiceDeliver {
           Map<String, dynamic> data = snapshot.data()!;
           return data['status'] as bool;
         }
+        return null;
       }
     } catch (e) {
       throw e.toString();
