@@ -3,17 +3,40 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ShowPost extends StatefulWidget {
-  const ShowPost({super.key});
+import '../utils/add_comments.dart';
+import '../utils/delivers_services.dart';
+import 'comment_screen.dart';
 
+class ShowPost extends StatefulWidget {
+  ShowPost({super.key});
+
+  String postId = "";
   @override
   State<ShowPost> createState() => _ShowPostState();
 }
+
+final _formKey = GlobalKey<FormState>();
+FirebaseFirestore _firestore = FirebaseFirestore.instance;
+FirebaseAuth _auth = FirebaseAuth.instance;
+
+TextEditingController _commentController = TextEditingController();
+
 
 class _ShowPostState extends State<ShowPost> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? uid;
+
+  void saveComment(String docid) async {
+    try {
+      String comment = _commentController.text;
+
+      await ServiceDeliver().saveDeliverComment(uid: uid ?? '', title: comment, postId: docid);
+      _commentController.clear();
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
   @override
   void initState() {
@@ -68,10 +91,12 @@ class _ShowPostState extends State<ShowPost> {
                       final deliverUser =
                           deliverUserDoc.data() as Map<String, dynamic>;
 
+                      String docid = deliverUserDoc.id;
                       String name = deliverUser['name'] ?? '';
                       String lname = deliverUser['lname'] ?? '';
                       String title = deliverUser['title'] ?? '';
                       String imageLink = deliverUser['imageurl'] ?? '';
+                      print("DocId: ${docid}");
                       final Timestamp timestamp = Timestamp.now();
                       final datenow = timestamp.toDate();
                       final date = DateFormat('d-MMM-yyyy').format(datenow);
@@ -150,7 +175,9 @@ class _ShowPostState extends State<ShowPost> {
                               alignment: MainAxisAlignment.end,
                               children: [
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    ShowCommentBottm(context, saveComment, docid, uid ?? '');
+                                  },
                                   child: Text('comment'),
                                 ),
                               ],
@@ -169,4 +196,55 @@ class _ShowPostState extends State<ShowPost> {
       },
     );
   }
+}
+
+Future ShowCommentBottm(context, Function saveComment, String postId, String uid) {
+  print("PostId: ${postId}");
+  return showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return Scaffold(
+        body: Container(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: CommentScreen(postId: postId, uid: uid,),
+                ),
+
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty && value == null) {
+                          return "กรุณาใส่ข้อมูล";
+                        }
+                        return null;
+                      },
+                      controller: _commentController,
+                    )),
+                // SizedBox(
+                //   height: 10,
+                // ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      saveComment(postId);
+                    }
+                  },
+                  child: Text("comment"),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }
