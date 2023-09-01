@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import '../pages/service_screen.dart';
+import 'package:purchaseassistant/routes/routes.dart';
 import '../pages/dashboard_screen.dart';
-// import '../pages/test_setting.dart';
 import '../pages/profile_screen.dart';
-// import '../utils/constants.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -46,9 +44,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const ServiceScreen(),
-            ));
+            Navigator.pushNamed(context, AppRoute.service);
+            // Navigator.of(context).push(MaterialPageRoute(
+            //   builder: (context) => const ServiceScreen(),
+            // ));
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
