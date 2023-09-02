@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:purchaseassistant/utils/delivers_services.dart';
 import 'package:intl/intl.dart';
 
+import '../utils/update_post.dart';
 import 'deliverer_screen.dart';
 
 class DeliverHistory extends StatefulWidget {
@@ -17,6 +18,21 @@ class _DeliverHistoryState extends State<DeliverHistory> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
+
+  void removePosted(String uid, String docid) async {
+    try {
+      await ServiceDeliver().removeDeliverer(uid: uid, docid: docid).then((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Content updated successfully')));
+        Navigator.pop(context);
+      }).catchError((error) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error updating content')));
+      });
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
   @override
   void initState() {
@@ -74,7 +90,9 @@ class _DeliverHistoryState extends State<DeliverHistory> {
 
           final deliverDocs = snapshot.data!.docs;
 
-          final fillterDeliver = deliverDocs.where((deliverDoc) => deliverDoc.id == spacificuser).toList();
+          final fillterDeliver = deliverDocs
+              .where((deliverDoc) => deliverDoc.id == spacificuser)
+              .toList();
           return ListView.builder(
             itemCount: fillterDeliver.length,
             itemBuilder: (context, index) {
@@ -105,6 +123,8 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                             deliverUserDoc.data() as Map<String, dynamic>;
 
                         String docid = deliverUserDoc.id;
+                        String userId = deliverDoc.id;
+
                         String name = deliverUser['name'] ?? '';
                         String lname = deliverUser['lname'] ?? '';
                         String title = deliverUser['title'] ?? '';
@@ -167,20 +187,21 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                                 height: 10,
                               ),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Expanded(
+                                  Container(
+                                    width: 200,
                                     child: imageLink != null
                                         ? Image(
                                             image: NetworkImage(
                                               imageLink,
                                             ),
-                                            width: 40.0,
                                           )
                                         : Image(
                                             image: NetworkImage(
                                               "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
                                             ),
-                                            width: 40.0,
+                                            width: 20,
                                           ),
                                   ),
                                 ],
@@ -189,8 +210,24 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                                 alignment: MainAxisAlignment.end,
                                 children: [
                                   TextButton(
-                                    onPressed: (){},
-                                    child: Text('edit'),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => UpdatePosted(
+                                                imageLink: imageLink,
+                                                postedDocid: docid,
+                                                postedUserid: userId,
+                                                title: title),
+                                          ));
+                                    },
+                                    child: Text('Edit'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      removePosted(userId, docid);
+                                    },
+                                    child: Text('Remove'),
                                   ),
                                 ],
                               ),

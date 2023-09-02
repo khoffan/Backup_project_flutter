@@ -64,6 +64,54 @@ class ServiceDeliver {
       throw e.toString();
     }
   }
+  Future<void> updateDeliver(
+      {required String uid,
+      required String Docid,
+      required String title,
+      required Uint8List file}) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
+          await AddProfile().getDataProfile();
+
+
+      if (getProfilesnapshot.exists) {
+        Map<String, dynamic> data =
+            getProfilesnapshot.data() as Map<String, dynamic>;
+
+        bool? status = await getStatus(uid);
+        String name = data['name'] ?? '';
+        String lname = data['lname'] ?? '';
+        String stdid = data['stdid'] ?? '';
+
+        Timestamp timestamp = Timestamp.now();
+
+        String imageurl = await uploadImagetoStorage('deliverImage', file);
+        await _firestore.collection('deliverPost').doc(uid).set({
+          'status': status,
+        });
+
+        final deliverRef = _firestore.collection('deliverPost').doc(uid);
+        await deliverRef.collection('deliverContent').doc(Docid).update({
+          'imageurl': imageurl,
+          'title': title,
+          'date': timestamp
+        });
+        print('save data success');
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> removeDeliverer({required String uid, required String docid}) async {
+    try{
+      await _firestore.collection('deliverPost').doc(uid).collection('deliverContent').doc(docid).delete();
+    } catch (e) {
+
+    }
+  }
+
+
 
   Future<void> saveDeliverComment({
   required String uid,
