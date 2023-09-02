@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:purchaseassistant/routes/routes.dart';
 import '../models/login.dart';
 import '../utils/constants.dart';
 import '../pages/login_screen.dart';
@@ -140,15 +141,17 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                                       .then((value) {
                                     widget.formKey.currentState?.reset();
                                     if (context.mounted) {
+                                      Navigator.pushReplacementNamed(
+                                          context, AppRoute.login);
                                       // Navigator.pop(context);
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) {
-                                            return const LoginScreen();
-                                          },
-                                        ),
-                                      );
+                                      // Navigator.pushReplacement(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //     builder: (context) {
+                                      //       return const LoginScreen();
+                                      //     },
+                                      //   ),
+                                      // );
                                     }
                                     Fluttertoast.showToast(
                                       msg: "สร้างบัญชีผู้ใช้สำเร็จ",
@@ -187,11 +190,12 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                   const Text("Already have an account?"),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (ctx) => const LoginScreen(),
-                        ),
-                      );
+                      Navigator.pushNamed(context, AppRoute.login);
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //     builder: (ctx) => const LoginScreen(),
+                      //   ),
+                      // );
                     },
                     child: Text(
                       "Login",
