@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../utils/add_comments.dart';
+// import '../utils/add_comments.dart';
 import '../utils/delivers_services.dart';
 import 'comment_screen.dart';
 
@@ -26,12 +26,14 @@ class _ShowPostState extends State<ShowPost> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? uid;
+  String? userId;
 
   void saveComment(String docid) async {
     try {
       String comment = _commentController.text;
 
-      await ServiceDeliver().saveDeliverComment(uid: uid ?? '', title: comment, postId: docid);
+      await ServiceDeliver()
+          .saveDeliverComment(uid: uid ?? '', title: comment, postId: docid);
       _commentController.clear();
     } catch (e) {
       throw e.toString();
@@ -92,11 +94,13 @@ class _ShowPostState extends State<ShowPost> {
                           deliverUserDoc.data() as Map<String, dynamic>;
 
                       String docid = deliverUserDoc.id;
+                      String userid = deliverDoc.id;
+      
                       String name = deliverUser['name'] ?? '';
                       String lname = deliverUser['lname'] ?? '';
                       String title = deliverUser['title'] ?? '';
                       String imageLink = deliverUser['imageurl'] ?? '';
-                      print("DocId: ${docid}");
+                      print("DocId: ${userId}");
                       final Timestamp timestamp = Timestamp.now();
                       final datenow = timestamp.toDate();
                       final date = DateFormat('d-MMM-yyyy').format(datenow);
@@ -111,7 +115,16 @@ class _ShowPostState extends State<ShowPost> {
                               children: [
                                 Row(
                                   children: [
-                                    Container(
+                                    GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return _showDiaslogProfile(
+                                                context, userid);
+                                          },
+                                        );
+                                      },
                                       child: Image(
                                         image: NetworkImage(
                                           "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
@@ -155,7 +168,7 @@ class _ShowPostState extends State<ShowPost> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: imageLink != null
+                                  child: imageLink != ''
                                       ? Image(
                                           image: NetworkImage(
                                             imageLink,
@@ -176,7 +189,8 @@ class _ShowPostState extends State<ShowPost> {
                               children: [
                                 TextButton(
                                   onPressed: () {
-                                    ShowCommentBottm(context, saveComment, docid, uid ?? '');
+                                    ShowCommentBottm(
+                                        context, saveComment, docid, uid ?? '');
                                   },
                                   child: Text('comment'),
                                 ),
@@ -198,7 +212,8 @@ class _ShowPostState extends State<ShowPost> {
   }
 }
 
-Future ShowCommentBottm(context, Function saveComment, String postId, String uid) {
+Future ShowCommentBottm(
+    context, Function saveComment, String postId, String uid) {
   print("PostId: ${postId}");
   return showModalBottomSheet(
     context: context,
@@ -211,7 +226,10 @@ Future ShowCommentBottm(context, Function saveComment, String postId, String uid
               children: [
                 Expanded(
                   flex: 4,
-                  child: CommentScreen(postId: postId, uid: uid,),
+                  child: CommentScreen(
+                    postId: postId,
+                    uid: uid,
+                  ),
                 ),
 
                 Padding(
@@ -222,7 +240,7 @@ Future ShowCommentBottm(context, Function saveComment, String postId, String uid
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
-                        if (value!.isEmpty && value == null) {
+                        if (value!.isEmpty && value == '') {
                           return "กรุณาใส่ข้อมูล";
                         }
                         return null;
@@ -247,4 +265,62 @@ Future ShowCommentBottm(context, Function saveComment, String postId, String uid
       );
     },
   );
+}
+
+StreamBuilder<DocumentSnapshot<Map<String, dynamic>>> _showDiaslogProfile(
+  BuildContext context,
+  String uid,
+) {
+  return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+    stream: _firestore.collection('userProfile').doc(uid).snapshots(),
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return Center(
+          child: Text('Error: ${snapshot.error}'),
+        );
+      }
+      if (!snapshot.hasData) {
+        return Center(
+          child: Text("No information"),
+        );
+      }
+      final userData = snapshot.data?.data() ?? {};
+
+      return _buildProfileDialog(context, userData);
+    },
+  );
+}
+
+Widget _buildProfileDialog(
+    BuildContext context, Map<String, dynamic> userData) {
+  if (userData != '') {
+    String image = userData['imageLink'] ?? '';
+    return AlertDialog(
+      title: CircleAvatar(
+        backgroundImage: NetworkImage(
+          image,
+          scale: 0.8,
+        ),
+        maxRadius: 40,
+      ),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: [
+            Text('Name: ${userData['name'] ?? ''} ${userData['lname'] ?? ''}'),
+            Text('Phone: ${userData['phone'] ?? ''}'),
+            // Add more profile information here
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('Exit'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+  }
+  return Container();
 }
