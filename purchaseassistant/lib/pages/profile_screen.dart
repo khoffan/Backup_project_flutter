@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 // import 'package:purchaseassistant/pages/home_screen.dart';
 
 import '../utils/pickerimg.dart';
+import '../utils/update_profile.dart';
 import 'editProfile.dart';
 import 'login_screen.dart';
 
@@ -60,7 +61,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasData) {
-            var data = snapshot.data!.data();
+            final data = snapshot.data!.data();
             name = data?["name"] ?? '';
             lname = data?["lname"] ?? '';
             stdid = data?["stdid"] ?? '';
@@ -196,8 +197,14 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                         ],
                       ),
                     )),
-                    const SizedBox(
+                    SizedBox(
                       height: 10,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateProfile(data: data!, uid: auth.currentUser?.uid ?? '',)));
+                      },
+                      child: Text("update profile"),
                     ),
                   ],
                 ),

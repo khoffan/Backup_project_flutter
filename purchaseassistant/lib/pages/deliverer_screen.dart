@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../utils/delivers_services.dart';
 import '../utils/pickerimg.dart';
+import 'deliverer_history.dart';
 
 class DelivererScreen extends StatefulWidget {
   const DelivererScreen({super.key});
@@ -55,11 +56,24 @@ class _DelivererScreenState extends State<DelivererScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Deliverer'),
-        actions: [
-          IconButton(onPressed: () async{
+        leading: GestureDetector(
+          onTap: () async{
             await ServiceDeliver().updateStatus(false, uid);
             Navigator.pop(context);
-          }, icon: Icon(Icons.arrow_back)),
+          },
+          child: Icon(Icons.arrow_back_outlined),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DeliverHistory(),
+                )
+              );
+            }, icon: Icon(Icons.add),
+          )
         ],
       ),
       body: ListView(

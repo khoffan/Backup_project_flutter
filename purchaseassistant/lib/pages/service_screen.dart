@@ -167,7 +167,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) {
-                                    return DeliverHistory();
+                                    return DelivererScreen();
                                   }),
                                 );
                                 ServiceDeliver().setStatus(true, uid);
