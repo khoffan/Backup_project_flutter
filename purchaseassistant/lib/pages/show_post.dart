@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:purchaseassistant/pages/chat_screen.dart';
+import 'package:purchaseassistant/utils/chat_services.dart';
 
 // import '../utils/add_comments.dart';
 import '../utils/delivers_services.dart';
@@ -19,8 +21,7 @@ final _formKey = GlobalKey<FormState>();
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 FirebaseAuth _auth = FirebaseAuth.instance;
 
-TextEditingController _commentController = TextEditingController();
-
+TextEditingController _messageController = TextEditingController();
 
 class _ShowPostState extends State<ShowPost> {
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -28,13 +29,23 @@ class _ShowPostState extends State<ShowPost> {
   String? uid;
   String? userId;
 
-  void saveComment(String docid) async {
-    try {
-      String comment = _commentController.text;
+  // void saveComment(String docid) async {
+  //   try {
+  //     String comment = _commentController.text;
 
-      await ServiceDeliver()
-          .saveDeliverComment(uid: uid ?? '', title: comment, postId: docid);
-      _commentController.clear();
+  //     await ServiceDeliver()
+  //         .saveDeliverComment(uid: uid ?? '', title: comment, postId: docid);
+  //     _commentController.clear();
+  //   } catch (e) {
+  //     throw e.toString();
+  //   }
+  // }
+  void saveChat(String userid, String name) async {
+    try {
+      String message = _messageController.text;
+
+      await ChatServices().sendMessge(userId, message, name);
+      _messageController.clear();
     } catch (e) {
       throw e.toString();
     }
@@ -95,7 +106,7 @@ class _ShowPostState extends State<ShowPost> {
 
                       String docid = deliverUserDoc.id;
                       String userid = deliverDoc.id;
-      
+
                       String name = deliverUser['name'] ?? '';
                       String lname = deliverUser['lname'] ?? '';
                       String title = deliverUser['title'] ?? '';
@@ -190,9 +201,9 @@ class _ShowPostState extends State<ShowPost> {
                                 TextButton(
                                   onPressed: () {
                                     ShowCommentBottm(
-                                        context, saveComment, docid, uid ?? '');
+                                        context, saveChat, name, userid);
                                   },
-                                  child: Text('comment'),
+                                  child: Text('chat'),
                                 ),
                               ],
                             ),
@@ -212,9 +223,63 @@ class _ShowPostState extends State<ShowPost> {
   }
 }
 
+// Future ShowCommentBottm(
+//     context, Function saveComment, String postId, String uid) {
+//   print("PostId: ${postId}");
+//   return showModalBottomSheet(
+//     context: context,
+//     builder: (context) {
+//       return Scaffold(
+//         body: Container(
+//           child: Form(
+//             key: _formKey,
+//             child: Column(
+//               children: [
+//                 Expanded(
+//                   flex: 4,
+//                   child: ChatScreen(
+//                     postId: postId,
+//                     name: uid, reciveuid: '',
+//                   ),
+//                 ),
+
+//                 Padding(
+//                     padding: const EdgeInsets.symmetric(
+//                         vertical: 10, horizontal: 10),
+//                     child: TextFormField(
+//                       decoration: InputDecoration(
+//                         border: OutlineInputBorder(),
+//                       ),
+//                       validator: (value) {
+//                         if (value!.isEmpty && value == '') {
+//                           return "กรุณาใส่ข้อมูล";
+//                         }
+//                         return null;
+//                       },
+//                       controller: _messageController,
+//                     )),
+//                 // SizedBox(
+//                 //   height: 10,
+//                 // ),
+//                 ElevatedButton(
+//                   onPressed: () {
+//                     if (_formKey.currentState!.validate()) {
+//                       saveComment(postId);
+//                     }
+//                   },
+//                   child: Text("comment"),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       );
+//     },
+//   );
+// }
+
 Future ShowCommentBottm(
-    context, Function saveComment, String postId, String uid) {
-  print("PostId: ${postId}");
+    context, Function saveChat, String name, String userid) {
   return showModalBottomSheet(
     context: context,
     builder: (context) {
@@ -226,9 +291,9 @@ Future ShowCommentBottm(
               children: [
                 Expanded(
                   flex: 4,
-                  child: CommentScreen(
-                    postId: postId,
-                    uid: uid,
+                  child: ChatScreen(
+                    reciveuid: userid,
+                    name: name,
                   ),
                 ),
 
@@ -245,7 +310,7 @@ Future ShowCommentBottm(
                         }
                         return null;
                       },
-                      controller: _commentController,
+                      controller: _messageController,
                     )),
                 // SizedBox(
                 //   height: 10,
@@ -253,7 +318,7 @@ Future ShowCommentBottm(
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      saveComment(postId);
+                      saveChat(userid, name);
                     }
                   },
                   child: Text("comment"),
