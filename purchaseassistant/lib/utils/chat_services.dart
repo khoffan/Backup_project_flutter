@@ -5,15 +5,15 @@ import 'package:purchaseassistant/models/message.dart';
 
 
 
-class ChatServices extends ChangeNotifier{
+class ChatServices {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> sendMessge(String? recivesid, String? message, String name) async {
+  Future<void> sendMessge(String recivesid, String message, String name) async {
     try {
       final String currentid = _auth.currentUser?.uid ?? '';
       final Timestamp _time = Timestamp.now();
-
+      print(recivesid);
 
       Message? newMessage;
       if(recivesid != '' && currentid != '' && message != '' && name != ''){
@@ -41,6 +41,6 @@ class ChatServices extends ChangeNotifier{
     ids.sort();
     String chat_room_id = ids.join("_");
     
-    return _firestore.collection('chat_rooms').doc(chat_room_id).collection('messages').orderBy('timeStemp', descending: false).snapshots();
+    return _firestore.collection('chat_rooms').doc(chat_room_id).collection('messages').orderBy('timestamp', descending: false).snapshots();
   }
 }

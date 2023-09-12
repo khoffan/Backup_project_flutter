@@ -27,7 +27,7 @@ class _ShowPostState extends State<ShowPost> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? uid;
-  String? userId;
+  String userId = '';
 
   // void saveComment(String docid) async {
   //   try {
@@ -43,7 +43,7 @@ class _ShowPostState extends State<ShowPost> {
   void saveChat(String userid, String name) async {
     try {
       String message = _messageController.text;
-
+      print(userid);
       await ChatServices().sendMessge(userId, message, name);
       _messageController.clear();
     } catch (e) {
@@ -106,12 +106,12 @@ class _ShowPostState extends State<ShowPost> {
 
                       String docid = deliverUserDoc.id;
                       String userid = deliverDoc.id;
-
+                      userId = userid;
                       String name = deliverUser['name'] ?? '';
                       String lname = deliverUser['lname'] ?? '';
                       String title = deliverUser['title'] ?? '';
                       String imageLink = deliverUser['imageurl'] ?? '';
-                      print("DocId: ${userId}");
+                      // print("DocId: ${userid}");
                       final Timestamp timestamp = Timestamp.now();
                       final datenow = timestamp.toDate();
                       final date = DateFormat('d-MMM-yyyy').format(datenow);
@@ -200,8 +200,8 @@ class _ShowPostState extends State<ShowPost> {
                               children: [
                                 TextButton(
                                   onPressed: () {
-                                    ShowCommentBottm(
-                                        context, saveChat, name, userid);
+                                    
+                                      ShowCommentBottm(context, saveChat, name);
                                   },
                                   child: Text('chat'),
                                 ),
@@ -217,6 +217,65 @@ class _ShowPostState extends State<ShowPost> {
               },
             );
           },
+        );
+      },
+    );
+  }
+
+  Future ShowCommentBottm(context, Function saveChat, String name) {
+    print("PostId: ${userId}");
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Scaffold(
+          body: Container(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: ChatScreen(
+                      reciveuid: userId,
+                      name: name,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        alignment: Alignment.center,
+                        width: MediaQuery.of(context).size.width - 50,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 10),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value!.isEmpty && value == '') {
+                              return "กรุณาใส่ข้อมูล";
+                            }
+                            return null;
+                          },
+                          controller: _messageController,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            saveChat(userId, name);
+                          }
+                        },
+                        icon: Icon(
+                          Icons.send_outlined,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
@@ -277,60 +336,6 @@ class _ShowPostState extends State<ShowPost> {
 //     },
 //   );
 // }
-
-Future ShowCommentBottm(
-    context, Function saveChat, String name, String userid) {
-  return showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      return Scaffold(
-        body: Container(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 4,
-                  child: ChatScreen(
-                    reciveuid: userid,
-                    name: name,
-                  ),
-                ),
-
-                Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 10),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value!.isEmpty && value == '') {
-                          return "กรุณาใส่ข้อมูล";
-                        }
-                        return null;
-                      },
-                      controller: _messageController,
-                    )),
-                // SizedBox(
-                //   height: 10,
-                // ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      saveChat(userid, name);
-                    }
-                  },
-                  child: Text("comment"),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    },
-  );
-}
 
 StreamBuilder<DocumentSnapshot<Map<String, dynamic>>> _showDiaslogProfile(
   BuildContext context,
