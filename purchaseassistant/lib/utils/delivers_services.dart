@@ -113,54 +113,7 @@ class ServiceDeliver {
 
 
 
-  Future<void> saveDeliverComment({
-  required String uid,
-  required String postId,
-  required String title,
-}) async {
-  try {
-    // Get user profile data
-    DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-        await AddProfile().getDataProfile();
-
-    // Get user status
-
-    if (getProfilesnapshot.exists) {
-      Map<String, dynamic> data =
-          getProfilesnapshot.data() as Map<String, dynamic>;
-
-      bool? status = await getStatus(uid);
-      String name = data['name'] ?? '';
-      String lname = data['lname'] ?? '';
-      String stdid = data['stdid'] ?? '';
-
-      // Use serverTimestamp for consistency
-      FieldValue timestamp = FieldValue.serverTimestamp();
-
-      // Update user status
-      await _firestore.collection('deliverPost').doc(uid).set({
-        'status': status,
-      });
-
-      // Add comment to user's comments subcollection
-      final deliverRef = _firestore.collection('deliverPost').doc(uid);
-      await deliverRef.collection('comments').add({
-        'postId' : postId,
-        'name': name,
-        'lastname': lname,
-        'stdid': stdid,
-        'title': title,
-        'date': timestamp,
-      });
-
-      print('Comment saved successfully');
-    }
-  } catch (e) {
-    // Print detailed error information
-    print('Error: $e');
-    throw e;
-  }
-}
+  
 
 
   Future<void> updateStatus(bool status, String uid) async {

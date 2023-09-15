@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/pages/chat_screen.dart';
 import 'package:purchaseassistant/utils/chat_services.dart';
+import 'package:purchaseassistant/utils/comment_services.dart';
 
 // import '../utils/add_comments.dart';
 import '../utils/delivers_services.dart';
@@ -21,35 +22,39 @@ final _formKey = GlobalKey<FormState>();
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 FirebaseAuth _auth = FirebaseAuth.instance;
 
-TextEditingController _messageController = TextEditingController();
+// TextEditingController _messageController = TextEditingController();
+TextEditingController _commentController = TextEditingController();
 
 class _ShowPostState extends State<ShowPost> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? uid;
-  String userId = '';
+  Set<String> likedUserIds = Set<String>();
+  int likeCount = 0;
+  bool isLiked = false;
+  String _docid = '';
+  String _userid = '';
 
-  // void saveComment(String docid) async {
-  //   try {
-  //     String comment = _commentController.text;
-
-  //     await ServiceDeliver()
-  //         .saveDeliverComment(uid: uid ?? '', title: comment, postId: docid);
-  //     _commentController.clear();
-  //   } catch (e) {
-  //     throw e.toString();
-  //   }
-  // }
-  void saveChat(String userid, String name) async {
+  void saveComment(String docid, String comment, String uid) async {
     try {
-      String message = _messageController.text;
-      print(userid);
-      await ChatServices().sendMessge(userId, message, name);
-      _messageController.clear();
+      if (docid != '' && comment != '' && uid != '') {
+        await ServiceComment()
+            .saveDeliverComment(uid: uid, title: comment, postId: docid);
+      }
     } catch (e) {
       throw e.toString();
     }
   }
+  // void saveChat(String userid, String docid) async {
+  //   try {
+  //     String message = _messageController.text;
+  //     print(userid);
+  //     await ChatServices().sendMessge(userid, message, docid);
+  //     _messageController.clear();
+  //   } catch (e) {
+  //     throw e.toString();
+  //   }
+  // }
 
   @override
   void initState() {
@@ -106,12 +111,12 @@ class _ShowPostState extends State<ShowPost> {
 
                       String docid = deliverUserDoc.id;
                       String userid = deliverDoc.id;
-                      userId = userid;
                       String name = deliverUser['name'] ?? '';
                       String lname = deliverUser['lname'] ?? '';
                       String title = deliverUser['title'] ?? '';
                       String imageLink = deliverUser['imageurl'] ?? '';
-                      // print("DocId: ${userid}");
+                      print("userId: ${userid}");
+                      print("DocId: ${docid}");
                       final Timestamp timestamp = Timestamp.now();
                       final datenow = timestamp.toDate();
                       final date = DateFormat('d-MMM-yyyy').format(datenow);
@@ -195,15 +200,38 @@ class _ShowPostState extends State<ShowPost> {
                                 ),
                               ],
                             ),
-                            ButtonBar(
-                              alignment: MainAxisAlignment.end,
+                            Divider(
+                              indent: 1,
+                              color: Colors.black26,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 TextButton(
                                   onPressed: () {
-                                    
-                                      ShowCommentBottm(context, saveChat, name);
+                                    // setState(() {
+                                    //   setState(() {
+                                    //     String userId = uid ?? '';
+                                    //          // Replace this with how you get the user's ID
+                                    //     if (likedUserIds.contains(userId)) {
+                                    //       // User has already liked, remove their like
+                                    //       likedUserIds.remove(userId);
+                                    //     } else {
+                                    //       // User hasn't liked yet, add their like
+                                    //       likedUserIds.add(userId);
+                                    //     }
+                                    //   });
+                                    // });
                                   },
-                                  child: Text('chat'),
+                                  child: Text('like ${likedUserIds.length}'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    ShowCommentBottom(
+                                        context, saveComment, docid, uid ?? '');
+                                  },
+                                  child: Text('comment'),
                                 ),
                               ],
                             ),
@@ -221,121 +249,125 @@ class _ShowPostState extends State<ShowPost> {
       },
     );
   }
+}
 
-  Future ShowCommentBottm(context, Function saveChat, String name) {
-    print("PostId: ${userId}");
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Scaffold(
-          body: Container(
-            child: Form(
-              key: _formKey,
-              child: Column(
+Future ShowCommentBottom(
+    context, Function saveComment, String postId, String uid) {
+  print("PostId: ${postId}");
+  return showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (context) {
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        child: Scaffold(
+          body: Column(
+            children: [
+              Expanded(
+                flex: 4,
+                child: CommentScreen(
+                  postId: postId,
+                  uid: uid,
+                ),
+              ),
+              Row(
                 children: [
-                  Expanded(
-                    flex: 4,
-                    child: ChatScreen(
-                      reciveuid: userId,
-                      name: name,
+                  Container(
+                    width: 320,
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      controller: _commentController,
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return "กรุณาใส่ข้อมูล";
+                        }
+                        return null;
+                      },
                     ),
                   ),
-                  Row(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width - 50,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty && value == '') {
-                              return "กรุณาใส่ข้อมูล";
-                            }
-                            return null;
-                          },
-                          controller: _messageController,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            saveChat(userId, name);
-                          }
-                        },
-                        icon: Icon(
-                          Icons.send_outlined,
-                        ),
-                      ),
-                    ],
+                  IconButton(
+                    onPressed: () {
+                      if (
+                          _formKey.currentState?.validate() ?? false) {
+                        String comment = _commentController.text;
+                        String userId = uid ?? '';
+                        saveComment(postId, comment, userId);
+                        _commentController.clear();
+                      }
+                    },
+                    icon: Icon(Icons.send_outlined),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
 }
 
-// Future ShowCommentBottm(
-//     context, Function saveComment, String postId, String uid) {
-//   print("PostId: ${postId}");
-//   return showModalBottomSheet(
-//     context: context,
-//     builder: (context) {
-//       return Scaffold(
-//         body: Container(
-//           child: Form(
-//             key: _formKey,
-//             child: Column(
-//               children: [
-//                 Expanded(
-//                   flex: 4,
-//                   child: ChatScreen(
-//                     postId: postId,
-//                     name: uid, reciveuid: '',
+// Future ShowCommentBottm(context, Function saveChat, String name) {
+//     return showModalBottomSheet(
+//       context: context,
+//       builder: (context) {
+//         return Scaffold(
+//           body: Container(
+//             child: Form(
+//               key: _formKey,
+//               child: Column(
+//                 children: [
+//                   Expanded(
+//                     flex: 4,
+//                     child: ChatScreen(
+//                       reciveuid: _userid,
+//                       name: name,
+//                       docid: _docid,
+//                     ),
 //                   ),
-//                 ),
-
-//                 Padding(
-//                     padding: const EdgeInsets.symmetric(
-//                         vertical: 10, horizontal: 10),
-//                     child: TextFormField(
-//                       decoration: InputDecoration(
-//                         border: OutlineInputBorder(),
+//                   Row(
+//                     children: [
+//                       Container(
+//                         alignment: Alignment.center,
+//                         width: MediaQuery.of(context).size.width - 50,
+//                         padding: const EdgeInsets.symmetric(
+//                             vertical: 10, horizontal: 10),
+//                         child: TextFormField(
+//                           decoration: InputDecoration(
+//                             border: OutlineInputBorder(),
+//                           ),
+//                           validator: (value) {
+//                             if (value!.isEmpty && value == '') {
+//                               return "กรุณาใส่ข้อมูล";
+//                             }
+//                             return null;
+//                           },
+//                           controller: _messageController,
+//                         ),
 //                       ),
-//                       validator: (value) {
-//                         if (value!.isEmpty && value == '') {
-//                           return "กรุณาใส่ข้อมูล";
-//                         }
-//                         return null;
-//                       },
-//                       controller: _messageController,
-//                     )),
-//                 // SizedBox(
-//                 //   height: 10,
-//                 // ),
-//                 ElevatedButton(
-//                   onPressed: () {
-//                     if (_formKey.currentState!.validate()) {
-//                       saveComment(postId);
-//                     }
-//                   },
-//                   child: Text("comment"),
-//                 ),
-//               ],
+//                       IconButton(
+//                         onPressed: () {
+//                           if (_formKey.currentState!.validate()) {
+//                             saveChat(_userid, _docid);
+//                           }
+//                         },
+//                         icon: Icon(
+//                           Icons.send_outlined,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
 //             ),
 //           ),
-//         ),
-//       );
-//     },
-//   );
-// }
+//         );
+//       },
+//     );
+//   }
 
 StreamBuilder<DocumentSnapshot<Map<String, dynamic>>> _showDiaslogProfile(
   BuildContext context,

@@ -17,11 +17,7 @@ class _CommentScreenState extends State<CommentScreen> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: _firestore
-          .collection('deliverPost')
-          .doc(widget.uid) // Use the specified post ID
-          .collection('comments')
-          .snapshots(),
+      stream: _firestore.collection('Comments').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -41,14 +37,60 @@ class _CommentScreenState extends State<CommentScreen> {
             final commentDoc = commentDocs[index];
             final commentData = commentDoc.data() as Map<String, dynamic>;
             String commentText = commentData['title'] ?? '';
-            String commentUser = commentData['user'] ?? '';
+            String commentUser = commentData['name'] ?? '';
             String commentid = commentData['postId'] ?? '';
             print("comment: ${commentid}");
-            print("comment: ${widget.postId}");
+            print("posatid: ${widget.postId}");
             if (commentid == widget.postId) {
-              return ListTile(
-                title: Text(commentUser),
-                subtitle: Text(commentText),
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 350, // Increase the width if necessary
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.red),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                ListTile(
+                                  title: Text(commentUser),
+                                  subtitle: Text(commentText),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              _buildMediaBottom(context);
+                            },
+                            icon: Icon(Icons.more_vert),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text("time"),
+                          Text("ถูกใจ"),
+                          Text("ตอบกลับ"),
+                          
+                        ],
+                      )
+                    ],
+                  ),
+                ),
               );
             }
             return Container();
@@ -57,4 +99,62 @@ class _CommentScreenState extends State<CommentScreen> {
       },
     );
   }
+}
+
+Future _buildMediaBottom(context) {
+  return showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return SizedBox(
+        height: 200,
+        child: Container(
+          margin: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          alignment: Alignment.centerLeft,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              _bulidMediaContent(context, "เข้าสู่ช่องฃแชท"),
+              _bulidMediaContent(context, "ตอบกลับ"),
+              _bulidMediaContent(context, "รายงาน"),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+GestureDetector _bulidMediaContent(context, String title) {
+  if (title == "รายงาน") {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: TextButton(
+          onPressed: () {},
+          child: Text(
+            title,
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+      ),
+    );
+  }
+  return GestureDetector(
+    onTap: () {},
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: TextButton(
+        onPressed: () {},
+        child: Text(
+          title,
+        ),
+      ),
+    ),
+  );
 }
