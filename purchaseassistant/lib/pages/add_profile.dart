@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../utils/add_profile.dart';
+import '../utils/profile_services.dart';
 import '../utils/pickerimg.dart';
 
 class EditProfile extends StatefulWidget {
@@ -204,7 +204,12 @@ class _EditProfileState extends State<EditProfile> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {
-                                saveFile();
+                                if(_image != null){
+                                  saveFile();
+                                }
+                                else{
+                                  Text("no data");
+                                }
                               }
                             },
                             child: Text("Save profile"),

@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Message{
   String? senderId;
   String? recivesid;
-
   String? name;
   String? message;
   Timestamp? timestamp;

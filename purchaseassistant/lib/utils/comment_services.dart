@@ -34,9 +34,11 @@ class ServiceComment {
         // Update user status
         // final contentDeliver = await _firestore.collection('deliverPost').doc(uid).collection('deliverContent').get();
 
+
         // Add comment to user's comments subcollection
         final deliverRef = _firestore.collection('Comments');
         await deliverRef.add({
+          'userid': uid,
           'postId': postId,
           'name': name,
           'lastname': lname,

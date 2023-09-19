@@ -7,8 +7,7 @@ class ChatServices extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> sendMessge(
-      String recivesid, String message) async {
+  Future<void> sendMessge(String recivesid, String message) async {
     try {
       final String currentid = _auth.currentUser?.uid ?? '';
       DocumentSnapshot<Map<String, dynamic>> snapshot =
@@ -41,8 +40,9 @@ class ChatServices extends ChangeNotifier {
     }
   }
 
-  Stream<QuerySnapshot> getMessage(
-      String userid, String otherid) {
+  
+
+  Stream<QuerySnapshot> getMessage(String userid, String otherid) {
     List<String> ids = [userid, otherid];
     ids.sort();
     String chat_room_id = ids.join("_");

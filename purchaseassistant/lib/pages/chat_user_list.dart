@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/utils/chat_services.dart';
 
 import 'chat_screen.dart';
 
@@ -13,7 +14,7 @@ class ListUserchat extends StatefulWidget {
 
 class _ListUserchatState extends State<ListUserchat> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestrore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
 
   @override
@@ -34,14 +35,14 @@ class _ListUserchatState extends State<ListUserchat> {
 
   Widget _buildShowUser() {
     return StreamBuilder(
-      stream: _firestrore.collection('userProfile').snapshots(),
+      stream: _firestore.collection('userProfile').snapshots(),
       builder: (context, snapshot) {
-        if(snapshot.hasError){
+        if (snapshot.hasError) {
           return Center(
             child: Text("${snapshot.error}"),
           );
         }
-        if(snapshot.connectionState == ConnectionState.waiting){
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(),
           );
@@ -53,28 +54,44 @@ class _ListUserchatState extends State<ListUserchat> {
     );
   }
 
-  Widget _listUser(DocumentSnapshot docs){
+  Widget _listUser(DocumentSnapshot docs) {
     Map<String, dynamic> data = docs.data() as Map<String, dynamic>;
-    print("id: ${docs.id}");
-    print("uid: ${uid}");
-    if(uid != docs.id){
-      return ListTile(
-        title: Text(data['name']),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatScreen(reciveuid: docs.id, name: data["name"],
-                
-              )
-            )
+    return StreamBuilder(
+      stream: ChatServices().getMessage(uid, docs.id),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            //            color: Colors.redAccent[400],
+            child: Text("Error: ${snapshot.error}"),
           );
-        },
-      );
-    }
-    else {
-      return Container(child: Text("No user online"),);
-    }
-
+        }
+        if (snapshot.hasData && uid != docs.id) {
+          final chatDocs = snapshot.data!.docs;
+          return ListView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            children: chatDocs.map((doc) {
+              if (doc['senderId'] == uid) {
+                return ListTile(
+                  title: Text(data['name']),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            ChatScreen(reciveuid: docs.id, name: data['name']),
+                      ),
+                    );
+                  },
+                );
+              } else {
+                return Container();
+              }
+            }).toList(),
+          );
+        }
+        return Container();
+      },
+    );
   }
 }

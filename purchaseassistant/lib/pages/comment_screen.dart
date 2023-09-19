@@ -1,5 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/pages/chat_screen.dart';
+import 'package:purchaseassistant/utils/formatDate.dart';
+
+import '../utils/popupmenu.dart';
 
 class CommentScreen extends StatefulWidget {
   CommentScreen({super.key, required this.postId, required this.uid});
@@ -13,7 +18,8 @@ class CommentScreen extends StatefulWidget {
 
 class _CommentScreenState extends State<CommentScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  List<String> popupItems = ["เข้าสู่ช่องฃแชท", "ตอบกลับ", "รายงาน"];
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -39,55 +45,62 @@ class _CommentScreenState extends State<CommentScreen> {
             String commentText = commentData['title'] ?? '';
             String commentUser = commentData['name'] ?? '';
             String commentid = commentData['postId'] ?? '';
+            String userId = commentData['userid'] ?? '';
+            String date = FormatDate(commentData['date']);
             print("comment: ${commentid}");
+            print("userId: ${userId}");
+            print("commentUser: ${commentUser}");
             print("posatid: ${widget.postId}");
             if (commentid == widget.postId) {
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  alignment: Alignment.center,
-                  width: 350, // Increase the width if necessary
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.red),
-                  ),
+              return Container(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: BouncingScrollPhysics(),
                   child: Column(
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                      Container(
+                        alignment: Alignment.center,
+                        width: 350, // Increase the width if necessary
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.red),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                ListTile(
-                                  title: Text(commentUser),
-                                  subtitle: Text(commentText),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      ListTile(
+                                        title: Text(commentUser),
+                                        subtitle: Text(commentText),
+                                      ),
+                                    ],
+                                  ),
                                 ),
+                                _buildMediaBottom(context, userId, commentUser),
                               ],
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              _buildMediaBottom(context);
-                            },
-                            icon: Icon(Icons.more_vert),
-                          ),
-                        ],
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text("${date}"),
+                                Text("ถูกใจ"),
+                                Text("ตอบกลับ"),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text("time"),
-                          Text("ถูกใจ"),
-                          Text("ตอบกลับ"),
-                          
-                        ],
-                      )
                     ],
                   ),
                 ),
@@ -99,62 +112,47 @@ class _CommentScreenState extends State<CommentScreen> {
       },
     );
   }
-}
 
-Future _buildMediaBottom(context) {
-  return showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      return SizedBox(
-        height: 200,
-        child: Container(
-          margin: const EdgeInsets.only(top: 10),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          alignment: Alignment.centerLeft,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                height: 10,
-              ),
-              _bulidMediaContent(context, "เข้าสู่ช่องฃแชท"),
-              _bulidMediaContent(context, "ตอบกลับ"),
-              _bulidMediaContent(context, "รายงาน"),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
-GestureDetector _bulidMediaContent(context, String title) {
-  if (title == "รายงาน") {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        child: TextButton(
-          onPressed: () {},
-          child: Text(
-            title,
-            style: TextStyle(color: Colors.red),
-          ),
-        ),
+  Widget _buildMediaBottom(context, String uid, String name) {
+    return Center(
+      child: PopupMenuButton<String>(
+        itemBuilder: (context) {
+          return popupItems.map(
+            (item) {
+              return PopupMenuItem<String>(
+                child: Text(item),
+                value: item,
+              );
+            },
+          ).toList();
+        },
+        onSelected: (String value) {
+          // Handle the selected menu item here
+          _handleMenuItemTap(value, uid, name);
+        },
       ),
     );
   }
-  return GestureDetector(
-    onTap: () {},
-    child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: TextButton(
-        onPressed: () {},
-        child: Text(
-          title,
-        ),
-      ),
-    ),
-  );
+
+  void _handleMenuItemTap(String selectedItem, String uid, String name) {
+    // Implement your logic for handling the selected item here
+    if (selectedItem == "เข้าสู่ช่องฃแชท") {
+      if (uid != _auth.currentUser!.uid) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(reciveuid: uid, name: name),
+          ),
+        );
+      } else {
+        Dialog(
+          child: Text("user is connnecting"),
+        );
+      }
+    } else if (selectedItem == "ตอบกลับ") {
+      // Handle the "ตอบกลับ" action
+    } else if (selectedItem == "รายงาน") {
+      // Handle the "รายงาน" action
+    }
+  }
 }

@@ -38,23 +38,12 @@ class _ShowPostState extends State<ShowPost> {
   void saveComment(String docid, String comment, String uid) async {
     try {
       if (docid != '' && comment != '' && uid != '') {
-        await ServiceComment()
-            .saveDeliverComment(uid: uid, title: comment, postId: docid);
+        await ServiceComment().saveDeliverComment(uid: uid, title: comment, postId: docid);
       }
     } catch (e) {
       throw e.toString();
     }
   }
-  // void saveChat(String userid, String docid) async {
-  //   try {
-  //     String message = _messageController.text;
-  //     print(userid);
-  //     await ChatServices().sendMessge(userid, message, docid);
-  //     _messageController.clear();
-  //   } catch (e) {
-  //     throw e.toString();
-  //   }
-  // }
 
   @override
   void initState() {
@@ -259,50 +248,58 @@ Future ShowCommentBottom(
     isScrollControlled: true,
     builder: (context) {
       return Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        child: Scaffold(
-          body: Column(
-            children: [
-              Expanded(
-                flex: 4,
-                child: CommentScreen(
-                  postId: postId,
-                  uid: uid,
+        height: MediaQuery.of(context).size.height * 0.8,
+        child: Form(
+          key: _formKey,
+          child: Scaffold(
+            appBar: AppBar(
+              leading: null,
+              backgroundColor: Colors.white,
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: CommentScreen(
+                    postId: postId,
+                    uid: uid,
+                  ),
                 ),
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 320,
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width / 1.2,
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          hintText: "Comment",
+                        ),
+                        controller: _commentController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "กรุณาใส่ข้อมูล";
+                          }
+                          return null;
+                        },
                       ),
-                      controller: _commentController,
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return "กรุณาใส่ข้อมูล";
-                        }
-                        return null;
-                      },
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      if (
-                          _formKey.currentState?.validate() ?? false) {
-                        String comment = _commentController.text;
-                        String userId = uid ?? '';
-                        saveComment(postId, comment, userId);
-                        _commentController.clear();
-                      }
-                    },
-                    icon: Icon(Icons.send_outlined),
-                  ),
-                ],
-              ),
-            ],
+                    IconButton(
+                      onPressed: () {
+                        if(_formKey.currentState!.validate()){
+                          String comment = _commentController.text;
+                          saveComment(postId, comment, uid);
+                          _commentController.clear();
+                        }
+                      },
+                      icon: Icon(Icons.send_outlined),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       );
