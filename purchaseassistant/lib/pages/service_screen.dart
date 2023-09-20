@@ -208,79 +208,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               ],
                             ),
                           ),
-                        ),
-<<<<<<< HEAD
-                      )),
-                  SizedBox(
-                      width: 170,
-                      height: 100,
-                      child: InkWell(
-                        onTap: () {
-                          print("Rider");
-                        },
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextButton(
-                              onPressed: ()  {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) {
-                                    return DelivererScreen();
-                                  }),
-                                );
-                                ServiceDeliver().setStatus(true, uid);
-                                ServiceDeliver().updateStatus(true, uid);
-                                print("save status success");
-                              },
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(2.0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    child: const Icon(
-                                      Icons.electric_moped,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 5.0,
-                                  ),
-                                  const Text(
-                                    "ผู้ส่งสินค้า",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      )),
-                ],
-              ),
-              Spacer(),
-              SizedBox(
-                height: 120.0,
-                child: Center(
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "     Matching    ",
-                      style: TextStyle(fontSize: 20, color: Colors.black),
-                    ),
-                    style: TextButton.styleFrom(
-                        backgroundColor: Colors.purple[100],
-                        shape: const BeveledRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(5)))),
-=======
+                        ),  
                       ),
                     )),
               ],
@@ -294,7 +222,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   child: Text(
                     "     Matching    ",
                     style: TextStyle(fontSize: 20, color: Colors.black),
->>>>>>> 3ed38294e2eeaae578b7c772d2894a88a66a0c7a
                   ),
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.purple[100],

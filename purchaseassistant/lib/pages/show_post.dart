@@ -37,17 +37,11 @@ class _ShowPostState extends State<ShowPost> {
 
   void saveComment(String docid, String comment, String uid) async {
     try {
-<<<<<<< HEAD
-      if (docid != '' && comment != '' && uid != '') {
-        await ServiceComment().saveDeliverComment(uid: uid, title: comment, postId: docid);
-      }
-=======
       String comment = _commentController.text;
 
-      await ServiceDeliver()
-          .saveDeliverComment(uid: uid ?? '', title: comment, postId: docid);
+      await ServiceComment()
+          .saveDeliverComment(uid: uid, title: comment, postId: docid);
       _commentController.clear();
->>>>>>> 80c015ded660b5d44fa5a4d2dd2996e78ca1871b
     } catch (e) {
       throw e.toString();
     }
@@ -128,21 +122,6 @@ class _ShowPostState extends State<ShowPost> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-<<<<<<< HEAD
-                                    GestureDetector(
-                                      onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return _showDiaslogProfile(
-                                                context, userid);
-                                          },
-                                        );
-                                      },
-                                      child: Image(
-                                        image: NetworkImage(
-                                          "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-=======
                                     Row(
                                       children: [
                                         Container(
@@ -152,7 +131,6 @@ class _ShowPostState extends State<ShowPost> {
                                             ),
                                             width: 40.0,
                                           ),
->>>>>>> 80c015ded660b5d44fa5a4d2dd2996e78ca1871b
                                         ),
                                         Container(
                                           margin: EdgeInsets.only(
@@ -167,77 +145,6 @@ class _ShowPostState extends State<ShowPost> {
                                       size: 20,
                                     ),
                                   ],
-<<<<<<< HEAD
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Text("${title}"),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: imageLink != ''
-                                      ? Image(
-                                          image: NetworkImage(
-                                            imageLink,
-                                          ),
-                                          width: 40.0,
-                                        )
-                                      : Image(
-                                          image: NetworkImage(
-                                            "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                          ),
-                                          width: 40.0,
-                                        ),
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              indent: 1,
-                              color: Colors.black26,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    // setState(() {
-                                    //   setState(() {
-                                    //     String userId = uid ?? '';
-                                    //          // Replace this with how you get the user's ID
-                                    //     if (likedUserIds.contains(userId)) {
-                                    //       // User has already liked, remove their like
-                                    //       likedUserIds.remove(userId);
-                                    //     } else {
-                                    //       // User hasn't liked yet, add their like
-                                    //       likedUserIds.add(userId);
-                                    //     }
-                                    //   });
-                                    // });
-                                  },
-                                  child: Text('like ${likedUserIds.length}'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    ShowCommentBottom(
-                                        context, saveComment, docid, uid ?? '');
-                                  },
-                                  child: Text('comment'),
-                                ),
-                              ],
-                            ),
-                          ],
-=======
                                 ),
                               ),
                               Row(
@@ -281,7 +188,6 @@ class _ShowPostState extends State<ShowPost> {
                               ),
                             ],
                           ),
->>>>>>> 80c015ded660b5d44fa5a4d2dd2996e78ca1871b
                         ),
                       );
                     }).toList(),
@@ -297,11 +203,7 @@ class _ShowPostState extends State<ShowPost> {
   }
 }
 
-<<<<<<< HEAD
-Future ShowCommentBottom(
-=======
 Future ShowCommentBottm(
->>>>>>> 80c015ded660b5d44fa5a4d2dd2996e78ca1871b
     context, Function saveComment, String postId, String uid) {
   print("PostId: ${postId}");
   return showModalBottomSheet(
