@@ -3,11 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:purchaseassistant/utils/delivers_services.dart';
 import '../models/login.dart';
-import '../pages/home_screen.dart';
+import '../routes/routes.dart';
 import '../utils/constants.dart';
-import '../widgets/custom_navigation_bar.dart';
-import './register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -149,7 +148,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                         borderRadius: BorderRadius.circular(
                                             20), // <-- Radius
                                       ),
-
                                       backgroundColor: Colors.red,
                                       textStyle: const TextStyle(
                                         fontSize: 20,
@@ -167,14 +165,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                           )
                                               .then((value) {
                                             formKey.currentState?.reset();
-                                            Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) {
-                                                  return BottomNavigation();
-                                                },
-                                              ),
-                                            );
+                                            Navigator.pushReplacementNamed(
+                                                context,
+                                                AppRoute.widget_navigation);
+                                            // Navigator.pushReplacement(
+                                            //   context,
+                                            //   MaterialPageRoute(
+                                            //     builder: (context) {
+                                            //       return BottomNavigation();
+                                            //     },
+                                            //   ),
+                                            // );
+                                            ServiceDeliver()
+                                                .setStatus(false, FirebaseAuth.instance.currentUser!.uid);
+                                            ServiceDeliver()
+                                                .updateStatus(false, FirebaseAuth.instance.currentUser!.uid);
                                           });
                                         } on FirebaseException catch (e) {
                                           Fluttertoast.showToast(
@@ -202,12 +207,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           const Text("Don't have an account?"),
                           TextButton(
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (ctx) => const RegisterScreen(),
-                                ),
-                              );
+                              Navigator.pushReplacementNamed(
+                                  context, AppRoute.register);
+                              // Navigator.pushReplacement(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (ctx) => const RegisterScreen(),
+                              //   ),
+                              // );
                             },
                             child: Text(
                               "Register",

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/pages/show_post.dart';
 import '../utils/constants.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -46,12 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
-      body: Center(
-        child: Text(
-          'Index 0: Home',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-        ),
-      ),
+      body: ShowPost(),
     );
   }
 }

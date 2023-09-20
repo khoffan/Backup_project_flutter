@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ไม่ใช้แล้ว
 const List<String> list = <String>[
   'ศูนย์อาหารโรงช้าง',
   'ภายในเขตหอพักนักศึกษา',

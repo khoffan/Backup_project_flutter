@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../pages/service_screen.dart';
+import 'package:purchaseassistant/routes/routes.dart';
+import '../pages/chat_user_list.dart';
 import '../pages/dashboard_screen.dart';
-// import '../pages/test_setting.dart';
 import '../pages/profile_screen.dart';
-// import '../utils/constants.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -20,10 +19,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     DashboardScreen(),
-    Text(
-      'Index 1: Chat',
-      style: optionStyle,
-    ),
+    ListUserchat(),
     Text(
       'Index 2: Scan',
       style: optionStyle,
@@ -46,9 +42,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const ServiceScreen(),
-            ));
+            Navigator.pushNamed(context, AppRoute.service);
+            // Navigator.of(context).push(MaterialPageRoute(
+            //   builder: (context) => const ServiceScreen(),
+            // ));
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

@@ -3,29 +3,37 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/utils/delivers_services.dart';
 
-import '../utils/delivers_services.dart';
-import '../utils/pickerimg.dart';
-import 'deliverer_history.dart';
+import 'pickerimg.dart';
 
-class DelivererScreen extends StatefulWidget {
-  const DelivererScreen({super.key});
+class UpdatePosted extends StatefulWidget {
+  UpdatePosted(
+      {super.key,
+      required this.postedDocid,
+      required this.postedUserid,
+      required this.title,
+      required this.imageLink});
+
+  String postedDocid = "";
+  String postedUserid = "";
+  String title = "";
+  String imageLink = "";
 
   @override
-  State<DelivererScreen> createState() => _DelivererScreenState();
+  State<UpdatePosted> createState() => _UpdatePostedState();
 }
 
-class _DelivererScreenState extends State<DelivererScreen> {
+class _UpdatePostedState extends State<UpdatePosted> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _txtControllerBody = TextEditingController();
-  
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  String uid = '';
-  Uint8List? _image;
+  TextEditingController _txtControllerBody = TextEditingController();
+  String _image = "";
+  Uint8List? _newImage;
+
   void selecImage() async {
     Uint8List img = await pickerImage(ImageSource.gallery);
     setState(() {
-      _image = img;
+      _newImage = img;
     });
     if (img == '') {
       print("no ok");
@@ -33,22 +41,25 @@ class _DelivererScreenState extends State<DelivererScreen> {
     print("ok");
   }
 
-  void saveData() async {
+  void updateData() async {
     try {
       String title = _txtControllerBody.text;
-
-      await ServiceDeliver().saveDeliver(title: title, file: _image!, uid: uid);
-      _txtControllerBody.clear();
-      print('success');
+      String uid = widget.postedUserid;
+      String Docid = widget.postedDocid;
+      await ServiceDeliver()
+          .updateDeliver(uid: uid, Docid: Docid, title: title, file: _newImage ?? Uint8List(0));
+      print("update success");
+      Navigator.pop(context);
     } catch (e) {
       throw e.toString();
     }
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    uid = _auth.currentUser?.uid ?? '';
+    _txtControllerBody.text = widget.title;
+    _image = widget.imageLink;
   }
 
   @override
@@ -56,29 +67,10 @@ class _DelivererScreenState extends State<DelivererScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Deliverer'),
-        leading: GestureDetector(
-          onTap: () async{
-            await ServiceDeliver().updateStatus(false, uid);
-            Navigator.pop(context);
-          },
-          child: Icon(Icons.arrow_back_outlined),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => DeliverHistory(),
-                )
-              );
-            }, icon: Icon(Icons.add),
-          )
-        ],
       ),
       body: ListView(
         children: [
-          _image != null
+          _image != null && _newImage == null
               ? Container(
                   width: MediaQuery.of(context).size.width,
                   height: 200,
@@ -95,7 +87,11 @@ class _DelivererScreenState extends State<DelivererScreen> {
                     ),
                   ),
                   decoration: BoxDecoration(
-                      image: DecorationImage(image: MemoryImage(_image!))))
+                    image: DecorationImage(
+                      image: NetworkImage(_image),
+                    ),
+                  ),
+                )
               : Container(
                   width: MediaQuery.of(context).size.width,
                   height: 200,
@@ -110,7 +106,13 @@ class _DelivererScreenState extends State<DelivererScreen> {
                         selecImage();
                       },
                     ),
-                  )),
+                  ),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: MemoryImage(_newImage!),
+                    ),
+                  ),
+                ),
           Form(
             key: _formKey,
             child: Padding(
@@ -138,7 +140,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.blue),
               onPressed: () => {
-                if (_formKey.currentState!.validate()) {saveData()}
+                if (_formKey.currentState!.validate()) {updateData()}
               },
               child: Text('อัปโหลด'),
             ),
@@ -148,3 +150,4 @@ class _DelivererScreenState extends State<DelivererScreen> {
     );
   }
 }
+
