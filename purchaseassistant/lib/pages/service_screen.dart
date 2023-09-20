@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/utils/delivers_services.dart';
 import '../utils/constants.dart';
-import 'deliverer_history.dart';
+
+import 'deliverer_screen.dart';
 
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});
@@ -25,7 +26,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
   // 'โลตัส สาขา ม.อ.',
   // 'สถานีขนส่ง หาดใหญ่',
   // 'เซนทรัลเฟตติวัลหาดใหญ่'
-
+  void sendLocationRider(String title){
+    print(title);
+  }
   @override
   void initState() {
     super.initState();
@@ -174,7 +177,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
-                                  return DeliverHistory();
+                                  return DelivererScreen();
                                 }),
                               );
                               ServiceDeliver().setStatus(true, uid);
@@ -208,7 +211,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               ],
                             ),
                           ),
-                        ),  
+                        ),
                       ),
                     )),
               ],
@@ -218,7 +221,20 @@ class _ServiceScreenState extends State<ServiceScreen> {
               height: 120.0,
               child: Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    if(valueFirst == true){
+                      String title = "หอพัก - ภายในหมาวิทยาลัย";
+                      sendLocationRider(title);
+                    }
+                    if(valueSecond == true){
+                      String title = "หอพัก - โลตัสหน้า ม.อ.";
+                      sendLocationRider(title);
+                    }
+                    if(valueThird == true && valueSecond == true && valueFirst == true){
+                      String title = "รับทุกงาน";
+                      sendLocationRider(title);
+                    }
+                  },
                   child: Text(
                     "     Matching    ",
                     style: TextStyle(fontSize: 20, color: Colors.black),
