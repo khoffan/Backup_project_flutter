@@ -5,7 +5,6 @@ import 'package:email_validator/email_validator.dart';
 import 'package:purchaseassistant/routes/routes.dart';
 import '../models/login.dart';
 import '../utils/constants.dart';
-import '../pages/login_screen.dart';
 
 class CustomFormRegister extends StatefulWidget {
   const CustomFormRegister({

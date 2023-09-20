@@ -12,7 +12,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../utils/pickerimg.dart';
 import '../utils/update_profile.dart';
-import 'editProfile.dart';
+import 'add_profile.dart';
 import 'login_screen.dart';
 
 class ProfileScreenApp extends StatefulWidget {

@@ -1,10 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:purchaseassistant/pages/deliverer_screen.dart';
 import 'package:purchaseassistant/utils/delivers_services.dart';
 import '../utils/constants.dart';
-import '../widgets/custom_radio.dart';
-import '../widgets/dropdown_location.dart';
 import 'deliverer_history.dart';
 
 class ServiceScreen extends StatefulWidget {
@@ -18,14 +15,24 @@ class _ServiceScreenState extends State<ServiceScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = "";
 
-  int _value = 1;
+  bool valueFirst = false;
+  bool valueSecond = false;
+  bool valueThird = false;
+  // 'ศูนย์อาหารโรงช้าง',
+  // 'ภายในเขตหอพักนักศึกษา',
+  // 'ภายในมหาวิทยาลัยสงขลานครินทร์',
+  // 'ตลาดศรีตรัง',
+  // 'โลตัส สาขา ม.อ.',
+  // 'สถานีขนส่ง หาดใหญ่',
+  // 'เซนทรัลเฟตติวัลหาดใหญ่'
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     uid = _auth.currentUser?.uid ?? '';
     print(uid);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,95 +43,144 @@ class _ServiceScreenState extends State<ServiceScreen> {
             style: TextStyle(color: Colors.black),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 40.0,
-                child: Text(
-                  "เลือกบริการ",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20.0,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 40.0,
-                child: Row(children: [
-                  const Text("ลูกค้า  "),
-                  const SizedBox(
-                    width: 40.0,
-                  ),
-                  CustomRadio(
-                    value: 1,
-                    groupValue: _value,
-                    onChanged: (int? value) {
-                      setState(() {
-                        _value = value!;
-                      });
-                    },
-                  ),
-                ]),
-              ),
-              SizedBox(
-                height: 40.0,
-                child: Row(children: [
-                  const Text("ผู้ส่งสินค้า"),
-                  const SizedBox(
-                    width: 30.0,
-                  ),
-                  CustomRadio(
-                    value: 2,
-                    groupValue: _value,
-                    onChanged: (int? value) {
-                      setState(() {
-                        _value = value!;
-                      });
-                    },
-                  ),
-                ]),
-              ),
-              // const Divider(
-              //   height: 1.0,
-              //   thickness: 1,
-              //   color: Colors.black54,
-              // ),
-              const SizedBox(
-                height: 10,
-              ),
-              const SizedBox(
-                height: 40.0,
-                child: Text(
-                  "เลือกสถานที่",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20.0,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 40.0,
-                child: Card(
-                  child: DropdownLocation(),
-                  color: Colors.white,
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  SizedBox(
-                      width: 170,
-                      height: 100,
-                      child: InkWell(
-                        onTap: () {
-                          print("Custommer");
-                        },
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+                padding: const EdgeInsets.all(22.0),
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Row(
+                      children: [
+                        Text(
+                          'เลือกขอบเขตสถานที่ใช้บริการ',
+                          style: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                    CheckboxListTile(
+                      secondary: const Icon(Icons.area_chart),
+                      title: const Text('หอพัก - ภายในหมาวิทยาลัย'),
+                      subtitle: Text('ค่าบริการขั้นต่ำ 10 บาท'),
+                      value: this.valueFirst,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          this.valueFirst = value!;
+                          value
+                              ? (this.valueSecond
+                                  ? valueThird = true
+                                  : print('not all'))
+                              : valueThird = false;
+                        });
+                      },
+                    ),
+                    CheckboxListTile(
+                      controlAffinity: ListTileControlAffinity.trailing,
+                      secondary: const Icon(Icons.alarm),
+                      title: const Text('หอพัก - โลตัสหน้า ม.อ.'),
+                      subtitle: Text('ค่าบริการขั้นต่ำ 15 บาท'),
+                      value: this.valueSecond,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          this.valueSecond = value!;
+                          value
+                              ? (this.valueFirst
+                                  ? valueThird = true
+                                  : print('not all'))
+                              : valueThird = false;
+                        });
+                      },
+                    ),
+                    CheckboxListTile(
+                      controlAffinity: ListTileControlAffinity.trailing,
+                      secondary: const Icon(Icons.alarm),
+                      title: const Text('รับงานทุกพื้นที่'),
+                      subtitle: Text(
+                        '***เฉพาะผู้ส่งสินค้า',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      value: this.valueThird,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          this.valueThird = value!;
+                          if (this.valueThird) {
+                            this.valueFirst = value;
+                            this.valueSecond = value;
+                          } else {
+                            this.valueFirst = value;
+                            this.valueSecond = value;
+                          }
+                        });
+                      },
+                    ),
+                  ],
+                )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                SizedBox(
+                    width: 170,
+                    height: 100,
+                    child: InkWell(
+                      onTap: () {
+                        print("Custommer");
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(2.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                                child: const Icon(
+                                  Icons.face,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5.0,
+                              ),
+                              const Text(
+                                "ลูกค้า",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    )),
+                SizedBox(
+                    width: 170,
+                    height: 100,
+                    child: InkWell(
+                      onTap: () {
+                        print("Rider");
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  return DeliverHistory();
+                                }),
+                              );
+                              ServiceDeliver().setStatus(true, uid);
+                              ServiceDeliver().updateStatus(true, uid);
+                              print("save status success");
+                            },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -136,7 +192,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
                                   child: const Icon(
-                                    Icons.face,
+                                    Icons.electric_moped,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -144,13 +200,16 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                   height: 5.0,
                                 ),
                                 const Text(
-                                  "ลูกค้า",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  "ผู้ส่งสินค้า",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
                                 )
                               ],
                             ),
                           ),
                         ),
+<<<<<<< HEAD
                       )),
                   SizedBox(
                       width: 170,
@@ -221,11 +280,30 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         shape: const BeveledRectangleBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(5)))),
+=======
+                      ),
+                    )),
+              ],
+            ),
+            Spacer(),
+            SizedBox(
+              height: 120.0,
+              child: Center(
+                child: TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    "     Matching    ",
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+>>>>>>> 3ed38294e2eeaae578b7c772d2894a88a66a0c7a
                   ),
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.purple[100],
+                      shape: const BeveledRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)))),
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         )
         // ],
         );

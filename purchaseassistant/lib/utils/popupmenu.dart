@@ -8,7 +8,7 @@ class PopupMenuScreen extends StatefulWidget {
 }
 
 class _PopupMenuScreenState extends State<PopupMenuScreen> {
-  final List<String> popupItems = ["เข้าสู่ช่องฃแชท", "ตอบกลับ", "รายงาน"];
+  
   @override
   Widget build(BuildContext context) {
     return Container();
