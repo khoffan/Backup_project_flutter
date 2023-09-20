@@ -21,7 +21,6 @@ FirebaseAuth _auth = FirebaseAuth.instance;
 
 TextEditingController _commentController = TextEditingController();
 
-
 class _ShowPostState extends State<ShowPost> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -31,7 +30,8 @@ class _ShowPostState extends State<ShowPost> {
     try {
       String comment = _commentController.text;
 
-      await ServiceDeliver().saveDeliverComment(uid: uid ?? '', title: comment, postId: docid);
+      await ServiceDeliver()
+          .saveDeliverComment(uid: uid ?? '', title: comment, postId: docid);
       _commentController.clear();
     } catch (e) {
       throw e.toString();
@@ -101,88 +101,82 @@ class _ShowPostState extends State<ShowPost> {
                       final datenow = timestamp.toDate();
                       final date = DateFormat('d-MMM-yyyy').format(datenow);
                       return Card(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
+                        child: Container(
+                          margin: const EdgeInsets.all(15.0),
+                          child: Column(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                      child: Image(
-                                        image: NetworkImage(
-                                          "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                    Row(
+                                      children: [
+                                        Container(
+                                          child: Image(
+                                            image: NetworkImage(
+                                              "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                            ),
+                                            width: 40.0,
+                                          ),
                                         ),
-                                        width: 40.0,
-                                      ),
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                              left: 20.0, right: 30),
+                                          child: Text("${name} ${lname}"),
+                                        ),
+                                        Text(date),
+                                      ],
                                     ),
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    SizedBox(
-                                      child: Text("${name} ${lname}"),
-                                    ),
-                                  ],
-                                ),
-                                Text(date),
-                                Row(
-                                  children: [
                                     Icon(
                                       Icons.more_vert,
-                                      size: 15,
+                                      size: 20,
                                     ),
-                                    SizedBox(
-                                      width: 15,
-                                    )
                                   ],
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Text("${title}"),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: imageLink != null
-                                      ? Image(
-                                          image: NetworkImage(
-                                            imageLink,
-                                          ),
-                                          width: 40.0,
-                                        )
-                                      : Image(
-                                          image: NetworkImage(
-                                            "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                          ),
-                                          width: 40.0,
-                                        ),
                                 ),
-                              ],
-                            ),
-                            ButtonBar(
-                              alignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    ShowCommentBottm(context, saveComment, docid, uid ?? '');
-                                  },
-                                  child: Text('comment'),
-                                ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              Row(
+                                children: [
+                                  Text("${title}"),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: imageLink != null
+                                        ? Image(
+                                            image: NetworkImage(
+                                              imageLink,
+                                            ),
+                                            width: 40.0,
+                                          )
+                                        : Image(
+                                            image: NetworkImage(
+                                              "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                            ),
+                                            width: 40.0,
+                                          ),
+                                  ),
+                                ],
+                              ),
+                              ButtonBar(
+                                alignment: MainAxisAlignment.end,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      ShowCommentBottm(context, saveComment,
+                                          docid, uid ?? '');
+                                    },
+                                    child: Text('comment'),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }).toList(),
@@ -198,7 +192,8 @@ class _ShowPostState extends State<ShowPost> {
   }
 }
 
-Future ShowCommentBottm(context, Function saveComment, String postId, String uid) {
+Future ShowCommentBottm(
+    context, Function saveComment, String postId, String uid) {
   print("PostId: ${postId}");
   return showModalBottomSheet(
     context: context,
@@ -211,7 +206,10 @@ Future ShowCommentBottm(context, Function saveComment, String postId, String uid
               children: [
                 Expanded(
                   flex: 4,
-                  child: CommentScreen(postId: postId, uid: uid,),
+                  child: CommentScreen(
+                    postId: postId,
+                    uid: uid,
+                  ),
                 ),
 
                 Padding(
