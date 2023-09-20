@@ -56,41 +56,15 @@ class _ListUserchatState extends State<ListUserchat> {
 
   Widget _listUser(DocumentSnapshot docs) {
     Map<String, dynamic> data = docs.data() as Map<String, dynamic>;
-    return StreamBuilder(
-      stream: ChatServices().getMessage(uid, docs.id),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            //            color: Colors.redAccent[400],
-            child: Text("Error: ${snapshot.error}"),
-          );
-        }
-        if (snapshot.hasData && uid != docs.id) {
-          final chatDocs = snapshot.data!.docs;
-          return ListView(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            children: chatDocs.map((doc) {
-              if (doc['senderId'] == uid) {
-                return ListTile(
-                  title: Text(data['name']),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            ChatScreen(reciveuid: docs.id, name: data['name']),
-                      ),
-                    );
-                  },
-                );
-              } else {
-                return Container();
-              }
-            }).toList(),
-          );
-        }
-        return Container();
+    return ListTile(
+      title: Text(data['name']),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatScreen(reciveuid: docs.id, name: data['name']),
+          ),
+        );
       },
     );
   }
