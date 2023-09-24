@@ -44,6 +44,10 @@ dependencies:
   cloud_firestore: ^4.8.3
   email_validator: ^2.1.17
   never_behind_keyboard: ^1.0.2
+  qrscan: ^0.3.3
+  qr_flutter: ^4.1.0
+  permission_handler: ^10.4.3
+  url_launcher: ^6.1.12
 
 dev_dependencies:
   flutter_test:
