@@ -38,12 +38,18 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
-  Uint8List? _image;
+  String? _image;
   void selectImage() async {
-    Uint8List img = await pickerImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
+    final picker = ImagePicker();
+    final pickImageURL = await picker.pickImage(source: ImageSource.gallery);
+    if (pickImageURL != null) {
+      final img = File(pickImageURL.path);
+
+      final imgurl = await AddProfile().uploadImagetoStorage('/profileImage', img);
+      setState(() {
+        _image = imgurl;
+      });
+    }
   }
 
   void saveFile() async {
@@ -72,8 +78,7 @@ class _EditProfileState extends State<EditProfile> {
         phone: phone,
         lname: lname,
       );
-      Navigator.push(
-          context, MaterialPageRoute(builder: (_) => ProfileScreenApp()));
+      Navigator.pop(context);
     }
     print(room);
     print(name);
@@ -118,7 +123,7 @@ class _EditProfileState extends State<EditProfile> {
                             _image != null
                                 ? CircleAvatar(
                                     radius: 64,
-                                    backgroundImage: MemoryImage(_image!),
+                                    backgroundImage: NetworkImage(_image!),
                                   )
                                 : CircleAvatar(
                                     radius: 64,

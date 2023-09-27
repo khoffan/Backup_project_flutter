@@ -34,20 +34,19 @@ class AddProfile {
       required String dorm,
       required String gender,
       required String phone,
-      required Uint8List file,}) async {
+      required String file,}) async {
     String resp = "some Error";
     try {
       print("Attempting to save data...");
       if (name.isNotEmpty &&
           room.isNotEmpty &&
-          file.isNotEmpty &&
           lname.isNotEmpty &&
           dorm.isNotEmpty &&
           stdid.isNotEmpty &&
           gender.isNotEmpty &&
           phone.isNotEmpty) {
         
-        String? _image = await uploadImagetoStorage('/profileImage', file as File);
+        // String? _image = await uploadImagetoStorage('/profileImage', file);
         await _firestore.collection("userProfile").doc(_user.uid ?? '').set({
           'name': name,
           'lname': lname,
@@ -56,7 +55,7 @@ class AddProfile {
           'dorm': dorm,
           'gender': gender,
           'phone': phone,
-          'imageLink': _image,
+          'imageLink': file,
         });
         print("Data saved successfully!");
         resp = "Success";
