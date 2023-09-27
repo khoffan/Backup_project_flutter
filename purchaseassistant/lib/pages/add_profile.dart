@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -6,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../utils/profile_services.dart';
 import '../utils/pickerimg.dart';
+import 'profile_screen.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -63,13 +65,15 @@ class _EditProfileState extends State<EditProfile> {
       await AddProfile().saveProfile(
         name: name,
         room: room,
-        file: _image ?? Uint8List(0),
+        file: _image!,
         stdid: stdid,
         dorm: dorm,
         gender: dropdownValue,
         phone: phone,
         lname: lname,
       );
+      Navigator.push(
+          context, MaterialPageRoute(builder: (_) => ProfileScreenApp()));
     }
     print(room);
     print(name);
@@ -83,8 +87,6 @@ class _EditProfileState extends State<EditProfile> {
     dormController.clear();
     lastnameController.clear();
     phoneController.clear();
-
-    Navigator.pop(context);
   }
 
   @override
@@ -204,10 +206,9 @@ class _EditProfileState extends State<EditProfile> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {
-                                if(_image != null){
+                                if (_image != null) {
                                   saveFile();
-                                }
-                                else{
+                                } else {
                                   Text("no data");
                                 }
                               }

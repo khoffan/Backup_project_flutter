@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -40,12 +42,19 @@ class _UpdateProfileState extends State<UpdateProfile> {
   }
 
   String _image = "";
-  Uint8List? newImage;
+  bool imgState = false;
+  String? newImage;
   void selectImage() async {
-    Uint8List img = await pickerImage(ImageSource.gallery);
-    setState(() {
-      newImage = img;
-    });
+    final pickImag = ImagePicker();
+    final pickImagURL = await pickImag.pickImage(source: ImageSource.gallery);
+    if (pickImagURL != null) {
+      final imageFile = File(pickImagURL.path);
+
+      final imageURL =
+          await AddProfile().uploadImagetoStorage('/profileImage', imageFile);
+
+      newImage = imageURL;
+    }
   }
 
   void updateProfile() async {
@@ -63,11 +72,23 @@ class _UpdateProfileState extends State<UpdateProfile> {
         lname.isNotEmpty &&
         room.isNotEmpty &&
         phone.isNotEmpty &&
-        dropdownValue.isNotEmpty) {
+        dropdownValue.isNotEmpty &&
+        imgState == false) {
       await AddProfile().updateProfile(
         name: name,
         room: room,
-        file: newImage ?? Uint8List(0),
+        file: _image,
+        stdid: stdid,
+        dorm: dorm,
+        gender: dropdownValue,
+        phone: phone,
+        lname: lname,
+      );
+    } else {
+      await AddProfile().updateProfile(
+        name: name,
+        room: room,
+        file: newImage!,
         stdid: stdid,
         dorm: dorm,
         gender: dropdownValue,
@@ -75,12 +96,6 @@ class _UpdateProfileState extends State<UpdateProfile> {
         lname: lname,
       );
     }
-    print(room);
-    print(name);
-    print(lname);
-    print(dorm);
-    print(phone);
-    print(dropdownValue);
     nameController.clear();
     roomController.clear();
     stdidController.clear();
@@ -116,7 +131,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
               appBar: AppBar(title: Text("Error")),
               body: Center(child: Text("${snap.error}")),
             );
-          } else if (snap.connectionState == ConnectionState.done) {
+          }
+          if (snap.hasData) {
             return Scaffold(
               appBar: AppBar(),
               body: Container(
@@ -138,8 +154,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                   )
                                 : CircleAvatar(
                                     radius: 64,
-                                    backgroundImage: MemoryImage(
-                                        newImage!),
+                                    backgroundImage: NetworkImage(newImage!),
                                   ),
                             Positioned(
                               child: IconButton(
@@ -235,11 +250,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
               ),
             );
           }
-          return Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return Container();
         },
       ),
     );

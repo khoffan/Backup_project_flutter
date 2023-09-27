@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,13 +12,13 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final User _user = _auth.currentUser!;
 
 class AddProfile {
-  Future<String> uploadImagetoStorage(String name, Uint8List file) async {
+  Future<String?> uploadImagetoStorage(String name, File file) async {
    try {
-      Reference ref =
+      final ref =
           _storage.ref().child(name).child(DateTime.now().toString());
-      UploadTask uploadTask = ref.putData(file);
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadURL = await snapshot.ref.getDownloadURL();
+      final uploadTask = ref.putFile(file);
+      final snapshot = await uploadTask;
+      final downloadURL = await snapshot.ref.getDownloadURL();
       return downloadURL;
     } catch (e) {
       print("Error uploading image to Firebase Storage: $e");
@@ -45,7 +46,8 @@ class AddProfile {
           stdid.isNotEmpty &&
           gender.isNotEmpty &&
           phone.isNotEmpty) {
-        String imageURL = await uploadImagetoStorage('/profileImage', file);
+        
+        String? _image = await uploadImagetoStorage('/profileImage', file as File);
         await _firestore.collection("userProfile").doc(_user.uid ?? '').set({
           'name': name,
           'lname': lname,
@@ -54,7 +56,7 @@ class AddProfile {
           'dorm': dorm,
           'gender': gender,
           'phone': phone,
-          'imageLink': imageURL,
+          'imageLink': _image,
         });
         print("Data saved successfully!");
         resp = "Success";
@@ -75,7 +77,7 @@ class AddProfile {
       required String dorm,
       required String gender,
       required String phone,
-      required Uint8List file,}) async {
+      required String file,}) async {
     String resp = "some Error";
     try {
       print("Attempting to save data...");
@@ -87,7 +89,7 @@ class AddProfile {
           stdid.isNotEmpty &&
           gender.isNotEmpty &&
           phone.isNotEmpty) {
-        String imageURL = await uploadImagetoStorage('/profileImage', file);
+        
         await _firestore.collection("userProfile").doc(_user.uid ?? '').update({
           'name': name,
           'lname': lname,
@@ -96,7 +98,7 @@ class AddProfile {
           'dorm': dorm,
           'gender': gender,
           'phone': phone,
-          'imageLink': imageURL,
+          'imageLink': file,
         });
         print("Data saved successfully!");
         resp = "Success";

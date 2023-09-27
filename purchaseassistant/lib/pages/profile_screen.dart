@@ -56,12 +56,15 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
             return Center(
               child: Text("Error: ${snapshot.error}"),
             );
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
             );
-          } else if (snapshot.hasData) {
-            final data = snapshot.data!.data();
+          }
+          if (!snapshot.hasData) {
+            Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;
             name = data?["name"] ?? '';
             lname = data?["lname"] ?? '';
             stdid = data?["stdid"] ?? '';
@@ -70,7 +73,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
             gender = data?["gender"] ?? '';
             phone = data?["phone"] ?? '';
             image = data?["imageLink"] ?? '';
-
+            print(data);
             return Scaffold(
               appBar: AppBar(
                 backgroundColor: Color.fromARGB(255, 242, 195, 245),
@@ -109,11 +112,22 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                           Positioned(
                             child: IconButton(
                               onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => EditProfile(),
-                                  ),
-                                );
+                                if (data == null) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => EditProfile(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => UpdateProfile(
+                                        uid: auth.currentUser!.uid,
+                                        data: data,
+                                      ),
+                                    ),
+                                  );
+                                }
                               },
                               icon: Icon(
                                 Icons.add_a_photo,
@@ -200,18 +214,24 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                     SizedBox(
                       height: 10,
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateProfile(data: data!, uid: auth.currentUser?.uid ?? '',)));
-                      },
-                      child: Text("update profile"),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //             builder: (_) => UpdateProfile(
+                    //                   data: data!,
+                    //                   uid: auth.currentUser?.uid ?? '',
+                    //                 )));
+                    //   },
+                    //   child: Text("update profile"),
+                    // ),
                   ],
                 ),
               ),
             );
           }
-          return Container();
+          return EditProfile();
         });
   }
 
