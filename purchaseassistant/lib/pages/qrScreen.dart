@@ -81,11 +81,11 @@ class _QrscannerScreenState extends State<QrscannerScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            isCameroMode = !isCameroMode;
+            // isCameroMode = !isCameroMode;
             _startScan();
           });
         },
-        child: Icon(isCameroMode ? Icons.image : Icons.qr_code_scanner_rounded),
+        child: Icon(Icons.qr_code_scanner_rounded),
       ),
     );
   }
@@ -127,18 +127,7 @@ class _QrscannerScreenState extends State<QrscannerScreen> {
           return;
         }
       }
-    } else {
-      final pickedImage =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedImage != null) {
-        String? imageScanResult = await scanner.scanPath(pickedImage.path);
-        if (imageScanResult != null) {
-          setState(() {
-            scannerResult = imageScanResult;
-          });
-        }
-      }
-    }
+    } 
   }
 
   Widget qrLink(context, bool? hasQrlink, String? scannerResult) {

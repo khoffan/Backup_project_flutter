@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -6,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../utils/profile_services.dart';
 import '../utils/pickerimg.dart';
+import 'profile_screen.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -36,12 +38,18 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
-  Uint8List? _image;
+  String? _image;
   void selectImage() async {
-    Uint8List img = await pickerImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
+    final picker = ImagePicker();
+    final pickImageURL = await picker.pickImage(source: ImageSource.gallery);
+    if (pickImageURL != null) {
+      final img = File(pickImageURL.path);
+
+      final imgurl = await AddProfile().uploadImagetoStorage('/profileImage', img);
+      setState(() {
+        _image = imgurl;
+      });
+    }
   }
 
   void saveFile() async {
@@ -63,13 +71,14 @@ class _EditProfileState extends State<EditProfile> {
       await AddProfile().saveProfile(
         name: name,
         room: room,
-        file: _image ?? Uint8List(0),
+        file: _image!,
         stdid: stdid,
         dorm: dorm,
         gender: dropdownValue,
         phone: phone,
         lname: lname,
       );
+      Navigator.pop(context);
     }
     print(room);
     print(name);
@@ -83,8 +92,6 @@ class _EditProfileState extends State<EditProfile> {
     dormController.clear();
     lastnameController.clear();
     phoneController.clear();
-
-    Navigator.pop(context);
   }
 
   @override
@@ -116,7 +123,7 @@ class _EditProfileState extends State<EditProfile> {
                             _image != null
                                 ? CircleAvatar(
                                     radius: 64,
-                                    backgroundImage: MemoryImage(_image!),
+                                    backgroundImage: NetworkImage(_image!),
                                   )
                                 : CircleAvatar(
                                     radius: 64,
@@ -204,10 +211,9 @@ class _EditProfileState extends State<EditProfile> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {
-                                if(_image != null){
+                                if (_image != null) {
                                   saveFile();
-                                }
-                                else{
+                                } else {
                                   Text("no data");
                                 }
                               }
