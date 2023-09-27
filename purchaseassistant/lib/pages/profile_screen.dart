@@ -49,169 +49,196 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
     return StreamBuilder(
         stream: _firestore
             .collection('userProfile')
-            .doc(auth.currentUser?.uid ?? '')
+            .doc(auth.currentUser!.uid)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
               child: Text("Error: ${snapshot.error}"),
             );
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
             );
-          } else if (snapshot.hasData) {
-            final data = snapshot.data!.data();
-            name = data?["name"] ?? '';
-            lname = data?["lname"] ?? '';
-            stdid = data?["stdid"] ?? '';
-            room = data?["room"] ?? '';
-            dorm = data?["dorm"] ?? '';
-            gender = data?["gender"] ?? '';
-            phone = data?["phone"] ?? '';
-            image = data?["imageLink"] ?? '';
+          }
 
-            return Scaffold(
-              appBar: AppBar(
-                backgroundColor: Color.fromARGB(255, 242, 195, 245),
-                actions: [
-                  IconButton(
-                    onPressed: () {
-                      showMediabottom(context);
-                    },
-                    icon: Icon(Icons.dehaze),
-                  )
-                ],
-              ),
-              body: Container(
-                alignment: Alignment.center,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      color: Colors.amber.withOpacity(0.1),
-                      padding: const EdgeInsets.only(top: 40, bottom: 40),
-                      margin: const EdgeInsets.only(bottom: 20.0),
-                      width: double.infinity,
-                      child: Stack(
-                        alignment: AlignmentDirectional.bottomCenter,
-                        children: [
-                          image != ''
-                              ? CircleAvatar(
-                                  radius: 64,
-                                  backgroundImage: NetworkImage(image),
-                                )
-                              : const CircleAvatar(
-                                  radius: 64,
-                                  backgroundImage: NetworkImage(
-                                      'https://www.google.com/imgres?imgurl=https%3A%2F%2Fw7.pngwing.com%2Fpngs%2F205%2F731%2Fpng-transparent-default-avatar-thumbnail.png&tbnid=vj1POnmqwlZL-M&vet=12ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ..i&imgrefurl=https%3A%2F%2Fwww.pngwing.com%2Fen%2Fsearch%3Fq%3Ddefault&docid=J354HYBi_egj6M&w=360&h=360&q=default%20avatar%20in%20png&hl=en&ved=2ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ'),
-                                ),
-                          Positioned(
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => EditProfile(),
-                                  ),
-                                );
-                              },
-                              icon: Icon(
-                                Icons.add_a_photo,
-                                size: 28,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            bottom: -10,
-                            left: 230,
-                          )
-                        ],
-                      ),
-                    ),
-                    Center(
-                      child: Text(
-                        "ข้อมูลโปรไฟล์",
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Center(
-                        child: Container(
-                      padding: EdgeInsets.only(left: 40, top: 30),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                "ชื่อ :  ${name}  ${lname}",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              SizedBox(
-                                height: 40,
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "รหัสนักศึกษา :  ${stdid}",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              SizedBox(
-                                height: 40,
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "ที่อยู่ :  หอพักอาคาร ${dorm}  ห้อง ${room}",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              SizedBox(
-                                height: 40,
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "เพศ :  ${gender}",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              SizedBox(
-                                height: 40,
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "เบอร์โทรศัพท์ :  ${phone}",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              SizedBox(
-                                height: 40,
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    )),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    ElevatedButton(
+          Map<String, dynamic> data = {};
+          if (snapshot.hasData && snapshot.data!.exists) {
+            final snapshotData = snapshot.data!.data() as Map<String, dynamic>;
+            if (snapshotData != null) {
+              data = snapshotData;
+              name = data?["name"] ?? '';
+              lname = data?["lname"] ?? '';
+              stdid = data?["stdid"] ?? '';
+              room = data?["room"] ?? '';
+              dorm = data?["dorm"] ?? '';
+              gender = data?["gender"] ?? '';
+              phone = data?["phone"] ?? '';
+              image = data?["imageLink"] ?? '';
+
+              return Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Color.fromARGB(255, 242, 195, 245),
+                  actions: [
+                    IconButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateProfile(data: data!, uid: auth.currentUser?.uid ?? '',)));
+                        showMediabottom(context);
                       },
-                      child: Text("update profile"),
-                    ),
+                      icon: Icon(Icons.dehaze),
+                    )
                   ],
                 ),
-              ),
-            );
+                body: Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        color: Colors.amber.withOpacity(0.1),
+                        padding: const EdgeInsets.only(top: 40, bottom: 40),
+                        margin: const EdgeInsets.only(bottom: 20.0),
+                        width: double.infinity,
+                        child: Stack(
+                          alignment: AlignmentDirectional.bottomCenter,
+                          children: [
+                            image != ''
+                                ? CircleAvatar(
+                                    radius: 64,
+                                    backgroundImage: NetworkImage(image),
+                                  )
+                                : const CircleAvatar(
+                                    radius: 64,
+                                    backgroundImage: NetworkImage(
+                                        'https://www.google.com/imgres?imgurl=https%3A%2F%2Fw7.pngwing.com%2Fpngs%2F205%2F731%2Fpng-transparent-default-avatar-thumbnail.png&tbnid=vj1POnmqwlZL-M&vet=12ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ..i&imgrefurl=https%3A%2F%2Fwww.pngwing.com%2Fen%2Fsearch%3Fq%3Ddefault&docid=J354HYBi_egj6M&w=360&h=360&q=default%20avatar%20in%20png&hl=en&ved=2ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ'),
+                                  ),
+                            Positioned(
+                              child: IconButton(
+                                onPressed: () {
+                                  if (data == null) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => EditProfile(),
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => UpdateProfile(
+                                          uid: auth.currentUser!.uid,
+                                          data: data,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                icon: Icon(
+                                  Icons.add_a_photo,
+                                  size: 28,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              bottom: -10,
+                              left: 230,
+                            )
+                          ],
+                        ),
+                      ),
+                      Center(
+                        child: Text(
+                          "ข้อมูลโปรไฟล์",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Center(
+                          child: Container(
+                        padding: EdgeInsets.only(left: 40, top: 30),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "ชื่อ :  ${name}  ${lname}",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "รหัสนักศึกษา :  ${stdid}",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "ที่อยู่ :  หอพักอาคาร ${dorm}  ห้อง ${room}",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "เพศ :  ${gender}",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "เบอร์โทรศัพท์ :  ${phone}",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      )),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     Navigator.push(
+                      //         context,
+                      //         MaterialPageRoute(
+                      //             builder: (_) => UpdateProfile(
+                      //                   data: data!,
+                      //                   uid: auth.currentUser?.uid ?? '',
+                      //                 )));
+                      //   },
+                      //   child: Text("update profile"),
+                      // ),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return EditProfile();
+            }
+          } else {
+            return EditProfile();
           }
-          return Container();
         });
   }
 
