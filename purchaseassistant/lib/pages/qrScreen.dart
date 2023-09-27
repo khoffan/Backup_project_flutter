@@ -7,8 +7,6 @@ import 'package:permission_handler/permission_handler.dart';
 // import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
-
 class QrscannerScreen extends StatefulWidget {
   const QrscannerScreen({Key? key}) : super(key: key);
 
@@ -119,13 +117,12 @@ class _QrscannerScreenState extends State<QrscannerScreen> {
           setState(() {
             hasLineResult = true;
           });
-        } 
+        }
         if (scannerResult != null) {
           setState(() {
             hasLineResult = true;
           });
-        } 
-        else {
+        } else {
           print("Permission not denine");
           return;
         }
