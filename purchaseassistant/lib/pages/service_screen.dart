@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/pages/testPage.dart';
 import 'package:purchaseassistant/utils/delivers_services.dart';
 import '../utils/constants.dart';
 
+import 'deliverer_history.dart';
 import 'deliverer_screen.dart';
 
 class ServiceScreen extends StatefulWidget {
@@ -26,9 +28,10 @@ class _ServiceScreenState extends State<ServiceScreen> {
   // 'โลตัส สาขา ม.อ.',
   // 'สถานีขนส่ง หาดใหญ่',
   // 'เซนทรัลเฟตติวัลหาดใหญ่'
-  void sendLocationRider(String title){
+  void sendLocationRider(String title) {
     print(title);
   }
+
   @override
   void initState() {
     super.initState();
@@ -130,6 +133,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     height: 100,
                     child: InkWell(
                       onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => TestPage()));
                         print("Custommer");
                       },
                       child: Card(
@@ -177,7 +182,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
-                                  return DelivererScreen();
+                                  return const DeliverHistory();
                                 }),
                               );
                               ServiceDeliver().setStatus(true, uid);
@@ -217,35 +222,37 @@ class _ServiceScreenState extends State<ServiceScreen> {
               ],
             ),
             Spacer(),
-            SizedBox(
-              height: 120.0,
-              child: Center(
-                child: TextButton(
-                  onPressed: () {
-                    if(valueFirst == true){
-                      String title = "หอพัก - ภายในหมาวิทยาลัย";
-                      sendLocationRider(title);
-                    }
-                    if(valueSecond == true){
-                      String title = "หอพัก - โลตัสหน้า ม.อ.";
-                      sendLocationRider(title);
-                    }
-                    if(valueThird == true && valueSecond == true && valueFirst == true){
-                      String title = "รับทุกงาน";
-                      sendLocationRider(title);
-                    }
-                  },
-                  child: Text(
-                    "     Matching    ",
-                    style: TextStyle(fontSize: 20, color: Colors.black),
-                  ),
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.purple[100],
-                      shape: const BeveledRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5)))),
-                ),
-              ),
-            )
+            // SizedBox(
+            //   height: 120.0,
+            //   child: Center(
+            //     child: TextButton(
+            //       onPressed: () {
+            //         if (valueFirst == true) {
+            //           String title = "หอพัก - ภายในหมาวิทยาลัย";
+            //           sendLocationRider(title);
+            //         }
+            //         if (valueSecond == true) {
+            //           String title = "หอพัก - โลตัสหน้า ม.อ.";
+            //           sendLocationRider(title);
+            //         }
+            //         if (valueThird == true &&
+            //             valueSecond == true &&
+            //             valueFirst == true) {
+            //           String title = "รับทุกงาน";
+            //           sendLocationRider(title);
+            //         }
+            //       },
+            //       child: Text(
+            //         "     Matching    ",
+            //         style: TextStyle(fontSize: 20, color: Colors.black),
+            //       ),
+            //       style: TextButton.styleFrom(
+            //           backgroundColor: Colors.purple[100],
+            //           shape: const BeveledRectangleBorder(
+            //               borderRadius: BorderRadius.all(Radius.circular(5)))),
+            //     ),
+            //   ),
+            // )
           ],
         )
         // ],
