@@ -18,7 +18,7 @@ class DelivererScreen extends StatefulWidget {
 class _DelivererScreenState extends State<DelivererScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _txtControllerBody = TextEditingController();
-  
+
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = '';
   Uint8List? _image;
@@ -46,7 +46,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     uid = _auth.currentUser?.uid ?? '';
   }
@@ -57,7 +57,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
       appBar: AppBar(
         title: Text('Deliverer'),
         leading: GestureDetector(
-          onTap: () async{
+          onTap: () async {
             await ServiceDeliver().updateStatus(false, uid);
             Navigator.pop(context);
           },
@@ -67,13 +67,13 @@ class _DelivererScreenState extends State<DelivererScreen> {
           IconButton(
             onPressed: () {
               Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => DeliverHistory(),
-                )
-              );
-            }, icon: Icon(Icons.add),
-          )
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DelivererScreen(),
+                  ));
+            },
+            icon: Icon(Icons.add),
+          ),
         ],
       ),
       body: ListView(
