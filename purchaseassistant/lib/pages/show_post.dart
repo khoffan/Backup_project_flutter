@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/pages/chat_screen.dart';
-import 'package:purchaseassistant/utils/chat_services.dart';
-import 'package:purchaseassistant/utils/comment_services.dart';
+import 'package:purchaseassistant/services/chat_services.dart';
+import 'package:purchaseassistant/services/comment_services.dart';
 
 // import '../utils/add_comments.dart';
-import '../utils/delivers_services.dart';
+import '../services/delivers_services.dart';
 import 'comment_screen.dart';
 
 class ShowPost extends StatefulWidget {

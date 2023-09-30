@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 // import 'package:purchaseassistant/models/login.dart';
 // import 'package:purchaseassistant/pages/home_screen.dart';
 
-import '../utils/pickerimg.dart';
+import '../services/pickerimg.dart';
 import '../utils/update_profile.dart';
 import 'add_profile.dart';
 import 'login_screen.dart';

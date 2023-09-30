@@ -5,8 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../utils/profile_services.dart';
-import '../utils/pickerimg.dart';
+import '../services/profile_services.dart';
+import '../services/pickerimg.dart';
 import 'profile_screen.dart';
 
 class EditProfile extends StatefulWidget {

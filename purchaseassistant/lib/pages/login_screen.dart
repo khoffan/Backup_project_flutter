@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:purchaseassistant/utils/delivers_services.dart';
+import 'package:purchaseassistant/services/delivers_services.dart';
 import '../models/login.dart';
 import '../routes/routes.dart';
 import '../utils/constants.dart';

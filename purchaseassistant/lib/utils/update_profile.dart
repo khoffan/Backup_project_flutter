@@ -6,8 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'profile_services.dart';
-import '../utils/pickerimg.dart';
+import '../services/profile_services.dart';
+import '../services/pickerimg.dart';
 
 class UpdateProfile extends StatefulWidget {
   UpdateProfile({super.key, required this.data, required this.uid});

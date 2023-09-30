@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:purchaseassistant/pages/chat_screen.dart';
 import 'package:purchaseassistant/utils/formatDate.dart';
 
-import '../utils/popupmenu.dart';
 
 class CommentScreen extends StatefulWidget {
   CommentScreen({super.key, required this.postId, required this.uid});

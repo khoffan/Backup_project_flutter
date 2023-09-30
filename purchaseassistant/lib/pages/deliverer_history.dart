@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:purchaseassistant/utils/delivers_services.dart';
+import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:intl/intl.dart';
 
 import '../utils/update_post.dart';
