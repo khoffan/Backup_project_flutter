@@ -55,6 +55,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
 
       setState(() {
         newImage = imageURL;
+        imgState = true;
       });
     }
     print(newImage);
