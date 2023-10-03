@@ -53,8 +53,11 @@ class _UpdateProfileState extends State<UpdateProfile> {
       final imageURL =
           await AddProfile().uploadImagetoStorage('/profileImage', imageFile);
 
-      newImage = imageURL;
+      setState(() {
+        newImage = imageURL;
+      });
     }
+    print(newImage);
   }
 
   void updateProfile() async {
