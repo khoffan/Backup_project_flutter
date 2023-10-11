@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:intl/intl.dart';
-import '../utils/ChatBouble.dart';
+import '../../utils/ChatBouble.dart';
 
 class ChatScreen extends StatefulWidget {
   ChatScreen({
