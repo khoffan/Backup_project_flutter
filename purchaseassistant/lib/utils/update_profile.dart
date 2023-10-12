@@ -69,15 +69,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     String phone = phoneController.text;
     String lname = lastnameController.text;
 
-    if (name.isNotEmpty &&
-        room.isNotEmpty &&
-        stdid.isNotEmpty &&
-        dorm.isNotEmpty &&
-        lname.isNotEmpty &&
-        room.isNotEmpty &&
-        phone.isNotEmpty &&
-        dropdownValue.isNotEmpty &&
-        imgState == false) {
+    if (imgState == false) {
       await AddProfile().updateProfile(
         name: name,
         room: room,
@@ -100,12 +92,6 @@ class _UpdateProfileState extends State<UpdateProfile> {
         lname: lname,
       );
     }
-    nameController.clear();
-    roomController.clear();
-    stdidController.clear();
-    dormController.clear();
-    lastnameController.clear();
-    phoneController.clear();
 
     Navigator.pop(context);
   }
@@ -244,7 +230,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                 updateProfile();
                               }
                             },
-                            child: Text("Save profile"),
+                            child: Text("Update profile"),
                           ),
                         ),
                       ],

@@ -13,10 +13,13 @@ import 'package:image_picker/image_picker.dart';
 import '../services/pickerimg.dart';
 import '../utils/update_profile.dart';
 import 'add_profile.dart';
+import 'dashboard_screen.dart';
 import 'login_screen.dart';
 
 class ProfileScreenApp extends StatefulWidget {
-  const ProfileScreenApp({super.key});
+  const ProfileScreenApp({super.key, required this.myNavigate});
+  
+  final Function myNavigate;
 
   @override
   State<ProfileScreenApp> createState() => _ProfileScreenAppState();
@@ -80,6 +83,11 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
               return Scaffold(
                 appBar: AppBar(
                   backgroundColor: Color.fromARGB(255, 242, 195, 245),
+                  leading: IconButton(
+                      onPressed: () {
+                        widget.myNavigate();
+                      },
+                      icon: Icon(Icons.arrow_back)),
                   actions: [
                     IconButton(
                       onPressed: () {
@@ -107,7 +115,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                     radius: 64,
                                     backgroundImage: NetworkImage(image),
                                   )
-                                :  CircleAvatar(
+                                : CircleAvatar(
                                     radius: 64,
                                     backgroundImage: NetworkImage(
                                         'https://www.google.com/imgres?imgurl=https%3A%2F%2Fw7.pngwing.com%2Fpngs%2F205%2F731%2Fpng-transparent-default-avatar-thumbnail.png&tbnid=vj1POnmqwlZL-M&vet=12ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ..i&imgrefurl=https%3A%2F%2Fwww.pngwing.com%2Fen%2Fsearch%3Fq%3Ddefault&docid=J354HYBi_egj6M&w=360&h=360&q=default%20avatar%20in%20png&hl=en&ved=2ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ'),
