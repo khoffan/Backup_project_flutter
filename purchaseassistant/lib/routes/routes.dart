@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:purchaseassistant/pages/login_screen.dart';
-import 'package:purchaseassistant/pages/register_screen.dart';
+import 'package:purchaseassistant/pages/auth/login_screen.dart';
+import 'package:purchaseassistant/pages/auth/register_screen.dart';
 import 'package:purchaseassistant/pages/testPage.dart';
 
 import '../pages/service_screen.dart';

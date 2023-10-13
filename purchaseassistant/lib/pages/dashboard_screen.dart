@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:purchaseassistant/pages/show_post.dart';
+import 'package:purchaseassistant/pages/posted/show_post.dart';
 import '../utils/constants.dart';
 
 class DashboardScreen extends StatefulWidget {

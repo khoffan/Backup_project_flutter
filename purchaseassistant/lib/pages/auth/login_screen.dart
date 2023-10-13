@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
-import '../models/login.dart';
-import '../routes/routes.dart';
-import '../utils/constants.dart';
+import '../../models/login.dart';
+import '../../routes/routes.dart';
+import '../../utils/constants.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

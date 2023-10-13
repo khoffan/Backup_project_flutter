@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/routes/routes.dart';
-import '../pages/chat_user_list.dart';
+import '../pages/chat/chat_user_list.dart';
 import '../pages/dashboard_screen.dart';
-import '../pages/profile_screen.dart';
+import '../pages/profile/profile_screen.dart';
 import '../pages/qrScreen.dart';
 
 class BottomNavigation extends StatefulWidget {

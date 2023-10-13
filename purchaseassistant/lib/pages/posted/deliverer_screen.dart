@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../services/delivers_services.dart';
-import '../services/pickerimg.dart';
+import '../../services/delivers_services.dart';
+import '../../services/pickerimg.dart';
 import 'deliverer_history.dart';
 
 class DelivererScreen extends StatefulWidget {

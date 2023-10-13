@@ -10,11 +10,11 @@ import 'package:image_picker/image_picker.dart';
 // import 'package:purchaseassistant/models/login.dart';
 // import 'package:purchaseassistant/pages/home_screen.dart';
 
-import '../services/pickerimg.dart';
-import '../utils/update_profile.dart';
+import '../../services/pickerimg.dart';
+import '../../utils/update_profile.dart';
+import '../auth/login_screen.dart';
 import 'add_profile.dart';
-import 'dashboard_screen.dart';
-import 'login_screen.dart';
+
 
 class ProfileScreenApp extends StatefulWidget {
   const ProfileScreenApp({super.key, required this.myNavigate});
