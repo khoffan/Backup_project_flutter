@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:purchaseassistant/utils/chat_services.dart';
+import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:intl/intl.dart';
-import '../utils/ChatBouble.dart';
+import '../../utils/ChatBouble.dart';
 
 class ChatScreen extends StatefulWidget {
   ChatScreen({
@@ -25,7 +25,8 @@ class _ChatScreenState extends State<ChatScreen> {
   String uid = "";
   String otherid = "";
   Timestamp? _lastMessageTimestamp;
-
+  FocusNode _focusNode = FocusNode();
+  bool isShowIcon = true;
   void sendMessge() async {
     if (_messageController.text.isNotEmpty) {
       await ChatServices().sendMessge(otherid, _messageController.text);
@@ -38,6 +39,17 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     uid = _auth.currentUser!.uid;
     otherid = widget.reciveuid ?? '';
+    _focusNode.addListener(() {
+      setState(() {
+        isShowIcon = !_focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -130,7 +142,7 @@ class _ChatScreenState extends State<ChatScreen> {
             if (data['message'] != null &&
                 data['message'].toString().isNotEmpty)
               ChatBouble(message: data['message'])
-      
+
 // Display the image
           ],
         ),
@@ -141,26 +153,50 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildMessageInput() {
     return Container(
       decoration: BoxDecoration(
-          color: const Color.fromARGB(96, 216, 216, 216), borderRadius: BorderRadius.circular(10)),
+          color: const Color.fromARGB(96, 216, 216, 216),
+          borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
         child: Row(
           children: [
             Expanded(
               child: TextFormField(
+                onTap: () {
+                  setState(() {
+                    isShowIcon = false;
+                  });
+                },
+                onEditingComplete: () {
+                  setState(() {
+                    isShowIcon = true;
+                  });
+                },
+                focusNode: _focusNode,
                 obscureText: false,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   hintText: "Enter message",
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.send), // You can choose any icon you like.
+                    onPressed: () {
+                      sendMessge();
+                    },
+                  ),
+                  prefixIcon: isShowIcon
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.person), // First icon
+                            SizedBox(width: 8), // Add spacing between icons
+                            Icon(Icons.location_on), // Second icon
+                          ],
+                        )
+                      : null,
                 ),
                 controller: _messageController,
               ),
-            ),
-            IconButton(
-              onPressed: sendMessge,
-              icon: Icon(Icons.arrow_upward_outlined),
             ),
           ],
         ),

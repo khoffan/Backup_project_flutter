@@ -6,8 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'profile_services.dart';
-import '../utils/pickerimg.dart';
+import '../services/profile_services.dart';
+import '../services/pickerimg.dart';
 
 class UpdateProfile extends StatefulWidget {
   UpdateProfile({super.key, required this.data, required this.uid});
@@ -53,8 +53,12 @@ class _UpdateProfileState extends State<UpdateProfile> {
       final imageURL =
           await AddProfile().uploadImagetoStorage('/profileImage', imageFile);
 
-      newImage = imageURL;
+      setState(() {
+        newImage = imageURL;
+        imgState = true;
+      });
     }
+    print(newImage);
   }
 
   void updateProfile() async {
@@ -65,15 +69,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     String phone = phoneController.text;
     String lname = lastnameController.text;
 
-    if (name.isNotEmpty &&
-        room.isNotEmpty &&
-        stdid.isNotEmpty &&
-        dorm.isNotEmpty &&
-        lname.isNotEmpty &&
-        room.isNotEmpty &&
-        phone.isNotEmpty &&
-        dropdownValue.isNotEmpty &&
-        imgState == false) {
+    if (imgState == false) {
       await AddProfile().updateProfile(
         name: name,
         room: room,
@@ -96,12 +92,6 @@ class _UpdateProfileState extends State<UpdateProfile> {
         lname: lname,
       );
     }
-    nameController.clear();
-    roomController.clear();
-    stdidController.clear();
-    dormController.clear();
-    lastnameController.clear();
-    phoneController.clear();
 
     Navigator.pop(context);
   }
@@ -240,7 +230,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                 updateProfile();
                               }
                             },
-                            child: Text("Save profile"),
+                            child: Text("Update profile"),
                           ),
                         ),
                       ],

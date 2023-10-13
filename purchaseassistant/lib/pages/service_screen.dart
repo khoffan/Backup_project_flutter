@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/pages/testPage.dart';
-import 'package:purchaseassistant/utils/delivers_services.dart';
+import 'package:purchaseassistant/services/delivers_services.dart';
 import '../utils/constants.dart';
 
-import 'deliverer_history.dart';
-import 'deliverer_screen.dart';
+import 'posted/deliverer_history.dart';
+import 'posted/deliverer_screen.dart';
 
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});

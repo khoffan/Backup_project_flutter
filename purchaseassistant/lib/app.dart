@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:purchaseassistant/pages/login_screen.dart';
+import 'package:purchaseassistant/pages/auth/login_screen.dart';
 import 'package:purchaseassistant/routes/routes.dart';
 
 class App extends StatelessWidget {

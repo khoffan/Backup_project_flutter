@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/routes/routes.dart';
-import '../pages/chat_user_list.dart';
+import '../pages/chat/chat_user_list.dart';
 import '../pages/dashboard_screen.dart';
-import '../pages/profile_screen.dart';
+import '../pages/profile/profile_screen.dart';
 import '../pages/qrScreen.dart';
 
 class BottomNavigation extends StatefulWidget {
@@ -18,17 +18,26 @@ class _BottomNavigationState extends State<BottomNavigation> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    DashboardScreen(),
-    ListUserchat(),
-    QrscannerScreen(),
-    ProfileScreenApp(),
-  ];
+  void _NavigateTohome() {
+    _onItemTapped(0);
+  }
+  
+  List<Widget> _widgetOptions = [];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void initState() {
+    super.initState();
+     _widgetOptions = <Widget>[
+      DashboardScreen(),
+      ListUserchat(),
+      QrscannerScreen(),
+      ProfileScreenApp(myNavigate: _NavigateTohome),
+    ];
   }
 
   @override
@@ -61,6 +70,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                     MaterialButton(
                       minWidth: 50,
                       onPressed: () {
+                        
                         _onItemTapped(0);
                       },
                       child: Column(
