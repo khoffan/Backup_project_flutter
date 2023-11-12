@@ -28,8 +28,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
   // 'โลตัส สาขา ม.อ.',
   // 'สถานีขนส่ง หาดใหญ่',
   // 'เซนทรัลเฟตติวัลหาดใหญ่'
-  void sendLocationRider(String title) {
-    print(title);
+  String sendLocationRider(String title) {
+    return title;
+  }
+
+  void getLocate(){
+
   }
 
   @override
@@ -89,12 +93,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
                       secondary: const Icon(Icons.alarm),
                       title: const Text('หอพัก - โลตัสหน้า ม.อ.'),
                       subtitle: Text('ค่าบริการขั้นต่ำ 15 บาท'),
-                      value: this.valueSecond,
+                      value: valueSecond,
                       onChanged: (bool? value) {
                         setState(() {
-                          this.valueSecond = value!;
+                          valueSecond = value!;
                           value
-                              ? (this.valueFirst
+                              ? (valueFirst
                                   ? valueThird = true
                                   : print('not all'))
                               : valueThird = false;
@@ -136,6 +140,18 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (_) => TestPage()));
                         print("Custommer");
+                        if (valueFirst == true && valueThird == false) {
+                          String title = "หอพัก - ภายในหมาวิทยาลัย";
+                          print(sendLocationRider(title));
+                        }
+                        if (valueSecond == true && valueThird == false) {
+                          String title = "หอพัก - โลตัสหน้า ม.อ.";
+                          print(sendLocationRider(title));
+                        }
+                        if (valueThird == true) {
+                          String title = "รับทุกงาน";
+                          print(sendLocationRider(title));
+                        }
                       },
                       child: Card(
                         child: Padding(
@@ -185,7 +201,19 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                   return const DeliverHistory();
                                 }),
                               );
-                              ServiceDeliver().setStatus(true, uid);
+                              if (valueFirst == true && valueThird == false) {
+                                String title = "หอพัก - ภายในหมาวิทยาลัย";
+                                ServiceDeliver().setStatus(true, uid, title);
+                              }
+                              if (valueSecond == true && valueThird == false) {
+                                String title = "หอพัก - โลตัสหน้า ม.อ.";
+                                ServiceDeliver().setStatus(true, uid, title);
+                              }
+                              if (valueThird == true) {
+                                String title = "รับทุกงาน";
+                                ServiceDeliver().setStatus(true, uid, title);
+                              }
+                              // ServiceDeliver().setStatus(true, uid, "");
                               ServiceDeliver().updateStatus(true, uid);
                               print("save status success");
                             },

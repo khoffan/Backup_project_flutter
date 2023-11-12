@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ServiceDeliver().setStatus(
                                               false,
                                               FirebaseAuth
-                                                  .instance.currentUser!.uid);
+                                                  .instance.currentUser!.uid, " ");
                                           ServiceDeliver().updateStatus(
                                               false,
                                               FirebaseAuth
