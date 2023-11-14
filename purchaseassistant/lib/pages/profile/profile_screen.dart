@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 // import 'package:purchaseassistant/models/login.dart';
 // import 'package:purchaseassistant/pages/home_screen.dart';
 
@@ -15,10 +14,9 @@ import '../../utils/update_profile.dart';
 import '../auth/login_screen.dart';
 import 'add_profile.dart';
 
-
 class ProfileScreenApp extends StatefulWidget {
   const ProfileScreenApp({super.key, required this.myNavigate});
-  
+
   final Function myNavigate;
 
   @override
@@ -68,9 +66,9 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
 
           Map<String, dynamic> data = {};
           if (snapshot.hasData && snapshot.data!.exists) {
-            final snapshotData = snapshot.data!.data() as Map<String, dynamic>;
-            if (snapshotData != null) {
-              data = snapshotData;
+            final snapData = snapshot.data!.data() as Map<String, dynamic>;
+            if (data != '') {
+              data = snapData;
               name = data["name"] ?? '';
               lname = data["lname"] ?? '';
               stdid = data["stdid"] ?? '';
@@ -123,7 +121,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                             Positioned(
                               child: IconButton(
                                 onPressed: () {
-                                  if (data == null) {
+                                  if (data == '') {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => EditProfile(),
@@ -274,7 +272,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                       child: ElevatedButton(
                         onPressed: () {
                           auth.signOut().then((value) {
-                            Navigator.pushReplacement(context,
+                            Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                               return LoginScreen();
                             }));

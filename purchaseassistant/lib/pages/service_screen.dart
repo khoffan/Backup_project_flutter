@@ -137,20 +137,22 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     height: 100,
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(context,
+                        if(valueFirst == true || valueSecond == true || valueThird == true){
+                           Navigator.push(context,
                             MaterialPageRoute(builder: (_) => TestPage()));
                         print("Custommer");
+                        }
                         if (valueFirst == true && valueThird == false) {
                           String title = "หอพัก - ภายในหมาวิทยาลัย";
-                          print(sendLocationRider(title));
+                          ServiceDeliver().setStatus(false, uid, title);
                         }
                         if (valueSecond == true && valueThird == false) {
                           String title = "หอพัก - โลตัสหน้า ม.อ.";
-                          print(sendLocationRider(title));
+                          ServiceDeliver().setStatus(false, uid, title);
                         }
                         if (valueThird == true) {
                           String title = "รับทุกงาน";
-                          print(sendLocationRider(title));
+                          ServiceDeliver().setStatus(false, uid, title);
                         }
                       },
                       child: Card(

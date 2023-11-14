@@ -195,7 +195,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                                 children: [
                                   Container(
                                     width: 200,
-                                    child: imageLink != null
+                                    child: imageLink != ''
                                         ? Image(
                                             image: NetworkImage(
                                               imageLink,
