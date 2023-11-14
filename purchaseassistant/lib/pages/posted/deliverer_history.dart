@@ -5,6 +5,7 @@ import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:intl/intl.dart';
 
 import '../../utils/update_post.dart';
+import '../profile/profile_screen.dart';
 import 'deliverer_screen.dart';
 
 class DeliverHistory extends StatefulWidget {
@@ -34,6 +35,9 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     }
   }
 
+  void navigetPOP(){
+    Navigator.pop(context);
+  }
   @override
   void initState() {
     super.initState();
@@ -64,22 +68,11 @@ class _DeliverHistoryState extends State<DeliverHistory> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => DelivererScreen(),
+                  builder: (_) => ProfileScreenApp(myNavigate: navigetPOP),
                 ),
               );
             },
-            icon: Icon(Icons.add),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => DelivererScreen(),
-                ),
-              );
-            },
-            icon: Icon(Icons.add),
+            icon: Icon(Icons.settings),
           ),
         ],
       ),
@@ -254,6 +247,17 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DelivererScreen(),
+            ),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

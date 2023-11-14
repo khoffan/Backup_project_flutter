@@ -195,26 +195,31 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(
+                              if(valueFirst == true || valueSecond == true || valueThird == true){
+                                Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
                                   return const DeliverHistory();
                                 }),
                               );
+                              }
                               if (valueFirst == true && valueThird == false) {
                                 String title = "หอพัก - ภายในหมาวิทยาลัย";
                                 ServiceDeliver().setStatus(true, uid, title);
+                                ServiceDeliver().updateStatus(true, uid);
                               }
                               if (valueSecond == true && valueThird == false) {
                                 String title = "หอพัก - โลตัสหน้า ม.อ.";
                                 ServiceDeliver().setStatus(true, uid, title);
+                                ServiceDeliver().updateStatus(true, uid);
                               }
                               if (valueThird == true) {
                                 String title = "รับทุกงาน";
                                 ServiceDeliver().setStatus(true, uid, title);
+                                ServiceDeliver().updateStatus(true, uid);
                               }
                               // ServiceDeliver().setStatus(true, uid, "");
-                              ServiceDeliver().updateStatus(true, uid);
+                              
                               print("save status success");
                             },
                             child: Column(

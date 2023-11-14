@@ -118,7 +118,7 @@ class ServiceDeliver {
 
   Future<void> updateStatus(bool status, String uid) async {
     try {
-      if (uid != '' && status != null) {
+      if (uid != '' && status != '') {
         
         await _firestore.collection('deliverPost').doc(uid).update({
           'status': status,
