@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/pages/testPage.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
+import 'package:purchaseassistant/services/matching_services.dart';
 import '../utils/constants.dart';
 
 import 'posted/deliverer_history.dart';
@@ -16,7 +18,9 @@ class ServiceScreen extends StatefulWidget {
 
 class _ServiceScreenState extends State<ServiceScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
+  String locateData = "";
 
   bool valueFirst = false;
   bool valueSecond = false;
@@ -28,15 +32,50 @@ class _ServiceScreenState extends State<ServiceScreen> {
   // 'โลตัส สาขา ม.อ.',
   // 'สถานีขนส่ง หาดใหญ่',
   // 'เซนทรัลเฟตติวัลหาดใหญ่'
-  void sendLocationRider(String title) {
-    print(title);
+  String getLocationData(String title) {
+    if (title != "") {
+      return title;
+    }
+    return "";
+  }
+
+  void sendData2api(String uid) async {
+    try {
+      String name = "";
+      String locate = "";
+      if (uid != "") {
+        DocumentSnapshot snapshot =
+            await _firestore.collection("deliverPost").doc(uid).get();
+        final datasnap = snapshot.data()! as Map<String, dynamic>?;
+        name = datasnap?["name"] ?? '';
+        locate = datasnap?["locattion"] ?? "";
+      }
+      if (uid != "" && locate != "") {
+        Map<String, dynamic> userData = {
+          "customers": [
+            {
+              "id": uid,
+              'name': name,
+              "location": locate,
+            }
+          ]
+        };
+
+        Map<String, dynamic> response =
+            await APIMatiching().sendData('matching', userData);
+        // Handle the response as needed
+        print(response);
+      }
+    } catch (e) {
+      // Handle errors
+      print('Error: $e, Error: uid or locate is null');
+    }
   }
 
   @override
   void initState() {
     super.initState();
     uid = _auth.currentUser?.uid ?? '';
-    print(uid);
   }
 
   @override
@@ -89,12 +128,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
                       secondary: const Icon(Icons.alarm),
                       title: const Text('หอพัก - โลตัสหน้า ม.อ.'),
                       subtitle: Text('ค่าบริการขั้นต่ำ 15 บาท'),
-                      value: this.valueSecond,
+                      value: valueSecond,
                       onChanged: (bool? value) {
                         setState(() {
-                          this.valueSecond = value!;
+                          valueSecond = value!;
                           value
-                              ? (this.valueFirst
+                              ? (valueFirst
                                   ? valueThird = true
                                   : print('not all'))
                               : valueThird = false;
@@ -133,9 +172,29 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     height: 100,
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => TestPage()));
-                        print("Custommer");
+                        if (valueFirst == true ||
+                            valueSecond == true ||
+                            valueThird == true) {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (_) => TestPage()));
+                          print("Custommer");
+                        }
+                        if (valueFirst == true && valueThird == false) {
+                          String title = "หอพัก - ภายในหมาวิทยาลัย";
+                          ServiceDeliver().setStatus(false, uid, title);
+                          locateData = getLocationData(title);
+                        }
+                        if (valueSecond == true && valueThird == false) {
+                          String title = "หอพัก - โลตัสหน้า ม.อ.";
+                          ServiceDeliver().setStatus(false, uid, title);
+                          locateData = getLocationData(title);
+                        }
+                        if (valueThird == true) {
+                          String title = "รับทุกงาน";
+                          ServiceDeliver().setStatus(false, uid, title);
+                          locateData = getLocationData(title);
+                        }
+                        sendData2api(uid);
                       },
                       child: Card(
                         child: Padding(
@@ -179,14 +238,33 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) {
-                                  return const DeliverHistory();
-                                }),
-                              );
-                              ServiceDeliver().setStatus(true, uid);
-                              ServiceDeliver().updateStatus(true, uid);
+                              if (valueFirst == true ||
+                                  valueSecond == true ||
+                                  valueThird == true) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) {
+                                    return const DeliverHistory();
+                                  }),
+                                );
+                              }
+                              if (valueFirst == true && valueThird == false) {
+                                String title = "หอพัก - ภายในหมาวิทยาลัย";
+                                ServiceDeliver().setStatus(true, uid, title);
+                                ServiceDeliver().updateStatus(true, uid);
+                              }
+                              if (valueSecond == true && valueThird == false) {
+                                String title = "หอพัก - โลตัสหน้า ม.อ.";
+                                ServiceDeliver().setStatus(true, uid, title);
+                                ServiceDeliver().updateStatus(true, uid);
+                              }
+                              if (valueThird == true) {
+                                String title = "รับทุกงาน";
+                                ServiceDeliver().setStatus(true, uid, title);
+                                ServiceDeliver().updateStatus(true, uid);
+                              }
+                              // ServiceDeliver().setStatus(true, uid, "");
+
                               print("save status success");
                             },
                             child: Column(

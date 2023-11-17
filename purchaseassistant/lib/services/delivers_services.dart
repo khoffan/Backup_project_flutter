@@ -118,7 +118,7 @@ class ServiceDeliver {
 
   Future<void> updateStatus(bool status, String uid) async {
     try {
-      if (uid != '' && status != null) {
+      if (uid != '' && status != '') {
         
         await _firestore.collection('deliverPost').doc(uid).update({
           'status': status,
@@ -130,11 +130,22 @@ class ServiceDeliver {
     }
   }
 
-  Future<void> setStatus(bool status, String uid) async{
+  Future<void> setStatus(bool status, String uid, String locate) async{
     try {
-      if (uid != '' && status != '') {
+      String name = "";
+      String stdid = "";
+      if (uid != '') {
+        DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot = await _firestore.collection('userProfile').doc(uid).get();
+        if(getProfilesnapshot.exists){
+          Map<String,dynamic> data = getProfilesnapshot.data()!;
+          name = data['name'];
+          stdid = data['stdid'];
+        }
         Timestamp timestamp = Timestamp.now();
         await _firestore.collection('deliverPost').doc(uid).set({
+          'stdid': stdid,
+          'name': name,
+          'locattion': locate,
           'status': status,
           'date': timestamp
         });

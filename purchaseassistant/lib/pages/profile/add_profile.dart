@@ -79,20 +79,20 @@ class _EditProfileState extends State<EditProfile> {
         phone: phone,
         lname: lname,
       );
+      nameController.clear();
+      roomController.clear();
+      stdidController.clear();
+      dormController.clear();
+      lastnameController.clear();
+      phoneController.clear();
       Navigator.pop(context);
     }
-    print(room);
-    print(name);
-    print(lname);
-    print(dorm);
-    print(phone);
-    print(dropdownValue);
-    nameController.clear();
-    roomController.clear();
-    stdidController.clear();
-    dormController.clear();
-    lastnameController.clear();
-    phoneController.clear();
+    // print(room);
+    // print(name);
+    // print(lname);
+    // print(dorm);
+    // print(phone);
+    // print(dropdownValue);
   }
 
   @override
@@ -106,7 +106,8 @@ class _EditProfileState extends State<EditProfile> {
               appBar: AppBar(title: Text("Error")),
               body: Center(child: Text("${snap.error}")),
             );
-          } else if (snap.connectionState == ConnectionState.done) {
+          }
+          if (snap.hasData) {
             return Scaffold(
               appBar: AppBar(),
               body: Container(
