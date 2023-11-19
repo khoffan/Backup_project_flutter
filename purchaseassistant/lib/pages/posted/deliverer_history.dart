@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:intl/intl.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../utils/update_post.dart';
 import '../profile/profile_screen.dart';
@@ -35,9 +36,10 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     }
   }
 
-  void navigetPOP(){
+  void navigetPOP() {
     Navigator.pop(context);
   }
+
   @override
   void initState() {
     super.initState();
@@ -50,6 +52,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     return Scaffold(
       appBar: AppBar(
         title: Text("History Posted"),
+        backgroundColor: themeBg,
         leading: Builder(
           builder: (context) {
             return IconButton(

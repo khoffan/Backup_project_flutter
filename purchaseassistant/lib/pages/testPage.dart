@@ -15,11 +15,11 @@ class _TestPageState extends State<TestPage> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(
+          const CircularProgressIndicator(),
+          const SizedBox(
             height: 15,
           ),
-          Text("ระบบกำลังจับคู่หาผู้ขับให้กับคุณ"),
+          const Text("ระบบกำลังจับคู่หาผู้ขับให้กับคุณ"),
           TextButton(
               onPressed: () {
                 Navigator.pop(context);

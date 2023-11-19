@@ -50,8 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Image.asset(
                       "assets/logo.png",
-                      height: 200,
-                      width: 200,
+                      height: 280,
+                      width: 280,
                       fit: BoxFit.scaleDown,
                     ),
                     const Center(
@@ -119,24 +119,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                     : null;
                               },
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 10.0,
-                                bottom: 15.0,
-                              ),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: const Text(
-                                    "Forgot password",
-                                    style: TextStyle(
-                                      color: Color(0xFFDA3340),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            const Padding(
+                                padding:
+                                    EdgeInsets.only(top: 10.0, bottom: 15.0)),
+                            // Padding(
+                            //   padding: const EdgeInsets.only(
+                            //     top: 10.0,
+                            //     bottom: 15.0,
+                            //   ),
+                            //   // child: Align(
+                            //   //   alignment: Alignment.centerLeft,
+                            //   //   child: InkWell(
+                            //   //     onTap: () {},
+                            //   //     child: const Text(
+                            //   //       "Forgot password",
+                            //   //       style: TextStyle(
+                            //   //         color: Color(0xFFDA3340),
+                            //   //       ),
+                            //   //     ),
+                            //   //   ),
+                            //   // ),
+                            // ),
                             Container(
                               height: 40.0,
                               width: 160,
@@ -177,7 +180,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ServiceDeliver().setStatus(
                                               false,
                                               FirebaseAuth
-                                                  .instance.currentUser!.uid, " ");
+                                                  .instance.currentUser!.uid,
+                                              " ");
                                           ServiceDeliver().updateStatus(
                                               false,
                                               FirebaseAuth

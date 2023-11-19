@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 
 import 'chat_screen.dart';
 
@@ -28,6 +29,8 @@ class _ListUserchatState extends State<ListUserchat> {
     return Scaffold(
       appBar: AppBar(
         title: Text("รายการผู้ใช้งาน"),
+        leading: null,
+        backgroundColor: themeBg,
       ),
       body: _buildShowUser(),
     );

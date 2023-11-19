@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:intl/intl.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 import '../../utils/ChatBouble.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -57,6 +58,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("${widget.name}"),
+        leading: null,
+        backgroundColor: themeBg,
+        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.add))],
       ),
       body: Container(
         child: Column(
