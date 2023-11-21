@@ -21,7 +21,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   void _NavigateTohome() {
     _onItemTapped(0);
   }
-  
+
   List<Widget> _widgetOptions = [];
 
   void _onItemTapped(int index) {
@@ -32,7 +32,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   void initState() {
     super.initState();
-     _widgetOptions = <Widget>[
+    _widgetOptions = <Widget>[
       DashboardScreen(),
       ListUserchat(),
       QrscannerScreen(),
@@ -48,11 +48,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
         ),
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
+          backgroundColor: Colors.green,
           onPressed: () {
             Navigator.pushNamed(context, AppRoute.service);
-            // Navigator.of(context).push(MaterialPageRoute(
-            //   builder: (context) => const ServiceScreen(),
-            // ));
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -70,7 +68,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
                     MaterialButton(
                       minWidth: 50,
                       onPressed: () {
-                        
                         _onItemTapped(0);
                       },
                       child: Column(
@@ -115,27 +112,27 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    MaterialButton(
-                      minWidth: 50,
-                      onPressed: () {
-                        _onItemTapped(2);
-                      },
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.qr_code_scanner_rounded,
-                                color: _selectedIndex == 2
-                                    ? Colors.green
-                                    : Colors.grey),
-                            Text(
-                              'Scan',
-                              style: TextStyle(
-                                  color: _selectedIndex == 2
-                                      ? Colors.green
-                                      : Colors.grey),
-                            ),
-                          ]),
-                    ),
+                    // MaterialButton(
+                    //   minWidth: 50,
+                    //   onPressed: () {
+                    //     _onItemTapped(2);
+                    //   },
+                    //   child: Column(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       children: [
+                    //         Icon(Icons.qr_code_scanner_rounded,
+                    //             color: _selectedIndex == 2
+                    //                 ? Colors.green
+                    //                 : Colors.grey),
+                    //         Text(
+                    //           'Scan',
+                    //           style: TextStyle(
+                    //               color: _selectedIndex == 2
+                    //                   ? Colors.green
+                    //                   : Colors.grey),
+                    //         ),
+                    //       ]),
+                    // ),
                     MaterialButton(
                       minWidth: 50,
                       onPressed: () {

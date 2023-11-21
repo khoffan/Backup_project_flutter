@@ -27,11 +27,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         centerTitle: true,
         actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search_outlined),
-            color: Colors.amber[800],
-          ),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: const Icon(Icons.search_outlined),
+          //   color: Colors.amber[800],
+          // ),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.notifications_outlined),
@@ -42,7 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           onPressed: () {},
           icon: IconButton(
             color: Colors.amber[800],
-            icon: const Icon(Icons.sensor_occupied_rounded),
+            icon: const Icon(Icons.search_outlined),
             onPressed: () {},
           ),
         ),

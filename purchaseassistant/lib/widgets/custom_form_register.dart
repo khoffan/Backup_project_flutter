@@ -36,15 +36,11 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
             children: [
               Image.asset(
                 "assets/logo.png",
-                height: 200,
-                width: 200,
+                height: 280,
+                width: 280,
                 fit: BoxFit.scaleDown,
               ),
               const Center(
-                // padding: EdgeInsets.only(
-                //   top: 4.0,
-                //   bottom: 2.0,
-                // ),
                 child: Text(
                   "Register now",
                   style: TextStyle(
@@ -95,7 +91,6 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                         decoration: const InputDecoration(
                           filled: true,
                           fillColor: Color.fromARGB(190, 255, 255, 255),
-                          // icon: Icon(Icons.person),
                           hintText: 'Password',
                           border: OutlineInputBorder(),
                           labelText: "Password",
@@ -110,73 +105,59 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                         },
                       ),
                       const SizedBox(height: 20.0),
-                      SizedBox(
-                        height: 40.0,
-                        width: 600,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(20), // <-- Radius
-                              ),
-                              backgroundColor: Colors.red,
-                              padding: const EdgeInsetsDirectional.symmetric(
-                                horizontal: 130,
-                              ),
-                              textStyle: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(20), // <-- Radius
                             ),
-                            onPressed: () async {
-                              if (widget.formKey.currentState!.validate()) {
-                                widget.formKey.currentState?.save();
-                                try {
-                                  await FirebaseAuth.instance
-                                      .createUserWithEmailAndPassword(
-                                    email: widget.register.email!,
-                                    password: widget.register.password!,
-                                  )
-                                      .then((value) {
-                                    widget.formKey.currentState?.reset();
-                                    if (context.mounted) {
-                                      Navigator.pushReplacementNamed(
-                                          context, AppRoute.login);
-                                      // Navigator.pop(context);
-                                      // Navigator.pushReplacement(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //     builder: (context) {
-                                      //       return const LoginScreen();
-                                      //     },
-                                      //   ),
-                                      // );
-                                    }
-                                    Fluttertoast.showToast(
-                                      msg: "สร้างบัญชีผู้ใช้สำเร็จ",
-                                      gravity: ToastGravity.CENTER,
-                                    );
-                                  });
-                                } on FirebaseAuthException catch (e) {
-                                  print(e.code);
-                                  String message = '';
-                                  if (e.code == 'email-already-in-use') {
-                                    message = 'มีชื่อบัญชีผู้ใช้นี้แล้ว';
-                                  } else if (e.code == 'weak-password') {
-                                    message =
-                                        'รหัสผ่านต้องมีความยาว 6 ตัวอักษรขึ้นไป';
-                                  } else {
-                                    message = e.message!;
+                            backgroundColor: Colors.red,
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 40,
+                              vertical: 8,
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (widget.formKey.currentState!.validate()) {
+                              widget.formKey.currentState?.save();
+                              try {
+                                await FirebaseAuth.instance
+                                    .createUserWithEmailAndPassword(
+                                  email: widget.register.email!,
+                                  password: widget.register.password!,
+                                )
+                                    .then((value) {
+                                  widget.formKey.currentState?.reset();
+                                  if (context.mounted) {
+                                    Navigator.pushReplacementNamed(
+                                        context, AppRoute.login);
                                   }
-                                  // print(e.message);
                                   Fluttertoast.showToast(
-                                      msg: message,
-                                      gravity: ToastGravity.CENTER);
+                                    msg: "สร้างบัญชีผู้ใช้สำเร็จ",
+                                    gravity: ToastGravity.CENTER,
+                                  );
+                                });
+                              } on FirebaseAuthException catch (e) {
+                                print(e.code);
+                                String message = '';
+                                if (e.code == 'email-already-in-use') {
+                                  message = 'มีชื่อบัญชีผู้ใช้นี้แล้ว';
+                                } else if (e.code == 'weak-password') {
+                                  message =
+                                      'รหัสผ่านต้องมีความยาว 6 ตัวอักษรขึ้นไป';
+                                } else {
+                                  message = e.message!;
                                 }
+                                Fluttertoast.showToast(
+                                    msg: message, gravity: ToastGravity.CENTER);
                               }
-                            },
-                            child: const Text("Register")),
-                      ),
+                            }
+                          },
+                          child: const Text("Register")),
                     ],
                   )),
 
@@ -190,11 +171,6 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                   TextButton(
                     onPressed: () {
                       Navigator.pushNamed(context, AppRoute.login);
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (ctx) => const LoginScreen(),
-                      //   ),
-                      // );
                     },
                     child: Text(
                       "Login",
