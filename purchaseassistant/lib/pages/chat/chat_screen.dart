@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:purchaseassistant/pages/chat/order_tracker.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:intl/intl.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 import '../../utils/ChatBouble.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -59,16 +60,8 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Text("${widget.name}"),
         leading: null,
-        actions: [
-          IconButton(onPressed: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => OrderTrackers(),
-              ),
-            );
-          }, icon: Icon(Icons.publish)),
-        ],
+        backgroundColor: themeBg,
+        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.add))],
       ),
       body: Container(
         child: Column(
