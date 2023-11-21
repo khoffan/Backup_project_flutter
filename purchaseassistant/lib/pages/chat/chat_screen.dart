@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/pages/chat/order_tracker.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:intl/intl.dart';
 import '../../utils/ChatBouble.dart';
@@ -57,6 +58,17 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("${widget.name}"),
+        leading: null,
+        actions: [
+          IconButton(onPressed: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => OrderTrackers(),
+              ),
+            );
+          }, icon: Icon(Icons.publish)),
+        ],
       ),
       body: Container(
         child: Column(

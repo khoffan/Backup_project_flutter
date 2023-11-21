@@ -166,14 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           Navigator.pushReplacementNamed(
                                               context,
                                               AppRoute.widget_navigation);
-                                          // Navigator.pushReplacement(
-                                          //   context,
-                                          //   MaterialPageRoute(
-                                          //     builder: (context) {
-                                          //       return BottomNavigation();
-                                          //     },
-                                          //   ),
-                                          // );
+                                          
                                           ServiceDeliver().setStatus(
                                               false,
                                               FirebaseAuth
@@ -188,9 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             msg: e.message!,
                                             gravity: ToastGravity.CENTER);
                                       }
-                                      //   print(
-                                      //       "email = ${login.email} password = ${login.password}");
-                                      //   formKey.currentState?.reset();
+                                     
                                     }
                                   },
                                   child: Text("Login")),
@@ -208,12 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             Navigator.pushReplacementNamed(
                                 context, AppRoute.register);
-                            // Navigator.pushReplacement(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (ctx) => const RegisterScreen(),
-                            //   ),
-                            // );
+                            
                           },
                           child: Text(
                             "Register",
