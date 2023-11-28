@@ -6,6 +6,7 @@ import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
 import '../utils/constants.dart';
 
+import 'customer_loading.dart';
 import 'posted/deliverer_history.dart';
 import 'posted/deliverer_screen.dart';
 
@@ -21,6 +22,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String locateData = "";
+  Map<String, dynamic> responseData = {};
 
   bool valueFirst = false;
   bool valueSecond = false;
@@ -64,7 +66,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
         Map<String, dynamic> response =
             await APIMatiching().sendData('matching', userData);
         // Handle the response as needed
-        print(response);
+        print("service_page: ${response}");
+        if (response != {}) {
+          responseData = await APIMatiching().getResponse(response);
+        } else {
+          print("data is null");
+        }
       }
     } catch (e) {
       // Handle errors
@@ -175,9 +182,14 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         if (valueFirst == true ||
                             valueSecond == true ||
                             valueThird == true) {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => TestPage()));
-                          print("Custommer");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CustomerLoadingScreen(
+                                response: responseData,
+                              ),
+                            ),
+                          );
                         }
                         if (valueFirst == true && valueThird == false) {
                           String title = "หอพัก - ภายในหมาวิทยาลัย";

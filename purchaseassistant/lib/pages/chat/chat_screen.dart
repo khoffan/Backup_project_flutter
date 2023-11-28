@@ -61,7 +61,14 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Text("${widget.name}"),
         leading: null,
         backgroundColor: themeBg,
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.add))],
+        actions: [IconButton(onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => OrderTrackers(),
+            ),
+          );
+        }, icon: Icon(Icons.add))],
       ),
       body: Container(
         child: Column(
