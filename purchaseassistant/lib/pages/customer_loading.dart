@@ -19,16 +19,16 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String data = "";
+  DataMatch datamatch = DataMatch();
   void getDataAPI() async {
     if (data != {}) {
       Map<String, dynamic> jsonMap = json.decode(data);
       MatchList matchList  = MatchList.fromJson(jsonMap);
-
       for (Match match in matchList.matches) {
-        print('Customer ID: ${match.customerid}');
-        print('Customer Name: ${match.customername}');
-        print('Rider ID: ${match.riderid}');
-        print('Rider Name: ${match.ridername}');
+        datamatch.cusId = match.customerid;
+        datamatch.cusName = match.customername;
+        datamatch.riderId = match.riderid;
+        datamatch.riderName = match.ridername;
       }
     } else {
       return;
@@ -66,16 +66,29 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
               onPressed: () {
                 if (widget.response != null) {
                   getDataAPI();
-                  Navigator.pop(context);
                 } else {
                   Navigator.pop(context);
                 }
               },
               child: Text("Back to Home"),
             ),
+            SizedBox(
+              height: 20,
+            ),
+            datamatch.cusId != null ? Column(
+              children: [
+                Text("CustomerId : ${datamatch.cusId}"),
+                Text("CustomerName : ${datamatch.cusName}"),
+                Text("RiderId : ${datamatch.riderId}"),
+                Text("RiderName : ${datamatch.riderName}"),
+              ],
+            ) : Container()
+              
           ],
         ),
       ),
     );
+
   }
+  
 }

@@ -4,11 +4,12 @@ class Match {
   String riderid = "";
   String ridername = "";
 
-  Match(
-      {required this.customerid,
-      required this.customername,
-      required this.riderid,
-      required this.ridername});
+  Match({
+    required this.customerid,
+    required this.customername,
+    required this.riderid,
+    required this.ridername,
+  });
 
   factory Match.fromJson(Map<String, dynamic> json) {
     return Match(
@@ -19,7 +20,7 @@ class Match {
   }
 }
 
-class MatchList{
+class MatchList {
   final List<Match> matches;
 
   MatchList({required this.matches});
@@ -31,4 +32,18 @@ class MatchList{
 
     return MatchList(matches: matches);
   }
+}
+
+class DataMatch {
+  String? cusId;
+  String? cusName;
+  String? riderName;
+  String? riderId;
+
+  DataMatch({
+    this.cusId,
+    this.cusName,
+    this.riderId,
+    this.riderName,
+  });
 }
