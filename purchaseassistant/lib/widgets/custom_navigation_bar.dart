@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purchaseassistant/routes/routes.dart';
 import '../pages/chat/chat_user_list.dart';
 import '../pages/dashboard_screen.dart';
@@ -14,7 +15,7 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   int _selectedIndex = 0;
-
+  double amout = 10.0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
@@ -50,7 +51,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
           child: const Icon(Icons.add),
           backgroundColor: Colors.green,
           onPressed: () {
-            Navigator.pushNamed(context, AppRoute.service);
+            if(amout < 20.00){
+              Fluttertoast.showToast(msg: "เงินตงเหลือไม่เพียงพอ กรุณาเติมเงิน",);
+            }
+            else{
+              Navigator.pushNamed(context, AppRoute.service);
+            }
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
