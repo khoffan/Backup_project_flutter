@@ -22,6 +22,8 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   final Future<FirebaseApp> _firebase = Firebase.initializeApp();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
+  CollectionReference amount =
+      FirebaseFirestore.instance.collection('transaction');
 
   String name = "";
   String lname = "";
@@ -212,29 +214,67 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                             ),
                             Row(
                               children: [
-                                OutlinedButton(
-                                  child: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.wallet,
-                                        color: Colors.black,
-                                      ),
-                                      Text(
-                                        '  ยอดเงินคงเหลือ 0.00 บาท',
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 16),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_right_outlined,
-                                        color: Colors.black,
-                                      )
-                                    ],
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pushNamed(
-                                        context, AppRoute.wallet);
+                                StreamBuilder(
+                                  stream: amount
+                                      .doc(auth.currentUser?.uid)
+                                      .collection('details')
+                                      .snapshots(),
+                                  // initialData: initialData,
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot snapshot) {
+                                    return Row(
+                                      children: [
+                                        OutlinedButton(
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.wallet,
+                                                color: Colors.black,
+                                              ),
+                                              Text(
+                                                '  ยอดเงินคงเหลือ 0.00 บาท',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16),
+                                              ),
+                                              Icon(
+                                                Icons.arrow_right_outlined,
+                                                color: Colors.black,
+                                              )
+                                            ],
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                                context, AppRoute.wallet);
+                                          },
+                                        ),
+                                      ],
+                                    );
                                   },
                                 ),
+                                // OutlinedButton(
+                                //   child: Row(
+                                //     children: [
+                                //       Icon(
+                                //         Icons.wallet,
+                                //         color: Colors.black,
+                                //       ),
+                                //       Text(
+                                //         '  ยอดเงินคงเหลือ ${_firestore.collection('transaction').doc(auth.currentUser?.uid).collection('details').snapshots().} บาท',
+                                //         style: TextStyle(
+                                //             color: Colors.black, fontSize: 16),
+                                //       ),
+                                //       Icon(
+                                //         Icons.arrow_right_outlined,
+                                //         color: Colors.black,
+                                //       )
+                                //     ],
+                                //   ),
+                                //   onPressed: () {
+                                //     Navigator.pushNamed(
+                                //         context, AppRoute.wallet);
+                                //   },
+                                // ),
                                 const SizedBox(
                                   height: 40,
                                 )

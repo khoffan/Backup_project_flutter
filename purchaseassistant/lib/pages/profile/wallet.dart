@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/utils/constants.dart';
+
+import 'dart:developer' as developer;
 
 class WalletScreenApp extends StatefulWidget {
   const WalletScreenApp({super.key});
@@ -10,7 +14,9 @@ class WalletScreenApp extends StatefulWidget {
 
 class _WalletScreenAppState extends State<WalletScreenApp> {
   late TextEditingController amountController;
-  String amount = '0.00';
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  int amount = 0;
   @override
   void initState() {
     super.initState();
@@ -63,9 +69,8 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
                       onTap: () async {
                         final amount = await openDialog();
                         if (amount == null || amount.isEmpty) return;
-
                         setState(() {
-                          this.amount = amount;
+                          this.amount += int.tryParse(amount) ?? 0;
                         });
                       },
                       child: Container(
@@ -114,7 +119,18 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
         ),
       );
 
-  void submit() {
+  Future submit() async {
+    await firestore
+        .collection('transaction')
+        .doc(auth.currentUser?.uid)
+        .collection('details')
+        .add({
+      'totalAmount': amount + int.tryParse(amountController.text)!,
+      'amount': int.tryParse(amountController.text)!,
+      'option': 'i',
+      'timeStamp': DateTime.timestamp()
+    });
+
     Navigator.of(context).pop(amountController.text);
     amountController.clear();
   }
