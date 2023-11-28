@@ -23,15 +23,21 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
   void getDataAPI() async {
     if (data != {}) {
       Map<String, dynamic> jsonMap = json.decode(data);
-      MatchList matchList  = MatchList.fromJson(jsonMap);
+      MatchList matchList = MatchList.fromJson(jsonMap);
       for (Match match in matchList.matches) {
         datamatch.cusId = match.customerid;
         datamatch.cusName = match.customername;
         datamatch.riderId = match.riderid;
         datamatch.riderName = match.ridername;
+        datamatch.date = match.date;
+        print("cusid: ${match.customerid}");
+        print("cusname: ${match.customername}");
+        print("riderid: ${match.riderid}");
+        print("ridername: ${match.ridername}");
       }
+      setState(() {});
     } else {
-      return;
+      print("data not found");
     }
   }
 
@@ -39,6 +45,7 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
     super.initState();
     uid = _auth.currentUser!.uid;
     data = json.encode(widget.response);
+    print("Loading_page: ${widget.response}");
   }
 
   @override
@@ -47,48 +54,55 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
       child: Container(
         color: Colors.white,
         alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "Loading",
-              style: TextStyle(fontSize: 20, color: Colors.blue),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (widget.response != null) {
-                  getDataAPI();
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-              child: Text("Back to Home"),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            datamatch.cusId != null ? Column(
-              children: [
-                Text("CustomerId : ${datamatch.cusId}"),
-                Text("CustomerName : ${datamatch.cusName}"),
-                Text("RiderId : ${datamatch.riderId}"),
-                Text("RiderName : ${datamatch.riderName}"),
-              ],
-            ) : Container()
-              
+            datamatch.cusId != null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                    
+                      Text(
+                        "CustomerName : ${datamatch.cusName}",
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      Text(
+                        "RiderName : ${datamatch.riderName}",
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      Text(
+                        "Date : ${datamatch.date}",
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      SizedBox(height: 20,),
+                      Container(
+                        alignment: Alignment.center,
+                        child: ElevatedButton(
+                          style: ButtonStyle(alignment: Alignment.center),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("back to home"),
+                        ),
+                      )
+                    ],
+                  )
+                : ElevatedButton(
+                    onPressed: () {
+                      if (widget.response != null) {
+                        getDataAPI();
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Text("Back to Home"),
+                  ),
           ],
         ),
       ),
     );
-
   }
-  
 }

@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
+
 import 'package:http/http.dart' as http;
 
 class APIMatiching {
-  String baseUrl = "https://64d3-2a09-bac5-5837-137d-00-1f1-20f.ngrok-free.app/api";
+  String baseUrl = "http://3.25.59.0/api";
   Map<String,dynamic> dataresponse = {}; 
   Future<Map<String, dynamic>> sendData(
       String endpoint, Map<String, dynamic> data) async {
@@ -38,7 +38,5 @@ class APIMatiching {
       return {};
     }
   }
-  
-
 
 }

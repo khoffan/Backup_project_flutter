@@ -3,12 +3,14 @@ class Match {
   String customername = "";
   String riderid = "";
   String ridername = "";
+  String date = "";
 
   Match({
     required this.customerid,
     required this.customername,
     required this.riderid,
     required this.ridername,
+    required this.date,
   });
 
   factory Match.fromJson(Map<String, dynamic> json) {
@@ -16,7 +18,8 @@ class Match {
         customerid: json["customer_id"],
         customername: json["customer_name"],
         riderid: json["rider_id"],
-        ridername: json["rider_name"]);
+        ridername: json["rider_name"],
+        date: json["date"]);
   }
 }
 
@@ -39,11 +42,13 @@ class DataMatch {
   String? cusName;
   String? riderName;
   String? riderId;
+  String? date;
 
   DataMatch({
     this.cusId,
     this.cusName,
     this.riderId,
     this.riderName,
+    this.date,
   });
 }

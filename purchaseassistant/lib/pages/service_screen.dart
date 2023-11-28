@@ -66,7 +66,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
         Map<String, dynamic> response =
             await APIMatiching().sendData('matching', userData);
         // Handle the response as needed
-        responseData = await APIMatiching().getResponse(response);
+        print("service_page: ${response}");
+        if (response != {}) {
+          responseData = await APIMatiching().getResponse(response);
+        } else {
+          print("data is null");
+        }
       }
     } catch (e) {
       // Handle errors
@@ -74,7 +79,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
     }
   }
 
- 
   @override
   void initState() {
     super.initState();
@@ -178,9 +182,14 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         if (valueFirst == true ||
                             valueSecond == true ||
                             valueThird == true) {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => CustomerLoadingScreen(response: responseData,)));
-                          
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CustomerLoadingScreen(
+                                response: responseData,
+                              ),
+                            ),
+                          );
                         }
                         if (valueFirst == true && valueThird == false) {
                           String title = "หอพัก - ภายในหมาวิทยาลัย";
