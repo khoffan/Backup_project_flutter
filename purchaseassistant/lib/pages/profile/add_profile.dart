@@ -1,13 +1,9 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../services/profile_services.dart';
-import '../../services/pickerimg.dart';
-import 'profile_screen.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -127,7 +123,7 @@ class _EditProfileState extends State<EditProfile> {
                                     radius: 64,
                                     backgroundImage: NetworkImage(_image!),
                                   )
-                                : CircleAvatar(
+                                : const CircleAvatar(
                                     radius: 64,
                                     backgroundImage: NetworkImage(
                                         'https://i.pinimg.com/564x/37/c6/ee/37c6ee12369d470152c3cbe592477703.jpg'),
@@ -137,7 +133,7 @@ class _EditProfileState extends State<EditProfile> {
                                 onPressed: () {
                                   selectImage();
                                 },
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.add_a_photo,
                                   size: 28,
                                 ),
@@ -147,7 +143,7 @@ class _EditProfileState extends State<EditProfile> {
                             )
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Container(
@@ -162,7 +158,7 @@ class _EditProfileState extends State<EditProfile> {
                                       context, "รหัสนักศึกษา", valueItem),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Row(
@@ -175,7 +171,7 @@ class _EditProfileState extends State<EditProfile> {
                                       context, "นามสกุล", valueItem),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Row(
@@ -188,7 +184,7 @@ class _EditProfileState extends State<EditProfile> {
                                       context, "หมายเลขห้อง", valueItem),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Row(
@@ -204,7 +200,7 @@ class _EditProfileState extends State<EditProfile> {
                             ],
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Container(
@@ -216,11 +212,11 @@ class _EditProfileState extends State<EditProfile> {
                                 if (_image != null) {
                                   saveFile();
                                 } else {
-                                  Text("no data");
+                                  const Text("no data");
                                 }
                               }
                             },
-                            child: Text("Save profile"),
+                            child: const Text("Save profile"),
                           ),
                         ),
                       ],
@@ -230,7 +226,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
             );
           }
-          return Scaffold(
+          return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
             ),

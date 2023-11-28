@@ -1,16 +1,10 @@
-// import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/utils/constants.dart';
-// import 'package:purchaseassistant/models/login.dart';
-// import 'package:purchaseassistant/pages/home_screen.dart';
-
-import '../../services/pickerimg.dart';
+import '../../routes/routes.dart';
 import '../../utils/update_profile.dart';
 import '../auth/login_screen.dart';
 import 'add_profile.dart';
@@ -26,8 +20,10 @@ class ProfileScreenApp extends StatefulWidget {
 
 class _ProfileScreenAppState extends State<ProfileScreenApp> {
   final Future<FirebaseApp> _firebase = Firebase.initializeApp();
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
+  CollectionReference amount =
+      FirebaseFirestore.instance.collection('transaction');
 
   String name = "";
   String lname = "";
@@ -37,14 +33,6 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   String room = "";
   String dorm = "";
   String image = "";
-
-  // Uint8List? _image;
-  // void selectImage() async {
-  //   Uint8List img = await pickerImage(ImageSource.gallery);
-  //   setState(() {
-  //     _image = img;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +48,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
             );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -86,13 +74,19 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                       onPressed: () {
                         widget.myNavigate();
                       },
-                      icon: Icon(Icons.arrow_back)),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                      )),
                   actions: [
                     IconButton(
                       onPressed: () {
-                        showMediabottom(context);
+                        showMediaBottom(context);
                       },
-                      icon: Icon(Icons.dehaze),
+                      icon: const Icon(
+                        Icons.dehaze,
+                        color: Colors.black,
+                      ),
                     )
                   ],
                 ),
@@ -114,7 +108,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                     radius: 64,
                                     backgroundImage: NetworkImage(image),
                                   )
-                                : CircleAvatar(
+                                : const CircleAvatar(
                                     radius: 64,
                                     backgroundImage: NetworkImage(
                                         'https://www.google.com/imgres?imgurl=https%3A%2F%2Fw7.pngwing.com%2Fpngs%2F205%2F731%2Fpng-transparent-default-avatar-thumbnail.png&tbnid=vj1POnmqwlZL-M&vet=12ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ..i&imgrefurl=https%3A%2F%2Fwww.pngwing.com%2Fen%2Fsearch%3Fq%3Ddefault&docid=J354HYBi_egj6M&w=360&h=360&q=default%20avatar%20in%20png&hl=en&ved=2ahUKEwiv1vzRpZqAAxX-0qACHdgLBcgQMygCegUIARDlAQ'),
@@ -139,7 +133,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                     );
                                   }
                                 },
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.add_a_photo,
                                   size: 28,
                                   color: Colors.blue,
@@ -151,7 +145,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                           ],
                         ),
                       ),
-                      Center(
+                      const Center(
                         child: Text(
                           "ข้อมูลโปรไฟล์",
                           style: TextStyle(
@@ -160,16 +154,16 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                       ),
                       Center(
                           child: Container(
-                        padding: EdgeInsets.only(left: 40, top: 30),
+                        padding: const EdgeInsets.only(left: 40, top: 30),
                         child: Column(
                           children: [
                             Row(
                               children: [
                                 Text(
                                   "ชื่อ :  ${name}  ${lname}",
-                                  style: TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 18),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 40,
                                 )
                               ],
@@ -178,9 +172,9 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                               children: [
                                 Text(
                                   "รหัสนักศึกษา :  ${stdid}",
-                                  style: TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 18),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 40,
                                 )
                               ],
@@ -189,9 +183,9 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                               children: [
                                 Text(
                                   "ที่อยู่ :  หอพักอาคาร ${dorm}  ห้อง ${room}",
-                                  style: TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 18),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 40,
                                 )
                               ],
@@ -200,9 +194,9 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                               children: [
                                 Text(
                                   "เพศ :  ${gender}",
-                                  style: TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 18),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 40,
                                 )
                               ],
@@ -211,9 +205,77 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                               children: [
                                 Text(
                                   "เบอร์โทรศัพท์ :  ${phone}",
-                                  style: TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 18),
                                 ),
-                                SizedBox(
+                                const SizedBox(
+                                  height: 40,
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                StreamBuilder(
+                                  stream: amount
+                                      .doc(auth.currentUser?.uid)
+                                      .collection('details')
+                                      .snapshots(),
+                                  // initialData: initialData,
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot snapshot) {
+                                    return Row(
+                                      children: [
+                                        OutlinedButton(
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.wallet,
+                                                color: Colors.black,
+                                              ),
+                                              Text(
+                                                '  ยอดเงินคงเหลือ 0.00 บาท',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16),
+                                              ),
+                                              Icon(
+                                                Icons.arrow_right_outlined,
+                                                color: Colors.black,
+                                              )
+                                            ],
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                                context, AppRoute.wallet);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                // OutlinedButton(
+                                //   child: Row(
+                                //     children: [
+                                //       Icon(
+                                //         Icons.wallet,
+                                //         color: Colors.black,
+                                //       ),
+                                //       Text(
+                                //         '  ยอดเงินคงเหลือ ${_firestore.collection('transaction').doc(auth.currentUser?.uid).collection('details').snapshots().} บาท',
+                                //         style: TextStyle(
+                                //             color: Colors.black, fontSize: 16),
+                                //       ),
+                                //       Icon(
+                                //         Icons.arrow_right_outlined,
+                                //         color: Colors.black,
+                                //       )
+                                //     ],
+                                //   ),
+                                //   onPressed: () {
+                                //     Navigator.pushNamed(
+                                //         context, AppRoute.wallet);
+                                //   },
+                                // ),
+                                const SizedBox(
                                   height: 40,
                                 )
                               ],
@@ -221,75 +283,58 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                           ],
                         ),
                       )),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      //     Navigator.push(
-                      //         context,
-                      //         MaterialPageRoute(
-                      //             builder: (_) => UpdateProfile(
-                      //                   data: data!,
-                      //                   uid: auth.currentUser?.uid ?? '',
-                      //                 )));
-                      //   },
-                      //   child: Text("update profile"),
-                      // ),
                     ],
                   ),
                 ),
               );
             } else {
-              return EditProfile();
+              return const EditProfile();
             }
           } else {
-            return EditProfile();
+            return const EditProfile();
           }
         });
   }
 
-  Future showMediabottom(context) {
+  Future showMediaBottom(context) {
     return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return SizedBox(
           height: 300,
-          child: Container(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10, left: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  buildContentMedia(context, "change password"),
-                  buildContentMedia(context, "About me"),
-                  buildContentMedia(context, "Delete Account"),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    child: Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          auth.signOut().then((value) {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return LoginScreen();
-                            }));
-                            // Navigator.of(context).pushAndRemoveUntil(
-                            //     MaterialPageRoute(
-                            //         builder: (context) => const LoginScreen()),
-                            //     (route) => false);
-                          });
-                          // Add authen logout hare
-                        },
-                        child: Text("Sign Out"),
-                      ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10, left: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                buildContentMedia(context, "change password"),
+                buildContentMedia(context, "About me"),
+                buildContentMedia(context, "Delete Account"),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        auth.signOut().then((value) {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const LoginScreen();
+                          }));
+                        });
+
+                        // Add Logout here
+                      },
+                      child: const Text("Sign Out"),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -304,12 +349,12 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
         child: Padding(
           padding: const EdgeInsets.only(top: 10),
           child: Row(children: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.key)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.key)),
             TextButton(
               onPressed: () {},
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 15, color: Color.fromARGB(255, 56, 56, 56)),
               ),
             ),
@@ -322,11 +367,11 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
         child: Padding(
           padding: const EdgeInsets.only(top: 10),
           child: Row(children: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.person_2)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.person_2)),
             TextButton(
               onPressed: () {},
               child: Text(title,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 15, color: Color.fromARGB(255, 56, 56, 56))),
             ),
           ]),
@@ -340,7 +385,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
           child: Row(children: [
             IconButton(
                 onPressed: () {},
-                icon: Icon(
+                icon: const Icon(
                   Icons.person,
                   color: Colors.red,
                 )),
@@ -348,7 +393,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
               onPressed: () {},
               child: Text(
                 title,
-                style: TextStyle(fontSize: 15, color: Colors.red),
+                style: const TextStyle(fontSize: 15, color: Colors.red),
               ),
             )
           ]),
@@ -357,7 +402,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
     } else {
       return GestureDetector(
         onTap: () {},
-        child: SizedBox(),
+        child: const SizedBox(),
       );
     }
   }
