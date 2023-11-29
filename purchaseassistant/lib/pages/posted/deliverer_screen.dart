@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
@@ -19,7 +20,7 @@ class DelivererScreen extends StatefulWidget {
 class _DelivererScreenState extends State<DelivererScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _txtControllerBody = TextEditingController();
-
+  double amount = 20.00;
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = '';
   Uint8List? _image;
@@ -38,8 +39,13 @@ class _DelivererScreenState extends State<DelivererScreen> {
     try {
       String title = _txtControllerBody.text;
 
-      await ServiceDeliver().saveDeliver(title: title, file: _image!, uid: uid);
-      _txtControllerBody.clear();
+      if (amount > 50.00) {
+        await ServiceDeliver()
+            .saveDeliver(title: title, file: _image!, uid: uid);
+        _txtControllerBody.clear();
+      } else {
+        Fluttertoast.showToast(msg: "กรุณาเติมเงิน");
+      }
       print('success');
     } catch (e) {
       throw e.toString();

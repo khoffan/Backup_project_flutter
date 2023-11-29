@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purchaseassistant/pages/testPage.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
@@ -22,6 +23,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String locateData = "";
+  double amount = 50.00;
   Map<String, dynamic> responseData = {};
 
   bool valueFirst = false;
@@ -187,9 +189,10 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     height: 100,
                     child: InkWell(
                       onTap: () {
-                        if (valueFirst == true ||
-                            valueSecond == true ||
-                            valueThird == true) {
+                        if ((valueFirst == true ||
+                                valueSecond == true ||
+                                valueThird == true) &&
+                            amount > 50.00) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -198,7 +201,18 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               ),
                             ),
                           );
+                        } else {
+                          String msgErr = "";
+                          if (amount < 50.00) {
+                            msgErr = "เงินในวอลเล็ตของคุณไม่เพียงพอ";
+                          } else if (valueFirst == false ||
+                              valueSecond == false ||
+                              valueThird == false) {
+                            msgErr = "กรุณาเลือกสถานที่ที่ต้องการใช้บริการ";
+                          }
+                          Fluttertoast.showToast(msg: msgErr);
                         }
+                        print(amount);
                         if (valueFirst == true && valueThird == false) {
                           String title = "หอพัก - ภายในหมาวิทยาลัย";
                           ServiceDeliver().setStatus(false, uid, title);
@@ -258,16 +272,28 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: TextButton(
                             onPressed: () {
-                              if (valueFirst == true ||
-                                  valueSecond == true ||
-                                  valueThird == true) {
+                              if ((valueFirst == true ||
+                                      valueSecond == true ||
+                                      valueThird == true) &&
+                                  amount > 10.00) {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) {
                                     return const DeliverHistory();
                                   }),
                                 );
+                              } else {
+                                String msgErr2 = "";
+                                if (amount < 10.00) {
+                                  msgErr2 = "เงินในวอลเล็ตของคุณไม่เพียงพอ";
+                                } else if (valueFirst == false ||
+                                    valueSecond == false ||
+                                    valueThird == false) {
+                                  msgErr2 = "กรุณาเลือกสถานที่ที่ต้องการรับส่ง";
+                                }
+                                Fluttertoast.showToast(msg: msgErr2);
                               }
+                              print(amount);
                               if (valueFirst == true && valueThird == false) {
                                 String title = "หอพัก - ภายในหมาวิทยาลัย";
                                 ServiceDeliver().setStatus(true, uid, title);

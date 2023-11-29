@@ -213,36 +213,61 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                 )
                               ],
                             ),
-                            Row(
-                              children: [
-                                OutlinedButton(
-                                  child: Row(
+                            StreamBuilder(
+                              stream: _firestore
+                                  .collection('userProfile')
+                                  .doc(auth.currentUser!.uid)
+                                  .collection("transaction")
+                                  .orderBy("totalAmount", descending: true)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Container(
+                                    alignment: Alignment.center,
+                                    child: Text("${snapshot.error}"),
+                                  );
+                                } else if (snapshot.hasData) {
+                                  QueryDocumentSnapshot doc =
+                                      snapshot.data!.docs.first;
+                                  Map<String, dynamic> data =
+                                      doc.data() as Map<String, dynamic>;
+                                  return Row(
                                     children: [
-                                      Icon(
-                                        Icons.wallet,
-                                        color: Colors.black,
+                                      OutlinedButton(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.wallet,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              '  ยอดเงินคงเหลือ ${data["totalAmount"]}บาท',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16),
+                                            ),
+                                            Icon(
+                                              Icons.arrow_right_outlined,
+                                              color: Colors.black,
+                                            )
+                                          ],
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, AppRoute.wallet);
+                                        },
                                       ),
-                                      Text(
-                                        '  ยอดเงินคงเหลือ 0.00 บาท',
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 16),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_right_outlined,
-                                        color: Colors.black,
+                                      const SizedBox(
+                                        height: 40,
                                       )
                                     ],
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pushNamed(
-                                        context, AppRoute.wallet);
-                                  },
-                                ),
-                                const SizedBox(
-                                  height: 40,
-                                )
-                              ],
-                            ),
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            )
+                        
                           ],
                         ),
                       )),

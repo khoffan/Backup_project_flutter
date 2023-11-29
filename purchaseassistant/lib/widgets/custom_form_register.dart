@@ -142,7 +142,6 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                                   );
                                 });
                               } on FirebaseAuthException catch (e) {
-                                print(e.code);
                                 String message = '';
                                 if (e.code == 'email-already-in-use') {
                                   message = 'มีชื่อบัญชีผู้ใช้นี้แล้ว';
