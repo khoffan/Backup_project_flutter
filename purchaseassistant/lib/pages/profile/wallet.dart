@@ -33,7 +33,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
       appBar: AppBar(
         title: const Text(
           'Wallet',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black, fontSize: 18),
         ),
         backgroundColor: themeBg,
         automaticallyImplyLeading: true,
@@ -48,7 +48,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
               Container(
                 height: 300,
                 width: MediaQuery.of(context).size.width,
-                color: Colors.amber,
+                color: Colors.amber.withOpacity(0.1),
                 child: Column(
                   children: [
                     Padding(
@@ -121,9 +121,9 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
 
   Future submit() async {
     await firestore
-        .collection('transaction')
+        .collection('userProfile')
         .doc(auth.currentUser?.uid)
-        .collection('details')
+        .collection('transaction')
         .add({
       'totalAmount': amount + int.tryParse(amountController.text)!,
       'amount': int.tryParse(amountController.text)!,

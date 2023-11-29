@@ -28,7 +28,10 @@ class _ListUserchatState extends State<ListUserchat> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("รายการผู้ใช้งาน"),
+        title: Text(
+          "แชต",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
         leading: null,
         backgroundColor: themeBg,
       ),

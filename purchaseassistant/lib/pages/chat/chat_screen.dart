@@ -58,17 +58,34 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.name}"),
-        leading: null,
+        title: Text(
+          "${widget.name}",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            )),
         backgroundColor: themeBg,
-        actions: [IconButton(onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => OrderTrackers(),
-            ),
-          );
-        }, icon: Icon(Icons.add))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => OrderTrackers(),
+                  ),
+                );
+              },
+              icon: Icon(
+                Icons.add,
+                color: Colors.black,
+              ))
+        ],
       ),
       body: Container(
         child: Column(

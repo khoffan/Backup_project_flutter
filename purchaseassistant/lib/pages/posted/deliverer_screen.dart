@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../services/delivers_services.dart';
 import '../../services/pickerimg.dart';
@@ -55,13 +56,20 @@ class _DelivererScreenState extends State<DelivererScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Deliverer'),
+        title: Text(
+          'สร้างโพสต์รับหิ้ว',
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        backgroundColor: themeBg,
         leading: GestureDetector(
           onTap: () async {
             await ServiceDeliver().updateStatus(false, uid);
             Navigator.pop(context);
           },
-          child: Icon(Icons.arrow_back_outlined),
+          child: Icon(
+            Icons.arrow_back_outlined,
+            color: Colors.black,
+          ),
         ),
         actions: [
           IconButton(
@@ -136,11 +144,14 @@ class _DelivererScreenState extends State<DelivererScreen> {
               style: TextButton.styleFrom(
                   textStyle: const TextStyle(fontSize: 20),
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.blue),
+                  backgroundColor: themeBg),
               onPressed: () => {
                 if (_formKey.currentState!.validate()) {saveData()}
               },
-              child: Text('อัปโหลด'),
+              child: Text(
+                'อัปโหลด',
+                style: TextStyle(color: Colors.black, fontSize: 16),
+              ),
             ),
           )
         ],

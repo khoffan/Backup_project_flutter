@@ -51,12 +51,18 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     final spacificuser = uid;
     return Scaffold(
       appBar: AppBar(
-        title: Text("History Posted"),
+        title: Text(
+          "ประวัติการโพสต์",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
         backgroundColor: themeBg,
         leading: Builder(
           builder: (context) {
             return IconButton(
-              icon: const Icon(Icons.arrow_back_outlined),
+              icon: const Icon(
+                Icons.arrow_back_outlined,
+                color: Colors.black,
+              ),
               onPressed: () {
                 Navigator.pop(context);
                 ServiceDeliver().updateStatus(false, uid);
@@ -75,7 +81,10 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                 ),
               );
             },
-            icon: Icon(Icons.settings),
+            icon: Icon(
+              Icons.settings,
+              color: Colors.black,
+            ),
           ),
         ],
       ),
@@ -252,6 +261,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
         onPressed: () {
           Navigator.push(
             context,
