@@ -226,7 +226,8 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                     alignment: Alignment.center,
                                     child: Text("${snapshot.error}"),
                                   );
-                                } else if (snapshot.hasData) {
+                                } else if (snapshot.hasData &&
+                                    snapshot.data!.docs.isNotEmpty) {
                                   QueryDocumentSnapshot doc =
                                       snapshot.data!.docs.first;
                                   Map<String, dynamic> data =
@@ -241,7 +242,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                               color: Colors.black,
                                             ),
                                             Text(
-                                              '  ยอดเงินคงเหลือ ${data["totalAmount"]}บาท',
+                                              '  ยอดเงินคงเหลือ ${data["totalAmount"]} บาท',
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 16),
@@ -263,11 +264,40 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                     ],
                                   );
                                 } else {
-                                  return Container();
+                                  return Row(
+                                    children: [
+                                      OutlinedButton(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.wallet,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              '  ยอดเงินคงเหลือ 0.00 บาท',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16),
+                                            ),
+                                            Icon(
+                                              Icons.arrow_right_outlined,
+                                              color: Colors.black,
+                                            )
+                                          ],
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, AppRoute.wallet);
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 40,
+                                      )
+                                    ],
+                                  );
                                 }
                               },
                             )
-                        
                           ],
                         ),
                       )),
