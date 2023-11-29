@@ -1,9 +1,10 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class APIMatiching {
-  String baseUrl = 'https://b190-1-47-7-195.ngrok-free.app/api';
-
+  String baseUrl = "http://3.25.59.0/api";
+  Map<String,dynamic> dataresponse = {}; 
   Future<Map<String, dynamic>> sendData(
       String endpoint, Map<String, dynamic> data) async {
     try {
@@ -15,11 +16,11 @@ class APIMatiching {
         body: jsonEncode(data),
       );
 
-      print('Response Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+      // print('Response Status Code: ${response.statusCode}');
+      // print('Response Body: ${response.body}');
 
-      if (response.statusCode == 201) {
-        return json.decode(response.body);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
       } else {
         throw Exception('Failed to send data');
       }
@@ -28,4 +29,14 @@ class APIMatiching {
       throw Exception('Failed to send data: $e');
     }
   }
+
+  Future<Map<String, dynamic>> getResponse(Map<String, dynamic> data) async {
+    if(data != {}){
+       return data;
+    }
+    else {
+      return {};
+    }
+  }
+
 }

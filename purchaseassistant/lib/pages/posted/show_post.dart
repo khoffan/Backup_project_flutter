@@ -101,8 +101,8 @@ class _ShowPostState extends State<ShowPost> {
                       String lname = deliverUser['lname'] ?? '';
                       String title = deliverUser['title'] ?? '';
                       String imageLink = deliverUser['imageurl'] ?? '';
-                      print("userId: ${userid}");
-                      print("DocId: ${docid}");
+                      // print("userId: ${userid}");
+                      // print("DocId: ${docid}");
                       final Timestamp timestamp = Timestamp.now();
                       final datenow = timestamp.toDate();
                       final date = DateFormat('d-MMM-yyyy').format(datenow);
