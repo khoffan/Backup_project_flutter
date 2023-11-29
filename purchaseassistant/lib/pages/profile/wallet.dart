@@ -121,9 +121,9 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
 
   Future submit() async {
     await firestore
-        .collection('transaction')
+        .collection('userProfile')
         .doc(auth.currentUser?.uid)
-        .collection('details')
+        .collection('transaction')
         .add({
       'totalAmount': amount + int.tryParse(amountController.text)!,
       'amount': int.tryParse(amountController.text)!,
