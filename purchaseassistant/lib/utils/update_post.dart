@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 
 import '../services/pickerimg.dart';
 
@@ -46,8 +47,11 @@ class _UpdatePostedState extends State<UpdatePosted> {
       String title = _txtControllerBody.text;
       String uid = widget.postedUserid;
       String Docid = widget.postedDocid;
-      await ServiceDeliver()
-          .updateDeliver(uid: uid, Docid: Docid, title: title, file: _newImage ?? Uint8List(0));
+      await ServiceDeliver().updateDeliver(
+          uid: uid,
+          Docid: Docid,
+          title: title,
+          file: _newImage ?? Uint8List(0));
       print("update success");
       Navigator.pop(context);
     } catch (e) {
@@ -66,7 +70,19 @@ class _UpdatePostedState extends State<UpdatePosted> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Deliverer'),
+        title: Text(
+          'แก้ไขโพสต์',
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        backgroundColor: themeBg,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            )),
       ),
       body: ListView(
         children: [
@@ -138,11 +154,14 @@ class _UpdatePostedState extends State<UpdatePosted> {
               style: TextButton.styleFrom(
                   textStyle: const TextStyle(fontSize: 20),
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.blue),
+                  backgroundColor: themeBg),
               onPressed: () => {
                 if (_formKey.currentState!.validate()) {updateData()}
               },
-              child: Text('อัปโหลด'),
+              child: Text(
+                'อัปโหลด',
+                style: TextStyle(color: Colors.black, fontSize: 16),
+              ),
             ),
           )
         ],
@@ -150,4 +169,3 @@ class _UpdatePostedState extends State<UpdatePosted> {
     );
   }
 }
-

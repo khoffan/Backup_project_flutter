@@ -6,6 +6,7 @@
 /// To use this package, add `order_tracker_zen` as a dependency in your `pubspec.yaml` file.
 import 'package:flutter/material.dart';
 import 'package:order_tracker_zen/order_tracker_zen.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 
 /// The main function is the entry point of the application.
 
@@ -24,8 +25,19 @@ class _OrderTrackersState extends State<OrderTrackers> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Order Tracker Zen"),
-        backgroundColor: Colors.cyan[400],
+        title: const Text(
+          "ติดตามสถานะคำสั่งซื้อ",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        backgroundColor: themeBg,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            )),
       ),
       body: Center(
         child: Column(

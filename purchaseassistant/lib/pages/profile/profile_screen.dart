@@ -67,6 +67,10 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
               return Scaffold(
                 appBar: AppBar(
                   backgroundColor: themeBg,
+                  title: const Text(
+                    "โปรไฟล์และการตั้งค่า",
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                  ),
                   leading: IconButton(
                       onPressed: () {
                         widget.myNavigate();

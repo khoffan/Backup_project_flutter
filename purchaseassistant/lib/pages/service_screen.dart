@@ -91,9 +91,17 @@ class _ServiceScreenState extends State<ServiceScreen> {
         appBar: AppBar(
           backgroundColor: themeBg,
           title: const Text(
-            "Service Selection",
-            style: TextStyle(color: Colors.black),
+            "เลือกบริการ",
+            style: TextStyle(color: Colors.black, fontSize: 18),
           ),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              )),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
