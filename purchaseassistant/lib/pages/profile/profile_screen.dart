@@ -223,7 +223,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                         color: Colors.black,
                                       ),
                                       Text(
-                                        '  ยอดเงินคงเหลือ 0.00 บาท',
+                                        '  ยอดเงินคงเหลือ ${totalAmount()} บาท',
                                         style: TextStyle(
                                             color: Colors.black, fontSize: 16),
                                       ),
@@ -368,5 +368,35 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
         child: const SizedBox(),
       );
     }
+  }
+
+  dynamic totalAmount() {
+    dynamic a = FirebaseFirestore.instance
+        .collection('userProfile')
+        .doc(auth.currentUser!.uid)
+        .collection('transaction')
+        .doc('JMF6if7kg0Wdxz5nXEWt');
+    return a;
+
+    // StreamBuilder(
+    //     stream: _firestore
+    //         .collection('userProfile')
+    //         .doc(auth.currentUser!.uid)
+    //         .collection('transaction')
+    //         .doc('JMF6if7kg0Wdxz5nXEWt')
+    //         .snapshots(),
+    //     builder: (context, snapshot) {
+    //       if (snapshot.hasError) {
+    //         return Center(
+    //           child: Text("Error: ${snapshot.error}"),
+    //         );
+    //       }
+    //       if (snapshot.connectionState == ConnectionState.waiting) {
+    //         return const Center(
+    //           child: CircularProgressIndicator(),
+    //         );
+    //       }
+    //       return snapshot.data!['amount'];
+    //     });
   }
 }
