@@ -30,7 +30,7 @@ class ServiceDeliver {
       required Uint8List file}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-          await AddProfile().getDataProfile();
+          await ProfileService().getDataProfile();
 
 
       if (getProfilesnapshot.exists) {
@@ -71,7 +71,7 @@ class ServiceDeliver {
       required Uint8List file}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-          await AddProfile().getDataProfile();
+          await ProfileService().getDataProfile();
 
 
       if (getProfilesnapshot.exists) {
@@ -167,6 +167,14 @@ class ServiceDeliver {
         }
         return null;
       }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> delateDeliver(String uid) async {
+    try {
+      await _firestore.collection('deliverPost').doc(uid).delete();
     } catch (e) {
       throw e.toString();
     }

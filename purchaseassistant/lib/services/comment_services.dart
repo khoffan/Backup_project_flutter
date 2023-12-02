@@ -16,7 +16,7 @@ class ServiceComment {
     try {
       // Get user profile data
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-          await AddProfile().getDataProfile();
+          await ProfileService().getDataProfile();
 
       // Get user status
 

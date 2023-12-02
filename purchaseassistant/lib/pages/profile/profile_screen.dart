@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/services/auth_service.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import '../../routes/routes.dart';
 import '../../utils/update_profile.dart';
@@ -338,13 +339,8 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                   margin: const EdgeInsets.all(10),
                   child: Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        auth.signOut().then((value) {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return const LoginScreen();
-                          }));
-                        });
+                      onPressed: () async {
+                        await AuthServices().Signoutuser(context);
 
                         // Add Logout here
                       },
@@ -402,13 +398,21 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
           padding: const EdgeInsets.only(top: 10),
           child: Row(children: [
             IconButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await AuthServices().delateUser(auth.currentUser!.uid);
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (_) => LoginScreen()));
+                },
                 icon: const Icon(
                   Icons.person,
                   color: Colors.red,
                 )),
             TextButton(
-              onPressed: () {},
+              onPressed: () async {
+                await AuthServices().delateUser(auth.currentUser!.uid);
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (_) => LoginScreen()));
+              },
               child: Text(
                 title,
                 style: const TextStyle(fontSize: 15, color: Colors.red),

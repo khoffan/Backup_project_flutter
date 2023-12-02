@@ -52,7 +52,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
       final imageFile = File(pickImagURL.path);
 
       final imageURL =
-          await AddProfile().uploadImagetoStorage('/profileImage', imageFile);
+          await ProfileService().uploadImagetoStorage('/profileImage', imageFile);
 
       setState(() {
         newImage = imageURL;
@@ -71,7 +71,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     String lname = lastnameController.text;
 
     if (imgState == false) {
-      await AddProfile().updateProfile(
+      await ProfileService().updateProfile(
         name: name,
         room: room,
         file: _image,
@@ -82,7 +82,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
         lname: lname,
       );
     } else {
-      await AddProfile().updateProfile(
+      await ProfileService().updateProfile(
         name: name,
         room: room,
         file: newImage!,
