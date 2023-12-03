@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:purchaseassistant/services/auth_service.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
+import 'package:purchaseassistant/services/user_provider.dart';
 import '../../models/login.dart';
 import '../../routes/routes.dart';
 import '../../utils/constants.dart';
@@ -160,6 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (formKey.currentState!.validate()) {
                                       formKey.currentState?.save();
                                       try {
+                                        bool? sts;
                                         await AuthServices().SigninwithEmailandPassword(login.email, login.password);
                                         formKey.currentState?.reset();
                                         Navigator.pushReplacementNamed(context,
@@ -174,6 +176,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                             false,
                                             FirebaseAuth
                                                 .instance.currentUser!.uid);
+                                        UserLogin.setLogin(true);
+                                        sts = await UserLogin.getLogin();
+                                        ServiceDeliver().updateUser(FirebaseAuth
+                                                .instance.currentUser!.uid, sts);
                                       } on FirebaseException catch (e) {
                                         print("ecode: ${e.code}");
                                         String message = "";

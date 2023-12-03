@@ -66,6 +66,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
               onPressed: () {
                 Navigator.pop(context);
                 ServiceDeliver().updateStatus(false, uid);
+                
               },
               tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
             );

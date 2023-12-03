@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:purchaseassistant/services/auth_service.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import '../../routes/routes.dart';
+import '../../services/delivers_services.dart';
+import '../../services/user_provider.dart';
 import '../../utils/update_profile.dart';
 import '../auth/login_screen.dart';
 import 'add_profile.dart';
@@ -20,10 +23,10 @@ class ProfileScreenApp extends StatefulWidget {
 }
 
 class _ProfileScreenAppState extends State<ProfileScreenApp> {
-  final Future<FirebaseApp> _firebase = Firebase.initializeApp();
+  // final Future<FirebaseApp> _firebase = Firebase.initializeApp();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final auth = FirebaseAuth.instance;
-
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  String uid = "";
   String name = "";
   String lname = "";
   String phone = "";
@@ -32,18 +35,48 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   String room = "";
   String dorm = "";
   String image = "";
+  bool? sts;
+  String checkuid() {
+    if (uid == "") {
+      return uid;
+    } else {
+      return uid;
+    }
+  }
+
+  void signoutsubmit() async {
+    await AuthServices().Signoutuser(context);
+    await UserLogin.setLogin(false);
+    sts = await UserLogin.getLogin();
+    if (uid != "") {
+      await ServiceDeliver()
+          .updateUser(uid, sts);
+    }
+    print(sts);
+  }
+
+  void initState() {
+    super.initState();
+    uid = auth.currentUser!.uid;
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: _firestore
-            .collection('userProfile')
-            .doc(auth.currentUser!.uid)
-            .snapshots(),
+        stream:
+            _firestore.collection('userProfile').doc(uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
-              child: Text("Error: ${snapshot.error}"),
+              child: ElevatedButton(
+                onPressed: () async {
+                  await AuthServices().Signoutuser(context);
+                  await UserLogin.setLogin(false);
+                  // Add Logout here
+                },
+                child: const Text("Sign Out"),
+              ),
             );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -54,7 +87,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
           Map<String, dynamic> data = {};
           if (snapshot.hasData && snapshot.data!.exists) {
             final snapData = snapshot.data!.data() as Map<String, dynamic>;
-            if (data != '') {
+            if (data != null) {
               data = snapData;
               name = data["name"] ?? '';
               lname = data["lname"] ?? '';
@@ -74,7 +107,9 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                   ),
                   leading: IconButton(
                       onPressed: () {
-                        widget.myNavigate();
+                        if (widget.myNavigate() != null) {
+                          widget.myNavigate();
+                        }
                       },
                       icon: const Icon(
                         Icons.arrow_back,
@@ -217,7 +252,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                             StreamBuilder(
                               stream: _firestore
                                   .collection('userProfile')
-                                  .doc(auth.currentUser!.uid)
+                                  .doc(uid)
                                   .collection("transaction")
                                   .orderBy("totalAmount", descending: true)
                                   .snapshots(),
@@ -310,10 +345,10 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                 ),
               );
             } else {
-              return const EditProfile();
+              return EditProfile();
             }
           } else {
-            return const EditProfile();
+            return EditProfile();
           }
         });
   }
@@ -340,9 +375,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                   child: Center(
                     child: ElevatedButton(
                       onPressed: () async {
-                        await AuthServices().Signoutuser(context);
-
-                        // Add Logout here
+                        signoutsubmit();
                       },
                       child: const Text("Sign Out"),
                     ),

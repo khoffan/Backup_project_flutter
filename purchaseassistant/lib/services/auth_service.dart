@@ -5,6 +5,7 @@ import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/profile_services.dart';
 
 import '../pages/auth/login_screen.dart';
+import 'user_provider.dart';
 
 class AuthServices {
   Future<UserCredential> SigninwithEmailandPassword(
@@ -49,11 +50,16 @@ class AuthServices {
   }
 
   Future<void> Signoutuser(BuildContext context) async {
-    FirebaseAuth.instance.signOut().then((value) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return const LoginScreen();
-      }));
-    });
+    String uid = await FirebaseAuth.instance.currentUser!.uid;
+    if (uid != "") {
+      await FirebaseAuth.instance.signOut().then((value) {
+        
+        
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const LoginScreen();
+        }));
+      });
+    }
   }
 
   Future<void> delateUser(String uid) async {
