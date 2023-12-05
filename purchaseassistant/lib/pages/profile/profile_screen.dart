@@ -49,8 +49,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
     await UserLogin.setLogin(false);
     sts = await UserLogin.getLogin();
     if (uid != "") {
-      await ServiceDeliver()
-          .updateUser(uid, sts);
+      await ServiceDeliver().updateUser(uid, sts);
     }
     print(sts);
   }
@@ -58,14 +57,12 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   void initState() {
     super.initState();
     uid = auth.currentUser!.uid;
-
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream:
-            _firestore.collection('userProfile').doc(uid).snapshots(),
+        stream: _firestore.collection('userProfile').doc(uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -345,10 +342,38 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                 ),
               );
             } else {
-              return EditProfile();
+              if (uid == "") {
+                return Container(
+                  margin: const EdgeInsets.all(10),
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        signoutsubmit();
+                      },
+                      child: const Text("Sign Out"),
+                    ),
+                  ),
+                );
+              } else {
+                return EditProfile();
+              }
             }
           } else {
-            return EditProfile();
+            if (uid == "") {
+              return Container(
+                margin: const EdgeInsets.all(10),
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      signoutsubmit();
+                    },
+                    child: const Text("Sign Out"),
+                  ),
+                ),
+              );
+            } else {
+              return EditProfile();
+            }
           }
         });
   }

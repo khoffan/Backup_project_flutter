@@ -146,7 +146,19 @@ class ServiceDeliver {
           name = data['name'];
           stdid = data['stdid'];
         }
-        Timestamp timestamp = Timestamp.now();
+        if (status == true) {
+          Timestamp timestamp = Timestamp.now();
+          await _firestore.collection('deliverPost').doc(uid).set({
+            'stdid': stdid,
+            'name': name,
+            'locattion': locate,
+            'role': status,
+            'status': userstatus,
+            'statuswork' : "Active",
+            'date': timestamp
+          });
+        } else {
+          Timestamp timestamp = Timestamp.now();
         await _firestore.collection('deliverPost').doc(uid).set({
           'stdid': stdid,
           'name': name,
@@ -155,6 +167,7 @@ class ServiceDeliver {
           'status': userstatus,
           'date': timestamp
         });
+        }
       }
       print("update success");
     } catch (e) {

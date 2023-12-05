@@ -19,33 +19,56 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String data = "";
-  DataMatch datamatch = DataMatch();
-  void getDataAPI() async {
-    if (data != {}) {
-      Map<String, dynamic> jsonMap = json.decode(data);
-      MatchList matchList = MatchList.fromJson(jsonMap);
+  List<DataMatch> datamatches = [];
+
+  void getDataAPI() {
+    if (data.isNotEmpty) {
+      print("data: ${data}");
+      List<dynamic> jsonList = json.decode(data);
+      MatchList matchList = MatchList.fromJson(jsonList);
+
+      List<DataMatch> dataMatches = [];
+
       for (Match match in matchList.matches) {
-        datamatch.cusId = match.customerid;
-        datamatch.cusName = match.customername;
-        datamatch.riderId = match.riderid;
-        datamatch.riderName = match.ridername;
-        datamatch.date = match.date;
-        print("cusid: ${match.customerid}");
-        print("cusname: ${match.customername}");
-        print("riderid: ${match.riderid}");
-        print("ridername: ${match.ridername}");
+        DataMatch matchData = DataMatch(
+          cusId: match.customerid,
+          cusName: match.customername,
+          riderId: match.riderid,
+          riderName: match.ridername,
+          date: match.date,
+        );
+
+        dataMatches.add(matchData);
       }
-      setState(() {});
+
+      setState(() {
+        datamatches = dataMatches;
+        data = "";
+      });
     } else {
       print("data not found");
+      // Navigator.pop(context);
     }
   }
 
+  // void getRiderslistwithapi() async{
+  //    await APIMatiching().getRiderlist("riderlist");
+  // }
+
+  @override
   void initState() {
     super.initState();
+    data = json.encode(widget.response["matches"]);
     uid = _auth.currentUser!.uid;
-    data = json.encode(widget.response);
-    print("Loading_page: ${widget.response}");
+    getDataAPI();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.response["matches"] = [];
+    data = "";
+    getDataAPI();
   }
 
   @override
@@ -59,47 +82,48 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            datamatch.cusId != null
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                    
-                      Text(
-                        "CustomerName : ${datamatch.cusName}",
-                        style: TextStyle(fontSize: 16, color: Colors.black),
+            for (DataMatch datamatch in datamatches)
+              if (datamatch.cusId != null)
+                Column(
+                  // ... (your existing column properties)
+                  children: [
+                    Text(
+                      "CustomerName : ${datamatch.cusName}",
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                    Text(
+                      "RiderName : ${datamatch.riderName}",
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                    Text(
+                      "Date : ${datamatch.date}",
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      child: ElevatedButton(
+                        style: ButtonStyle(alignment: Alignment.center),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("back to home"),
                       ),
-                      Text(
-                        "RiderName : ${datamatch.riderName}",
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      Text(
-                        "Date : ${datamatch.date}",
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      SizedBox(height: 20,),
-                      Container(
-                        alignment: Alignment.center,
-                        child: ElevatedButton(
-                          style: ButtonStyle(alignment: Alignment.center),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text("back to home"),
-                        ),
-                      )
-                    ],
-                  )
-                : ElevatedButton(
-                    onPressed: () {
-                      if (widget.response != null) {
-                        getDataAPI();
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    },
-                    child: Text("Back to Home"),
-                  ),
+                    )
+                  ],
+                )
+              else
+                Container(child: Text("match data is null "),),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                "Back to Home",
+              ),
+            ),
           ],
         ),
       ),

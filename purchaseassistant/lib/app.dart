@@ -12,7 +12,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: AppRoute.all,
-      home: CheckLogin(),
+      home:  const CheckLogin(),
     );
   }
 }

@@ -62,32 +62,61 @@ class _ListUserchatState extends State<ListUserchat> {
 
   Widget _listUser(DocumentSnapshot docs) {
     Map<String, dynamic> data = docs.data() as Map<String, dynamic>;
-    return Card(
-      child: InkWell(
-        child: SizedBox(
-          width: 100,
-          height: 60,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 64,
-                backgroundImage: NetworkImage(data["imageLink"]),
+
+    return StreamBuilder(
+      stream: _firestore
+          .collection('chat_rooms')
+          .where('recivesid', isEqualTo: docs.id)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text("${snapshot.error}"),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final chatroomid = snapshot.data!.docs;
+
+        // Ensure data exists before accessing its properties
+        if (data.containsKey('imageLink') && data.containsKey('name')) {
+          return Card(
+            child: InkWell(
+              child: SizedBox(
+                width: 100,
+                height: 60,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 64,
+                      backgroundImage: NetworkImage(data["imageLink"]),
+                    ),
+                    Text(data['name']),
+                  ],
+                ),
               ),
-              Text(data['name']),
-            ],
-          ),
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  ChatScreen(reciveuid: docs.id, name: data['name']),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        ChatScreen(reciveuid: docs.id, name: data['name']),
+                  ),
+                );
+              },
             ),
           );
-        },
-      ),
+        } else {
+          // Handle the case where the data is missing or incomplete
+          return Container();
+        }
+      },
     );
   }
 

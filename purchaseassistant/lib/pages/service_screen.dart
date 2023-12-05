@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purchaseassistant/pages/testPage.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
+import '../models/matchmodel.dart';
 import '../utils/constants.dart';
 
 import 'customer_loading.dart';
@@ -25,6 +28,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   String locateData = "";
   double amount = 50.00;
   Map<String, dynamic> responseData = {};
+  Map<String, dynamic> responseDatariders = {};
 
   bool valueFirst = false;
   bool valueSecond = false;
@@ -43,16 +47,14 @@ class _ServiceScreenState extends State<ServiceScreen> {
     return "";
   }
 
-  void sendData2api(String uid) async {
+  void sendData2api(String uid, String locate) async {
     try {
       String name = "";
-      String locate = "";
       if (uid != "") {
         DocumentSnapshot snapshot =
             await _firestore.collection("deliverPost").doc(uid).get();
         final datasnap = snapshot.data()! as Map<String, dynamic>?;
         name = datasnap?["name"] ?? '';
-        locate = datasnap?["locattion"] ?? "";
       }
       if (uid != "" && locate != "") {
         Map<String, dynamic> userData = {
@@ -68,9 +70,21 @@ class _ServiceScreenState extends State<ServiceScreen> {
         Map<String, dynamic> response =
             await APIMatiching().sendData('matching', userData);
         // Handle the response as needed
-        print("service_page: ${response}");
+
         if (response != {}) {
-          responseData = await APIMatiching().getResponse(response);
+          responseData = await APIMatiching().setResponse(response);
+          print("service_page: ${response["matches"]}");
+          String datamatch = json.encode(responseData["matches"]);
+          List<dynamic> jasonmatch = json.decode(datamatch);
+          MatchList matchList = MatchList.fromJson(jasonmatch);
+          for (Match match in matchList.matches) {
+            print('Name: ${match.customername}');
+            print('Date: ${match.date}');
+            print('ID: ${match.customerid}');
+            print('Name: ${match.ridername}');
+            print('ID: ${match.riderid}');
+            await APIMatiching().setMatchingResult(match.customerid!, match.riderid!, match.customername!, match.ridername!);
+          }
         } else {
           print("data is null");
         }
@@ -78,6 +92,32 @@ class _ServiceScreenState extends State<ServiceScreen> {
     } catch (e) {
       // Handle errors
       print('Error: $e, Error: uid or locate is null');
+    }
+  }
+
+  void getRiderlist() async {
+    try {
+      Map<String, dynamic> datariders =
+          await APIMatiching().getRiderlist("riderlist");
+
+      if (datariders != {}) {
+        responseDatariders = await APIMatiching().setResponse(datariders);
+        print("riders-list: ${responseDatariders["riders"]}");
+        String ridersdata = json.encode(responseDatariders["riders"]);
+        List<dynamic> jsonlist = json.decode(ridersdata);
+        Riderlist ridersList = Riderlist.fromJson(jsonlist);
+
+        for (RiderModel rider in ridersList.riders) {
+          print('Name: ${rider.name}');
+          print('Location: ${rider.location}');
+          print('Date: ${rider.date}');
+          print('ID: ${rider.id}');
+          print('Status User: ${rider.statususer}');
+          print('------------');
+        }
+      }
+    } catch (e) {
+      throw e.toString();
     }
   }
 
@@ -189,18 +229,17 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     height: 100,
                     child: InkWell(
                       onTap: () {
-                        if ((valueFirst == true ||
-                                valueSecond == true ||
-                                valueThird == true) &&
-                            amount > 50.00) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => CustomerLoadingScreen(
-                                response: responseData,
-                              ),
-                            ),
-                          );
+                        if (((valueFirst == true || valueSecond == true) &&
+                                valueThird != true) &&
+                            amount > 10.00) {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (_) => CustomerLoadingScreen(
+                          //       response: responseData,
+                          //     ),
+                          //   ),
+                          // );
                         } else {
                           String msgErr = "";
                           if (amount < 50.00) {
@@ -209,26 +248,32 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               valueSecond == false ||
                               valueThird == false) {
                             msgErr = "กรุณาเลือกสถานที่ที่ต้องการใช้บริการ";
+                          } else if (valueThird == true &&
+                              valueFirst == true &&
+                              valueSecond == true) {
+                            msgErr =
+                                "ไม่สามารถเลือกรายการนี้ได้ กรุณาเลือกสถานที่ใหม่";
                           }
                           Fluttertoast.showToast(msg: msgErr);
                         }
                         print(amount);
-                        if (valueFirst == true && valueThird == false) {
+                        if (valueFirst == true &&
+                            valueThird == false &&
+                            valueSecond == false) {
                           String title = "หอพัก - ภายในหมาวิทยาลัย";
                           ServiceDeliver().setStatus(false, uid, title);
                           locateData = getLocationData(title);
+                          sendData2api(uid, title);
                         }
-                        if (valueSecond == true && valueThird == false) {
+                        if (valueSecond == true &&
+                            valueThird == false &&
+                            valueFirst == false) {
                           String title = "หอพัก - โลตัสหน้า ม.อ.";
                           ServiceDeliver().setStatus(false, uid, title);
                           locateData = getLocationData(title);
+                          sendData2api(uid, title);
                         }
-                        if (valueThird == true) {
-                          String title = "รับทุกงาน";
-                          ServiceDeliver().setStatus(false, uid, title);
-                          locateData = getLocationData(title);
-                        }
-                        sendData2api(uid);
+                        // getRiderlist();
                       },
                       child: Card(
                         child: Padding(
