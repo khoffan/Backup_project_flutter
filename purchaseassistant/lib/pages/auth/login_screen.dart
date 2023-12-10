@@ -181,8 +181,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   .instance.currentUser!.uid);
                                         });
                                       } on FirebaseException catch (e) {
+                                        String message = "";
+                                        if(e.code == "wrong-password" || e.code == "user-not-found"){
+                                          message = "username หรือ password ไม่ถูกต้อง";
+                                        }
                                         Fluttertoast.showToast(
-                                            msg: e.message!,
+                                            msg: message,
                                             gravity: ToastGravity.CENTER);
                                       }
                                      

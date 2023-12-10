@@ -17,6 +17,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
   int amount = 0;
+  var totalAmount;
   @override
   void initState() {
     super.initState();
@@ -55,13 +56,36 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
                       padding: const EdgeInsets.only(
                           top: 90, bottom: 40, left: 50, right: 50),
                       child: Center(
-                        child: Text(
-                          'ยอดเงินคงเหลือ $amount บาท',
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500),
-                        ),
+                        child: StreamBuilder(
+                            stream: firestore
+                                .collection('userProfile')
+                                .doc(auth.currentUser!.uid)
+                                .collection("transaction")
+                                .orderBy("totalAmount", descending: true)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Container(
+                                  alignment: Alignment.center,
+                                  child: Text("${snapshot.error}"),
+                                );
+                              } else if (snapshot.hasData &&
+                                  snapshot.data!.docs.isNotEmpty) {
+                                QueryDocumentSnapshot doc =
+                                    snapshot.data!.docs.first;
+                                Map<String, dynamic> data =
+                                    doc.data() as Map<String, dynamic>;
+                                totalAmount = data["totalAmount"] ?? 0;
+                                return Text(
+                                  'ยอดเงินคงเหลือ ${data["totalAmount"]} บาท',
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500),
+                                );
+                              }
+                              return Container();
+                            }),
                       ),
                     ),
                     Center(
@@ -125,7 +149,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
         .doc(auth.currentUser?.uid)
         .collection('transaction')
         .add({
-      'totalAmount': amount + int.tryParse(amountController.text)!,
+      'totalAmount': totalAmount + int.tryParse(amountController.text)!,
       'amount': int.tryParse(amountController.text)!,
       'option': 'i',
       'timeStamp': DateTime.timestamp()

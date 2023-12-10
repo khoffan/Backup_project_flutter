@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,6 +9,7 @@ import '../../routes/routes.dart';
 import '../../utils/update_profile.dart';
 import '../auth/login_screen.dart';
 import 'add_profile.dart';
+import 'package:quickalert/quickalert.dart';
 
 class ProfileScreenApp extends StatefulWidget {
   const ProfileScreenApp({super.key, required this.myNavigate});
@@ -213,36 +215,91 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                 )
                               ],
                             ),
-                            Row(
-                              children: [
-                                OutlinedButton(
-                                  child: Row(
+                            StreamBuilder(
+                              stream: _firestore
+                                  .collection('userProfile')
+                                  .doc(auth.currentUser!.uid)
+                                  .collection("transaction")
+                                  .orderBy("totalAmount", descending: true)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Container(
+                                    alignment: Alignment.center,
+                                    child: Text("${snapshot.error}"),
+                                  );
+                                } else if (snapshot.hasData &&
+                                    snapshot.data!.docs.isNotEmpty) {
+                                  QueryDocumentSnapshot doc =
+                                      snapshot.data!.docs.first;
+                                  Map<String, dynamic> data =
+                                      doc.data() as Map<String, dynamic>;
+                                  return Row(
                                     children: [
-                                      Icon(
-                                        Icons.wallet,
-                                        color: Colors.black,
+                                      OutlinedButton(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.wallet,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              '  ยอดเงินคงเหลือ ${data["totalAmount"]} บาท',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16),
+                                            ),
+                                            Icon(
+                                              Icons.arrow_right_outlined,
+                                              color: Colors.black,
+                                            )
+                                          ],
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, AppRoute.wallet);
+                                        },
                                       ),
-                                      Text(
-                                        '  ยอดเงินคงเหลือ ${totalAmount()} บาท',
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 16),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_right_outlined,
-                                        color: Colors.black,
+                                      const SizedBox(
+                                        height: 40,
                                       )
                                     ],
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pushNamed(
-                                        context, AppRoute.wallet);
-                                  },
-                                ),
-                                const SizedBox(
-                                  height: 40,
-                                )
-                              ],
-                            ),
+                                  );
+                                } else {
+                                  return Row(
+                                    children: [
+                                      OutlinedButton(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.wallet,
+                                              color: Colors.black,
+                                            ),
+                                            Text(
+                                              '  ยอดเงินคงเหลือ 0.00 บาท',
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16),
+                                            ),
+                                            Icon(
+                                              Icons.arrow_right_outlined,
+                                              color: Colors.black,
+                                            )
+                                          ],
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, AppRoute.wallet);
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 40,
+                                      )
+                                    ],
+                                  );
+                                }
+                              },
+                            )
                           ],
                         ),
                       )),
@@ -353,7 +410,23 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                   color: Colors.red,
                 )),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.confirm,
+                  title: 'ต้องการลบบัญชีนี้หรือไม่?',
+                  text: 'เมื่อลบบัญชีแล้วไม่สามารถกู้คืนได้',
+                  headerBackgroundColor: Colors.red,
+                  confirmBtnText: 'ยืนยัน',
+                  cancelBtnText: 'ยกเลิก',
+                  confirmBtnColor: Colors.red,
+                  onConfirmBtnTap: () async => {
+                    await deleteUser(),
+                    await signOut(),
+                    Navigator.pushReplacementNamed(context, AppRoute.login),
+                  },
+                );
+              },
               child: Text(
                 title,
                 style: const TextStyle(fontSize: 15, color: Colors.red),
@@ -370,33 +443,19 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
     }
   }
 
-  dynamic totalAmount() {
-    dynamic a = FirebaseFirestore.instance
-        .collection('userProfile')
-        .doc(auth.currentUser!.uid)
-        .collection('transaction')
-        .doc('JMF6if7kg0Wdxz5nXEWt');
-    return a;
+  Future<void> deleteUser() async {
+    User? user = FirebaseAuth.instance.currentUser;
 
-    // StreamBuilder(
-    //     stream: _firestore
-    //         .collection('userProfile')
-    //         .doc(auth.currentUser!.uid)
-    //         .collection('transaction')
-    //         .doc('JMF6if7kg0Wdxz5nXEWt')
-    //         .snapshots(),
-    //     builder: (context, snapshot) {
-    //       if (snapshot.hasError) {
-    //         return Center(
-    //           child: Text("Error: ${snapshot.error}"),
-    //         );
-    //       }
-    //       if (snapshot.connectionState == ConnectionState.waiting) {
-    //         return const Center(
-    //           child: CircularProgressIndicator(),
-    //         );
-    //       }
-    //       return snapshot.data!['amount'];
-    //     });
+    try {
+      await user?.delete();
+      debugPrint('User account deleted.');
+    } catch (e) {
+      debugPrint('Failed to delete user account: $e');
+    }
+  }
+
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
+    debugPrint('User signed out.');
   }
 }
