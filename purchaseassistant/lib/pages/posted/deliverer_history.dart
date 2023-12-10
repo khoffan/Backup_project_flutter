@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/utils/constants.dart';
@@ -10,7 +11,10 @@ import '../profile/profile_screen.dart';
 import 'deliverer_screen.dart';
 
 class DeliverHistory extends StatefulWidget {
-  const DeliverHistory({super.key});
+  DeliverHistory({Key? key, this.cusid, this.riderid}) : super(key: key);
+
+  final String? cusid;
+  final String? riderid;
 
   @override
   State<DeliverHistory> createState() => _DeliverHistoryState();
@@ -35,6 +39,11 @@ class _DeliverHistoryState extends State<DeliverHistory> {
       throw e.toString();
     }
   }
+
+  void summitMatching() async {
+    print("cusid: ${widget.cusid}, riderid: ${widget.riderid}");
+  }
+
 
   void navigetPOP() {
     Navigator.pop(context);
@@ -66,7 +75,6 @@ class _DeliverHistoryState extends State<DeliverHistory> {
               onPressed: () {
                 Navigator.pop(context);
                 // ServiceDeliver().updateStatus(false, uid);
-                
               },
               tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
             );
@@ -85,6 +93,15 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             icon: Icon(
               Icons.settings,
               color: Colors.black,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              summitMatching();
+            },
+            icon: Icon(
+              FontAwesomeIcons.bell,
+              color: Colors.black26,
             ),
           ),
         ],

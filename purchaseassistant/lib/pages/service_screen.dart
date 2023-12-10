@@ -26,6 +26,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String locateData = "";
+  String cusid = "";
+  String riderid = "";
   double amount = 50.00;
   Map<String, dynamic> responseData = {};
   Map<String, dynamic> responseDatariders = {};
@@ -83,7 +85,10 @@ class _ServiceScreenState extends State<ServiceScreen> {
             print('ID: ${match.customerid}');
             print('Name: ${match.ridername}');
             print('ID: ${match.riderid}');
-            await APIMatiching().setMatchingResult(match.customerid!, match.riderid!, match.customername!, match.ridername!);
+            await APIMatiching().setMatchingResult(match.customerid!,
+                match.riderid!, match.customername!, match.ridername!);
+            cusid = match.customerid!;
+            riderid = match.riderid!;
           }
         } else {
           print("data is null");
@@ -232,14 +237,10 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         if (((valueFirst == true || valueSecond == true) &&
                                 valueThird != true) &&
                             amount > 10.00) {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (_) => CustomerLoadingScreen(
-                          //       response: responseData,
-                          //     ),
-                          //   ),
-                          // );
+                          DeliverHistory(
+                            cusid: cusid,
+                            riderid: riderid,
+                          );
                         } else {
                           String msgErr = "";
                           if (amount < 50.00) {
@@ -262,6 +263,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                             valueSecond == false) {
                           String title = "หอพัก - ภายในหมาวิทยาลัย";
                           ServiceDeliver().setStatus(false, uid, title);
+                          ServiceDeliver().setWorking(uid, false);
                           locateData = getLocationData(title);
                           sendData2api(uid, title);
                         }
@@ -270,6 +272,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                             valueFirst == false) {
                           String title = "หอพัก - โลตัสหน้า ม.อ.";
                           ServiceDeliver().setStatus(false, uid, title);
+                          ServiceDeliver().setWorking(uid, false);
                           locateData = getLocationData(title);
                           sendData2api(uid, title);
                         }
@@ -324,7 +327,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) {
-                                    return const DeliverHistory();
+                                    return DeliverHistory();
                                   }),
                                 );
                               } else {
@@ -343,16 +346,19 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 String title = "หอพัก - ภายในหมาวิทยาลัย";
                                 ServiceDeliver().setStatus(true, uid, title);
                                 ServiceDeliver().updateStatus(true, uid);
+                                ServiceDeliver().setWorking(uid, true);
                               }
                               if (valueSecond == true && valueThird == false) {
                                 String title = "หอพัก - โลตัสหน้า ม.อ.";
                                 ServiceDeliver().setStatus(true, uid, title);
                                 ServiceDeliver().updateStatus(true, uid);
+                                ServiceDeliver().setWorking(uid, true);
                               }
                               if (valueThird == true) {
                                 String title = "รับทุกงาน";
                                 ServiceDeliver().setStatus(true, uid, title);
                                 ServiceDeliver().updateStatus(true, uid);
+                                ServiceDeliver().setWorking(uid, true);
                               }
                               // ServiceDeliver().setStatus(true, uid, "");
 

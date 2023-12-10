@@ -79,4 +79,23 @@ class APIMatiching {
       throw e.code;
     }
   }
+
+  Future<Map<String, dynamic>> getMatchingresult(String cusid, String riderid) async {
+    try {
+      List<String> ids = [cusid,riderid];
+      ids.sort();
+      String match_id = ids.join("_");
+
+
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await _firestore.collection("matchingResult").doc(match_id).get();
+      if (snapshot.exists) {
+        return snapshot.data() ?? {};
+      } else {
+        return {};
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 }

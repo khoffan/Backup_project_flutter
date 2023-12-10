@@ -51,6 +51,7 @@ dependencies:
   http: ^1.1.0
   order_tracker_zen: ^1.0.0+4
   shared_preferences: ^2.2.0
+  font_awesome_flutter: ^10.6.0
 
 dev_dependencies:
   flutter_test:

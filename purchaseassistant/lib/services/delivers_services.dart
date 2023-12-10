@@ -138,6 +138,7 @@ class ServiceDeliver {
         DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
             await _firestore.collection('userProfile').doc(uid).get();
         bool? loginstatus = await UserLogin.getLogin();
+        String? getWork = await getWorkingsts(uid);
         if (loginstatus == true) {
           userstatus = "online";
         }
@@ -154,10 +155,10 @@ class ServiceDeliver {
             'locattion': locate,
             'role': status,
             'status': userstatus,
-            'statuswork' : "Active",
+            'statuswork' : getWork,
             'date': timestamp
           });
-        } else {
+        } else if(status == false){
           Timestamp timestamp = Timestamp.now();
         await _firestore.collection('deliverPost').doc(uid).set({
           'stdid': stdid,
@@ -165,6 +166,7 @@ class ServiceDeliver {
           'locattion': locate,
           'role': status,
           'status': userstatus,
+          'statuswork' : "Null",
           'date': timestamp
         });
         }
@@ -209,6 +211,55 @@ class ServiceDeliver {
     } catch (e) {
       throw e.toString();
     }
+  }
+  
+  Future<void> updateWorking(String uid) async {
+    try {
+      if (uid != "") {
+        await _firestore
+            .collection('deliverPost')
+            .doc(uid)
+            .update({'statuswork': "Inactive"});
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> setWorking(String uid, bool status) async {
+    try {
+      if (uid != "" && status == true) {
+        await _firestore
+            .collection('deliverPost')
+            .doc(uid)
+            .set({'statuswork': "Active"});
+      }
+      if (uid != "" && status == false) {
+        await _firestore
+            .collection('deliverPost')
+            .doc(uid)
+            .set({'statuswork': "Null"});
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<String?> getWorkingsts(String uid) async {
+    try {
+      if (uid != "") {
+        DocumentSnapshot<Map<String, dynamic>> snapshot =
+            await _firestore.collection('deliverPost').doc(uid).get();
+        if (snapshot.exists) {
+          Map<String, dynamic> data = snapshot.data()!;
+          return data['statuswork'] as String;
+        }
+        return null;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+    return null;
   }
 
   Future<void> delateDeliver(String uid) async {
