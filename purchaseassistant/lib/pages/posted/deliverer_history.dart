@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:purchaseassistant/models/matchmodel.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/utils/constants.dart';
@@ -11,10 +12,7 @@ import '../profile/profile_screen.dart';
 import 'deliverer_screen.dart';
 
 class DeliverHistory extends StatefulWidget {
-  DeliverHistory({Key? key, this.cusid, this.riderid}) : super(key: key);
-
-  final String? cusid;
-  final String? riderid;
+  const DeliverHistory({super.key});
 
   @override
   State<DeliverHistory> createState() => _DeliverHistoryState();
@@ -24,6 +22,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
+  DeliveryData deliData = DeliveryData("", "");
 
   void removePosted(String uid, String docid) async {
     try {
@@ -41,7 +40,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
   }
 
   void summitMatching() async {
-    print("cusid: ${widget.cusid}, riderid: ${widget.riderid}");
+    print("cusid: ${deliData.cusid}, riderid: ${deliData.riderid}");
   }
 
 

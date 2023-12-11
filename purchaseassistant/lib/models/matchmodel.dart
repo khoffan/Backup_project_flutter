@@ -97,3 +97,10 @@ class Riderlist {
     return Riderlist(riders: riders);
   }
 }
+
+class DeliveryData {
+  String cusid = "";
+  String riderid = "";
+
+  DeliveryData(this.cusid, this.riderid);
+}

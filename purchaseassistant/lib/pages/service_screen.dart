@@ -26,8 +26,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String locateData = "";
-  String cusid = "";
-  String riderid = "";
+  DeliveryData deliData = DeliveryData("", "");
   double amount = 50.00;
   Map<String, dynamic> responseData = {};
   Map<String, dynamic> responseDatariders = {};
@@ -52,11 +51,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
   void sendData2api(String uid, String locate) async {
     try {
       String name = "";
+
       if (uid != "") {
         DocumentSnapshot snapshot =
             await _firestore.collection("deliverPost").doc(uid).get();
-        final datasnap = snapshot.data()! as Map<String, dynamic>?;
-        name = datasnap?["name"] ?? '';
+        final datasnap = snapshot.data()! as Map<String, dynamic>;
+        name = datasnap["name"] ?? '';
+        print("cusName: ${name}");
       }
       if (uid != "" && locate != "") {
         Map<String, dynamic> userData = {
@@ -80,15 +81,16 @@ class _ServiceScreenState extends State<ServiceScreen> {
           List<dynamic> jasonmatch = json.decode(datamatch);
           MatchList matchList = MatchList.fromJson(jasonmatch);
           for (Match match in matchList.matches) {
-            print('Name: ${match.customername}');
-            print('Date: ${match.date}');
-            print('ID: ${match.customerid}');
-            print('Name: ${match.ridername}');
-            print('ID: ${match.riderid}');
+            // print('Name: ${match.customername}');
+            // print('Date: ${match.date}');
+            // print('ID: ${match.customerid}');
+            // print('Name: ${match.ridername}');
+            // print('ID: ${match.riderid}');
             await APIMatiching().setMatchingResult(match.customerid!,
                 match.riderid!, match.customername!, match.ridername!);
-            cusid = match.customerid!;
-            riderid = match.riderid!;
+            deliData.cusid = match.customerid!;
+            deliData.riderid = match.riderid!;
+            
           }
         } else {
           print("data is null");
@@ -237,10 +239,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         if (((valueFirst == true || valueSecond == true) &&
                                 valueThird != true) &&
                             amount > 10.00) {
-                          DeliverHistory(
-                            cusid: cusid,
-                            riderid: riderid,
-                          );
+                          
                         } else {
                           String msgErr = "";
                           if (amount < 50.00) {
@@ -262,8 +261,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                             valueThird == false &&
                             valueSecond == false) {
                           String title = "หอพัก - ภายในหมาวิทยาลัย";
-                          ServiceDeliver().setStatus(false, uid, title);
-                          ServiceDeliver().setWorking(uid, false);
+                          ServiceDeliver().updateStatus(false, uid, title);
+                          // ServiceDeliver().setWorking(uid, false);
                           locateData = getLocationData(title);
                           sendData2api(uid, title);
                         }
@@ -271,8 +270,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                             valueThird == false &&
                             valueFirst == false) {
                           String title = "หอพัก - โลตัสหน้า ม.อ.";
-                          ServiceDeliver().setStatus(false, uid, title);
-                          ServiceDeliver().setWorking(uid, false);
+                          ServiceDeliver().updateStatus(false, uid, title);
+                          // ServiceDeliver().setWorking(uid, false);
                           locateData = getLocationData(title);
                           sendData2api(uid, title);
                         }
@@ -344,21 +343,18 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               print(amount);
                               if (valueFirst == true && valueThird == false) {
                                 String title = "หอพัก - ภายในหมาวิทยาลัย";
-                                ServiceDeliver().setStatus(true, uid, title);
-                                ServiceDeliver().updateStatus(true, uid);
-                                ServiceDeliver().setWorking(uid, true);
+                                ServiceDeliver().updateStatus(true, uid,title);
+                                ServiceDeliver().updateWorking(uid, true);
                               }
                               if (valueSecond == true && valueThird == false) {
                                 String title = "หอพัก - โลตัสหน้า ม.อ.";
-                                ServiceDeliver().setStatus(true, uid, title);
-                                ServiceDeliver().updateStatus(true, uid);
-                                ServiceDeliver().setWorking(uid, true);
+                                ServiceDeliver().updateStatus(true, uid, title);
+                                ServiceDeliver().updateWorking(uid, true);
                               }
                               if (valueThird == true) {
                                 String title = "รับทุกงาน";
-                                ServiceDeliver().setStatus(true, uid, title);
-                                ServiceDeliver().updateStatus(true, uid);
-                                ServiceDeliver().setWorking(uid, true);
+                                ServiceDeliver().updateStatus(true, uid, title);
+                                ServiceDeliver().updateWorking(uid, true);
                               }
                               // ServiceDeliver().setStatus(true, uid, "");
 

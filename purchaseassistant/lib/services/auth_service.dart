@@ -53,11 +53,11 @@ class AuthServices {
     String uid = await FirebaseAuth.instance.currentUser!.uid;
     if (uid != "") {
       await FirebaseAuth.instance.signOut().then((value) {
-        
-        
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const LoginScreen();
         }));
+      }).catchError((e) {
+        e.toString();
       });
     }
   }

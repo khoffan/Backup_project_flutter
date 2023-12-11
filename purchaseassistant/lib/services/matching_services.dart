@@ -7,7 +7,7 @@ import 'package:purchaseassistant/utils/formatDate.dart';
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class APIMatiching {
-  String baseUrl = "http://3.25.59.0/api";
+  String baseUrl = "https://cdbe-2a09-bac1-6f00-98-00-1f1-1d2.ngrok-free.app/api";
   Map<String, dynamic> dataresponse = {};
   Future<Map<String, dynamic>> sendData(
       String endpoint, Map<String, dynamic> data) async {

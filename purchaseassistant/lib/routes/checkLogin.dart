@@ -5,6 +5,7 @@ import 'package:purchaseassistant/services/auth_service.dart';
 import 'package:purchaseassistant/services/user_provider.dart';
 
 import '../widgets/custom_navigation_bar.dart';
+import 'bypass_login.dart';
 
 class CheckLogin extends StatefulWidget {
   const CheckLogin({super.key});
@@ -18,18 +19,20 @@ class _CheckLoginState extends State<CheckLogin> {
     bool? login = await UserLogin.getLogin();
     if (login == false) {
       Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
-    } else if(login == true){
+    } else if (login == true) {
       Navigator.push(
           context, MaterialPageRoute(builder: (_) => BottomNavigation()));
     } else {
-      Container(
-        child: ElevatedButton(onPressed: () async{
-          await AuthServices().Signoutuser(context);
-        }, child: Text("by pass sign Out")),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BypassLogin(),
+        ),
       );
     }
   }
-  void initState(){
+
+  void initState() {
     super.initState();
     checklogin();
   }

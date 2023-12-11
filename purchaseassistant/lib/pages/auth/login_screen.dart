@@ -162,7 +162,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       formKey.currentState?.save();
                                       try {
                                         bool? sts;
-                                        await AuthServices().SigninwithEmailandPassword(login.email, login.password);
+                                        await AuthServices()
+                                            .SigninwithEmailandPassword(
+                                                login.email, login.password);
                                         formKey.currentState?.reset();
                                         Navigator.pushReplacementNamed(context,
                                             AppRoute.widget_navigation);
@@ -175,11 +177,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ServiceDeliver().updateStatus(
                                             false,
                                             FirebaseAuth
-                                                .instance.currentUser!.uid);
+                                                .instance.currentUser!.uid,
+                                            "");
+                                        ServiceDeliver().setWorking(
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                            false);
                                         UserLogin.setLogin(true);
                                         sts = await UserLogin.getLogin();
-                                        ServiceDeliver().updateUser(FirebaseAuth
-                                                .instance.currentUser!.uid, sts);
+                                        ServiceDeliver().updateUser(
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                            sts);
                                       } on FirebaseException catch (e) {
                                         print("ecode: ${e.code}");
                                         String message = "";
