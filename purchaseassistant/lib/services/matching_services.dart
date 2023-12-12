@@ -7,7 +7,7 @@ import 'package:purchaseassistant/utils/formatDate.dart';
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class APIMatiching {
-  String baseUrl = "https://cdbe-2a09-bac1-6f00-98-00-1f1-1d2.ngrok-free.app/api";
+  String baseUrl = "https://14db-2a09-bac1-6f00-98-00-1f1-1a1.ngrok-free.app/api";
   Map<String, dynamic> dataresponse = {};
   Future<Map<String, dynamic>> sendData(
       String endpoint, Map<String, dynamic> data) async {
@@ -59,9 +59,9 @@ class APIMatiching {
 
   // sett data in firestore
   Future<void> setMatchingResult(
-      String cusid, String riderid, String cusname, String ridername) async {
+      String cusid, String riderid, String cusname, String ridername, String locate) async {
     try {
-      if ((cusname, ridername, cusid, riderid) != "") {
+      if ((cusname, ridername, cusid, riderid, locate) != "") {
         List<String> ids = [cusid, riderid];
         ids.sort();
         String matchid = ids.join("_");
@@ -72,29 +72,64 @@ class APIMatiching {
           "riderid": riderid,
           "cusname": cusname,
           "ridername": ridername,
+          "location": locate,
           "date": datetime
         });
+        print("set data success");
       }
     } on FirebaseException catch (e) {
       throw e.code;
     }
   }
 
-  Future<Map<String, dynamic>> getMatchingresult(String cusid, String riderid) async {
+  Future<List<Map<String, dynamic>>> getMatchingresult() async {
     try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await _firestore.collection("matchingResult").get();
+
+      List<Map<String, dynamic>> result = [];
+
+      for(QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs){
+        List<String> extracid = doc.id.split('_');
+        Map<String, dynamic> data = doc.data();
+        String doccusid = extracid[0];
+        String docriderid = extracid[1];
+        if(data["cusid"] != doccusid || data["riderid"] != docriderid){
+          String doccusid = extracid[1];
+          String docriderid = extracid[0];
+          Map<String, dynamic> resultid = {
+            "cusid": doccusid,
+            "riderid": docriderid,
+          };
+          result.add(resultid);
+        }
+        else {
+          Map<String, dynamic> resultid = {
+            "cusid": doccusid,
+            "riderid": docriderid,
+          };
+          result.add(resultid);
+        }
+      }
+      return result;
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<Map<String,dynamic>> getMatckingData(String cusid, String riderid) async {
+    try{
       List<String> ids = [cusid,riderid];
       ids.sort();
       String match_id = ids.join("_");
 
-
-      DocumentSnapshot<Map<String, dynamic>> snapshot =
-          await _firestore.collection("matchingResult").doc(match_id).get();
-      if (snapshot.exists) {
-        return snapshot.data() ?? {};
-      } else {
-        return {};
+      DocumentSnapshot snapshot = await _firestore.collection("matchingResult").doc(match_id).get();
+      if(snapshot.exists){
+        Map<String, dynamic> data = snapshot.data() as Map<String,dynamic>;
+        return data;
       }
-    } catch (e) {
+      return {};
+    } catch(e){
       throw e.toString();
     }
   }

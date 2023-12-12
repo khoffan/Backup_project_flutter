@@ -3,6 +3,7 @@ class Match {
   String? customername;
   String? riderid;
   String? ridername;
+  String? locate;
   String? date;
 
   Match({
@@ -10,6 +11,7 @@ class Match {
     this.customername,
     this.riderid,
     this.ridername,
+    this.locate,
     this.date,
   });
 
@@ -19,6 +21,7 @@ class Match {
         customername: json["customer_name"],
         riderid: json["rider_id"],
         ridername: json["rider_name"],
+        locate: json["location_match"],
         date: json["date"]);
   }
 
@@ -28,6 +31,7 @@ class Match {
       'customer_name': customername,
       'rider_id': riderid,
       'rider_name': ridername,
+      'location': locate,
       'date': date
     };
   }
@@ -49,6 +53,7 @@ class DataMatch {
   String? cusName;
   String? riderName;
   String? riderId;
+  String? locate;
   String? date;
 
   DataMatch({
@@ -56,6 +61,7 @@ class DataMatch {
     this.cusName,
     this.riderId,
     this.riderName,
+    this.locate,
     this.date,
   });
 }
@@ -99,8 +105,8 @@ class Riderlist {
 }
 
 class DeliveryData {
-  String cusid = "";
-  String riderid = "";
+  String? cusid = "";
+  String? riderid = "";
 
-  DeliveryData(this.cusid, this.riderid);
+  DeliveryData({this.cusid, this.riderid});
 }
