@@ -20,7 +20,7 @@ class DelivererScreen extends StatefulWidget {
 class _DelivererScreenState extends State<DelivererScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _txtControllerBody = TextEditingController();
-  double amount = 20.00;
+  double amount = 300.00;
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = '';
   Uint8List? _image;
@@ -40,11 +40,13 @@ class _DelivererScreenState extends State<DelivererScreen> {
       String title = _txtControllerBody.text;
 
       if (amount > 50.00) {
-        await ServiceDeliver()
-            .saveDeliver(title: title, file: _image!, uid: uid);
+        ServiceDeliver().saveDeliver(title: title, file: _image!, uid: uid);
         _txtControllerBody.clear();
+        Navigator.pop(context);
+        print(amount);
       } else {
         Fluttertoast.showToast(msg: "กรุณาเติมเงิน");
+        print(amount);
       }
       print('success');
     } catch (e) {
@@ -69,7 +71,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
         backgroundColor: themeBg,
         leading: GestureDetector(
           onTap: () async {
-            await ServiceDeliver().updateStatus(false, uid);
+            
             Navigator.pop(context);
           },
           child: Icon(

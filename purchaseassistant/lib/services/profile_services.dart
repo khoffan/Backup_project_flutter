@@ -11,7 +11,7 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final User _user = _auth.currentUser!;
 
-class AddProfile {
+class ProfileService {
   Future<String?> uploadImagetoStorage(String name, File file) async {
    try {
       final ref =
@@ -116,6 +116,14 @@ class AddProfile {
       DocumentSnapshot<Map<String, dynamic>> snapshot = await _firestore.collection('userProfile').doc(_user.uid ?? '').get();
       return snapshot;
     } catch (e){
+      throw e.toString();
+    }
+  }
+
+  Future<void> deleteProfile(String uid) async {
+    try {
+      await _firestore.collection('userProfile').doc(uid).delete();
+    } catch (e) {
       throw e.toString();
     }
   }

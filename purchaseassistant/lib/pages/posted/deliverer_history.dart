@@ -1,8 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:purchaseassistant/Provider/deliverDataProvider.dart';
+import 'package:purchaseassistant/models/matchmodel.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:intl/intl.dart';
+import 'package:purchaseassistant/services/matching_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../utils/update_post.dart';
@@ -10,7 +15,10 @@ import '../profile/profile_screen.dart';
 import 'deliverer_screen.dart';
 
 class DeliverHistory extends StatefulWidget {
-  const DeliverHistory({super.key});
+  DeliverHistory({super.key, this.cusid, this.riderid});
+
+  final String? cusid;
+  final String? riderid;
 
   @override
   State<DeliverHistory> createState() => _DeliverHistoryState();
@@ -20,7 +28,9 @@ class _DeliverHistoryState extends State<DeliverHistory> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
-
+  String cusid = "";
+  String riderid = "";
+  DeliveryData deliData = DeliveryData();
   void removePosted(String uid, String docid) async {
     try {
       await ServiceDeliver().removeDeliverer(uid: uid, docid: docid).then((_) {
@@ -40,6 +50,35 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     Navigator.pop(context);
   }
 
+  int findIndexData(List<Map<String, dynamic>> allData, String targetId) {
+    for (int i = 0; i < allData.length; i++) {
+      if (allData[i]["cusid"] == targetId) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  Future<bool?> submituid1(BuildContext context) async {
+    try {
+      List<Map<String, dynamic>> allData =
+          await APIMatiching().getMatchingresult();
+      for (Map<String, dynamic> data in allData) {
+        int index = findIndexData(allData, uid);
+        if(index != -1){
+          Map<String, dynamic> data = allData[index];
+          if(uid == data["riderid"]){
+            return true;
+          }
+          return false;
+        }
+      }
+      return null;
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -51,43 +90,70 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     final spacificuser = uid;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "ประวัติการโพสต์",
-          style: TextStyle(color: Colors.black, fontSize: 18),
-        ),
-        backgroundColor: themeBg,
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(
-                Icons.arrow_back_outlined,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                ServiceDeliver().updateStatus(false, uid);
-              },
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            );
-          },
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ProfileScreenApp(myNavigate: navigetPOP),
+          title: Text(
+            "ประวัติการโพสต์",
+            style: TextStyle(color: Colors.black, fontSize: 18),
+          ),
+          backgroundColor: themeBg,
+          leading: Builder(
+            builder: (context) {
+              return IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_outlined,
+                  color: Colors.black,
                 ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  // ServiceDeliver().updateStatus(false, uid);
+                },
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
               );
             },
-            icon: Icon(
-              Icons.settings,
-              color: Colors.black,
-            ),
           ),
-        ],
-      ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProfileScreenApp(myNavigate: navigetPOP),
+                  ),
+                );
+              },
+              icon: Icon(
+                Icons.settings,
+                color: Colors.black,
+              ),
+            ),
+            // Consumer<DeliveryDataProvider>(
+            //   builder: (context, provider, chlid) {
+            //     DeliveryData deliveryData = provider.getDeliveryData();
+            //     String cusid = deliveryData.cusid.toString();
+            //     String riderid = deliveryData.riderid.toString();
+            //     return IconButton(
+            //       onPressed: () {
+            //         if (cusid.isNotEmpty && riderid.isNotEmpty) {
+            //           print("cusid: ${cusid}, riderid: ${riderid} -> of 1");
+            //         } else {
+            //           print("data not found of submit 1");
+            //         }
+            //         // Additional logic if needed
+            //         // For example, you can update the UI based on the data
+            //       },
+            //       icon: Icon(
+            //         Icons.notifications,
+            //         color: Colors.black26,
+            //       ),
+            //     );
+            //   },
+            // ),
+            IconButton(
+              onPressed: () {
+                submituid1(context);
+              },
+              icon: Icon(Icons.notifications),
+            ),
+          ]),
       body: StreamBuilder(
         stream: _firestore.collection('deliverPost').snapshots(),
         builder: (context, snapshot) {

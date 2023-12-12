@@ -318,9 +318,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           String msgErr = "";
                           if (amount < 50.00) {
                             msgErr = "เงินในวอลเล็ตของคุณไม่เพียงพอ";
-                          } else if ((valueFirst == false ||
+                          } else if (valueFirst == false ||
                               valueSecond == false ||
-                              valueThird == false)) {
+                              valueThird == false) {
                             msgErr = "กรุณาเลือกสถานที่ที่ต้องการใช้บริการ";
                           } else if (valueThird == true &&
                               valueFirst == true &&

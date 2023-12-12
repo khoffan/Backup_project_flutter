@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/pages/posted/show_post.dart';
+import '../services/auth_service.dart';
+import '../services/user_provider.dart';
 import '../utils/constants.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -14,6 +16,17 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  void bypasssignout() {
+    ElevatedButton(
+      onPressed: () async {
+        await AuthServices().Signoutuser(context);
+        // await UserLogin.setLogin(false);
+        // Add Logout here
+      },
+      child: const Text("Sign Out"),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,18 +36,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
           'Purchase Assistant',
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
+        leading: IconButton(onPressed: () {
+          bypasssignout();
+        }, icon: Icon(Icons.arrow_back)),
         centerTitle: true,
         actions: <Widget>[
-          // IconButton(
-          //   onPressed: () {},
-          //   icon: const Icon(Icons.search_outlined),
-          //   color: Colors.amber[800],
-          // ),
-          // IconButton(
-          //   onPressed: () {},
-          //   icon: const Icon(Icons.notifications_outlined),
-          //   color: Colors.amber[800],
-          // ),
+          IconButton(
+            onPressed: () {
+              bypasssignout();
+            },
+            icon: const Icon(Icons.search_outlined),
+            color: Colors.amber[800],
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.notifications_outlined),
+            color: Colors.amber[800],
+          ),
         ],
         // leading: IconButton(
         //   onPressed: () {},

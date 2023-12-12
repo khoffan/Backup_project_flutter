@@ -42,7 +42,7 @@ class _EditProfileState extends State<EditProfile> {
       final img = File(pickImageURL.path);
 
       final imgurl =
-          await AddProfile().uploadImagetoStorage('/profileImage', img);
+          await ProfileService().uploadImagetoStorage('/profileImage', img);
       setState(() {
         _image = imgurl;
       });
@@ -65,7 +65,7 @@ class _EditProfileState extends State<EditProfile> {
         room.isNotEmpty &&
         phone.isNotEmpty &&
         dropdownValue.isNotEmpty) {
-      await AddProfile().saveProfile(
+      await ProfileService().saveProfile(
         name: name,
         room: room,
         file: _image!,
