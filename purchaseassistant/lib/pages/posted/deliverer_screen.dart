@@ -2,7 +2,9 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../services/delivers_services.dart';
 import '../../services/pickerimg.dart';
@@ -18,7 +20,7 @@ class DelivererScreen extends StatefulWidget {
 class _DelivererScreenState extends State<DelivererScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _txtControllerBody = TextEditingController();
-
+  double amount = 300.00;
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = '';
   Uint8List? _image;
@@ -37,8 +39,15 @@ class _DelivererScreenState extends State<DelivererScreen> {
     try {
       String title = _txtControllerBody.text;
 
-      await ServiceDeliver().saveDeliver(title: title, file: _image!, uid: uid);
-      _txtControllerBody.clear();
+      if (amount > 50.00) {
+        ServiceDeliver().saveDeliver(title: title, file: _image!, uid: uid);
+        _txtControllerBody.clear();
+        Navigator.pop(context);
+        print(amount);
+      } else {
+        Fluttertoast.showToast(msg: "กรุณาเติมเงิน");
+        print(amount);
+      }
       print('success');
     } catch (e) {
       throw e.toString();
@@ -55,13 +64,20 @@ class _DelivererScreenState extends State<DelivererScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Deliverer'),
+        title: Text(
+          'สร้างโพสต์รับหิ้ว',
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        backgroundColor: themeBg,
         leading: GestureDetector(
           onTap: () async {
-            await ServiceDeliver().updateStatus(false, uid);
+            
             Navigator.pop(context);
           },
-          child: Icon(Icons.arrow_back_outlined),
+          child: Icon(
+            Icons.arrow_back_outlined,
+            color: Colors.black,
+          ),
         ),
         actions: [
           IconButton(
@@ -136,11 +152,14 @@ class _DelivererScreenState extends State<DelivererScreen> {
               style: TextButton.styleFrom(
                   textStyle: const TextStyle(fontSize: 20),
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.blue),
+                  backgroundColor: themeBg),
               onPressed: () => {
                 if (_formKey.currentState!.validate()) {saveData()}
               },
-              child: Text('อัปโหลด'),
+              child: Text(
+                'อัปโหลด',
+                style: TextStyle(color: Colors.black, fontSize: 16),
+              ),
             ),
           )
         ],

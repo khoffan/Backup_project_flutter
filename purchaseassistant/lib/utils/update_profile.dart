@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 
 import '../services/profile_services.dart';
 import '../services/pickerimg.dart';
@@ -51,7 +52,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
       final imageFile = File(pickImagURL.path);
 
       final imageURL =
-          await AddProfile().uploadImagetoStorage('/profileImage', imageFile);
+          await ProfileService().uploadImagetoStorage('/profileImage', imageFile);
 
       setState(() {
         newImage = imageURL;
@@ -70,7 +71,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     String lname = lastnameController.text;
 
     if (imgState == false) {
-      await AddProfile().updateProfile(
+      await ProfileService().updateProfile(
         name: name,
         room: room,
         file: _image,
@@ -81,7 +82,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
         lname: lname,
       );
     } else {
-      await AddProfile().updateProfile(
+      await ProfileService().updateProfile(
         name: name,
         room: room,
         file: newImage!,
@@ -124,7 +125,21 @@ class _UpdateProfileState extends State<UpdateProfile> {
           }
           if (snap.hasData) {
             return Scaffold(
-              appBar: AppBar(),
+              appBar: AppBar(
+                title: Text(
+                  'อัพเดทโปรไฟล์',
+                  style: TextStyle(color: Colors.black, fontSize: 18),
+                ),
+                backgroundColor: themeBg,
+                leading: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.black,
+                    )),
+              ),
               body: Container(
                 width: double.infinity,
                 height: double.infinity,
@@ -225,12 +240,19 @@ class _UpdateProfileState extends State<UpdateProfile> {
                           width: 150,
                           padding: const EdgeInsets.symmetric(horizontal: 100),
                           child: ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(themeBg)),
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {
                                 updateProfile();
                               }
                             },
-                            child: Text("Update profile"),
+                            child: Text(
+                              "Update profile",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
+                            ),
                           ),
                         ),
                       ],

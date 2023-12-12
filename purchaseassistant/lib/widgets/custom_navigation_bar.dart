@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:purchaseassistant/pages/auth/login_screen.dart';
 import 'package:purchaseassistant/routes/routes.dart';
 import '../pages/chat/chat_user_list.dart';
 import '../pages/dashboard_screen.dart';
 import '../pages/profile/profile_screen.dart';
 import '../pages/qrScreen.dart';
+import '../services/auth_service.dart';
+import '../services/user_provider.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -31,14 +34,34 @@ class _BottomNavigationState extends State<BottomNavigation> {
     });
   }
 
+  Widget buildSignOutWidget() {
+    return Container(
+      // Customize this container with your sign-out UI
+      child: ElevatedButton(
+        onPressed: () async {
+          await AuthServices().Signoutuser(context);
+          await UserLogin.setLogin(true);
+          Navigator.pushReplacementNamed(context, AppRoute.login);
+        },
+        child: Text("Sign Out"),
+      ),
+    );
+  }
+
   void initState() {
     super.initState();
-    _widgetOptions = <Widget>[
-      DashboardScreen(),
-      ListUserchat(),
-      QrscannerScreen(),
-      ProfileScreenApp(myNavigate: _NavigateTohome),
-    ];
+    assert(_NavigateTohome != null, "Error: _NavigateTohome is null.");
+    if (_NavigateTohome == null) {
+      // If _NavigateTohome is null, navigate to the LoginScreen
+      _widgetOptions = [buildSignOutWidget()];
+    } else {
+      _widgetOptions = <Widget>[
+        DashboardScreen(),
+        ListUserchat(),
+        QrscannerScreen(),
+        ProfileScreenApp(myNavigate: _NavigateTohome),
+      ];
+    }
   }
 
   @override
@@ -51,10 +74,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
           child: const Icon(Icons.add),
           backgroundColor: Colors.green,
           onPressed: () {
-            if(amout < 20.00){
-              Fluttertoast.showToast(msg: "เงินตงเหลือไม่เพียงพอ กรุณาเติมเงิน",);
-            }
-            else{
+            if (amout < 20.00) {
+              Fluttertoast.showToast(
+                msg: "เงินคงเหลือไม่เพียงพอ กรุณาเติมเงิน",
+              );
+              amout += 5;
+            } else {
               Navigator.pushNamed(context, AppRoute.service);
             }
           },

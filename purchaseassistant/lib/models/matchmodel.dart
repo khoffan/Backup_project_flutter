@@ -1,16 +1,18 @@
 class Match {
-  String customerid = "";
-  String customername = "";
-  String riderid = "";
-  String ridername = "";
-  String date = "";
+  String? customerid;
+  String? customername;
+  String? riderid;
+  String? ridername;
+  String? locate;
+  String? date;
 
   Match({
-    required this.customerid,
-    required this.customername,
-    required this.riderid,
-    required this.ridername,
-    required this.date,
+    this.customerid,
+    this.customername,
+    this.riderid,
+    this.ridername,
+    this.locate,
+    this.date,
   });
 
   factory Match.fromJson(Map<String, dynamic> json) {
@@ -19,7 +21,19 @@ class Match {
         customername: json["customer_name"],
         riderid: json["rider_id"],
         ridername: json["rider_name"],
+        locate: json["location_match"],
         date: json["date"]);
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'customer_id': customerid,
+      'customer_name': customername,
+      'rider_id': riderid,
+      'rider_name': ridername,
+      'location': locate,
+      'date': date
+    };
   }
 }
 
@@ -28,11 +42,8 @@ class MatchList {
 
   MatchList({required this.matches});
 
-  factory MatchList.fromJson(Map<String, dynamic> json) {
-    List<dynamic> matchList = json['matches'];
-    List<Match> matches =
-        matchList.map((match) => Match.fromJson(match)).toList();
-
+  factory MatchList.fromJson(List<dynamic> json) {
+    List<Match> matches = json.map((match) => Match.fromJson(match)).toList();
     return MatchList(matches: matches);
   }
 }
@@ -42,6 +53,7 @@ class DataMatch {
   String? cusName;
   String? riderName;
   String? riderId;
+  String? locate;
   String? date;
 
   DataMatch({
@@ -49,6 +61,52 @@ class DataMatch {
     this.cusName,
     this.riderId,
     this.riderName,
+    this.locate,
     this.date,
   });
+}
+
+class RiderModel {
+  String? name;
+  String? location;
+  String? date;
+  String? id;
+  String? statususer;
+
+  RiderModel({
+    this.name,
+    this.location,
+    this.date,
+    this.id,
+    this.statususer,
+  });
+
+  factory RiderModel.fromJson(Map<String, dynamic> json) {
+    return RiderModel(
+      name: json['name'],
+      location: json['location'],
+      date: json['date'],
+      id: json['id'],
+      statususer: json['statususer'],
+    );
+  }
+}
+
+class Riderlist {
+  final List<RiderModel> riders;
+
+  Riderlist({required this.riders});
+
+  factory Riderlist.fromJson(List<dynamic> json) {
+    List<RiderModel> riders =
+        json.map((rider) => RiderModel.fromJson(rider)).toList();
+    return Riderlist(riders: riders);
+  }
+}
+
+class DeliveryData {
+  String? cusid = "";
+  String? riderid = "";
+
+  DeliveryData({this.cusid, this.riderid});
 }

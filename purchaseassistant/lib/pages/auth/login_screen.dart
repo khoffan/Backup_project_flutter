@@ -3,7 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:purchaseassistant/services/auth_service.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
+import 'package:purchaseassistant/services/user_provider.dart';
 import '../../models/login.dart';
 import '../../routes/routes.dart';
 import '../../utils/constants.dart';
@@ -159,33 +161,46 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (formKey.currentState!.validate()) {
                                       formKey.currentState?.save();
                                       try {
-                                        await FirebaseAuth.instance
-                                            .signInWithEmailAndPassword(
-                                          email: login.email!,
-                                          password: login.password!,
-                                        )
-                                            .then((value) {
-                                          formKey.currentState?.reset();
-                                          Navigator.pushReplacementNamed(
-                                              context,
-                                              AppRoute.widget_navigation);
-                                          
-                                          ServiceDeliver().setStatus(
-                                              false,
-                                              FirebaseAuth
-                                                  .instance.currentUser!.uid,
-                                              " ");
-                                          ServiceDeliver().updateStatus(
-                                              false,
-                                              FirebaseAuth
-                                                  .instance.currentUser!.uid);
-                                        });
+                                        bool? sts;
+                                        await AuthServices()
+                                            .SigninwithEmailandPassword(
+                                                login.email, login.password);
+                                        formKey.currentState?.reset();
+                                        Navigator.pushReplacementNamed(context,
+                                            AppRoute.widget_navigation);
+
+                                        ServiceDeliver().setStatus(
+                                            false,
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                            " ");
+                                        ServiceDeliver().updateStatus(
+                                            false,
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                            "");
+                                        ServiceDeliver().setWorking(
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                            false);
+                                        UserLogin.setLogin(true);
+                                        sts = await UserLogin.getLogin();
+                                        ServiceDeliver().updateUser(
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                            sts);
                                       } on FirebaseException catch (e) {
+                                        print("ecode: ${e.code}");
+                                        String message = "";
+                                        if (e.code == "wrong-password" ||
+                                            e.code == "user-not-found") {
+                                          message =
+                                              "username หรือ password ไม่ถูกต้อง";
+                                        }
                                         Fluttertoast.showToast(
-                                            msg: e.message!,
+                                            msg: message,
                                             gravity: ToastGravity.CENTER);
                                       }
-                                     
                                     }
                                   },
                                   child: Text("Login")),
@@ -203,7 +218,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             Navigator.pushReplacementNamed(
                                 context, AppRoute.register);
-                            
                           },
                           child: Text(
                             "Register",

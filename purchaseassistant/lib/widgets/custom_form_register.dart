@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:purchaseassistant/routes/routes.dart';
+import 'package:purchaseassistant/services/auth_service.dart';
 import '../models/login.dart';
 import '../utils/constants.dart';
 
@@ -125,13 +126,10 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                             if (widget.formKey.currentState!.validate()) {
                               widget.formKey.currentState?.save();
                               try {
-                                await FirebaseAuth.instance
-                                    .createUserWithEmailAndPassword(
-                                  email: widget.register.email!,
-                                  password: widget.register.password!,
-                                )
-                                    .then((value) {
-                                  widget.formKey.currentState?.reset();
+                                if(widget.register.email != "" && widget.register.password != ""){
+                                  await AuthServices().registerEmailandPassword(widget.register.email!, widget.register.password!);
+                                }
+                                widget.formKey.currentState?.reset();
                                   if (context.mounted) {
                                     Navigator.pushReplacementNamed(
                                         context, AppRoute.login);
@@ -140,9 +138,7 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                                     msg: "สร้างบัญชีผู้ใช้สำเร็จ",
                                     gravity: ToastGravity.CENTER,
                                   );
-                                });
                               } on FirebaseAuthException catch (e) {
-                                print(e.code);
                                 String message = '';
                                 if (e.code == 'email-already-in-use') {
                                   message = 'มีชื่อบัญชีผู้ใช้นี้แล้ว';

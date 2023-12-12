@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:purchaseassistant/services/profile_services.dart';
+import 'package:purchaseassistant/services/user_provider.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,8 +31,7 @@ class ServiceDeliver {
       required Uint8List file}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-          await AddProfile().getDataProfile();
-
+          await ProfileService().getDataProfile();
 
       if (getProfilesnapshot.exists) {
         Map<String, dynamic> data =
@@ -64,6 +64,7 @@ class ServiceDeliver {
       throw e.toString();
     }
   }
+
   Future<void> updateDeliver(
       {required String uid,
       required String Docid,
@@ -71,8 +72,7 @@ class ServiceDeliver {
       required Uint8List file}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-          await AddProfile().getDataProfile();
-
+          await ProfileService().getDataProfile();
 
       if (getProfilesnapshot.exists) {
         Map<String, dynamic> data =
@@ -91,11 +91,10 @@ class ServiceDeliver {
         });
 
         final deliverRef = _firestore.collection('deliverPost').doc(uid);
-        await deliverRef.collection('deliverContent').doc(Docid).update({
-          'imageurl': imageurl,
-          'title': title,
-          'date': timestamp
-        });
+        await deliverRef
+            .collection('deliverContent')
+            .doc(Docid)
+            .update({'imageurl': imageurl, 'title': title, 'date': timestamp});
         print('save data success');
       }
     } catch (e) {
@@ -103,25 +102,26 @@ class ServiceDeliver {
     }
   }
 
-  Future<void> removeDeliverer({required String uid, required String docid}) async {
-    try{
-      await _firestore.collection('deliverPost').doc(uid).collection('deliverContent').doc(docid).delete();
+  Future<void> removeDeliverer(
+      {required String uid, required String docid}) async {
+    try {
+      await _firestore
+          .collection('deliverPost')
+          .doc(uid)
+          .collection('deliverContent')
+          .doc(docid)
+          .delete();
     } catch (e) {
-
+      throw e.toString();
     }
   }
 
-
-
-  
-
-
-  Future<void> updateStatus(bool status, String uid) async {
+  Future<void> updateStatus(bool status, String uid, String locate) async {
     try {
       if (uid != '' && status != '') {
-        
         await _firestore.collection('deliverPost').doc(uid).update({
-          'status': status,
+          'role': status,
+          'locattion': locate,
         });
       }
       print("update success");
@@ -130,25 +130,49 @@ class ServiceDeliver {
     }
   }
 
-  Future<void> setStatus(bool status, String uid, String locate) async{
+  Future<void> setStatus(bool status, String uid, String locate) async {
     try {
       String name = "";
       String stdid = "";
+      String userstatus = "";
+      
       if (uid != '') {
-        DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot = await _firestore.collection('userProfile').doc(uid).get();
-        if(getProfilesnapshot.exists){
-          Map<String,dynamic> data = getProfilesnapshot.data()!;
+        DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
+            await _firestore.collection('userProfile').doc(uid).get();
+        bool? loginstatus = await UserLogin.getLogin();
+        String? getWork = await getWorkingsts(uid);
+        
+        if (loginstatus == true) {
+          userstatus = "online";
+        }
+        if (getProfilesnapshot.exists) {
+          Map<String, dynamic> data = getProfilesnapshot.data()!;
           name = data['name'];
           stdid = data['stdid'];
         }
-        Timestamp timestamp = Timestamp.now();
+        if (status == true) {
+          Timestamp timestamp = Timestamp.now();
+          await _firestore.collection('deliverPost').doc(uid).set({
+            'stdid': stdid,
+            'name': name,
+            'locattion': locate,
+            'role': status,
+            'status': userstatus,
+            'statuswork' : getWork,
+            'date': timestamp
+          });
+        } else if(status == false){
+          Timestamp timestamp = Timestamp.now();
         await _firestore.collection('deliverPost').doc(uid).set({
           'stdid': stdid,
           'name': name,
           'locattion': locate,
-          'status': status,
+          'role': status,
+          'status': userstatus,
+          'statuswork' : "Null",
           'date': timestamp
         });
+        }
       }
       print("update success");
     } catch (e) {
@@ -163,10 +187,94 @@ class ServiceDeliver {
             await _firestore.collection('deliverPost').doc(uid).get();
         if (snapshot.exists) {
           Map<String, dynamic> data = snapshot.data()!;
-          return data['status'] as bool;
+          return data['role'] as bool;
         }
         return null;
       }
+    } catch (e) {
+      throw e.toString();
+    }
+    return null;
+  }
+
+  Future<void> updateUser(String uid, bool? userstatus) async {
+    try {
+      if (uid != "") {
+        if (userstatus == false) {
+          await _firestore
+              .collection('deliverPost')
+              .doc(uid)
+              .update({'status': "offline"});
+        } else {
+          await _firestore
+              .collection('deliverPost')
+              .doc(uid)
+              .update({'status': "online"});
+        }
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  
+  Future<void> updateWorking(String uid, bool status) async {
+    try {
+      if (uid != "" && status == true) {
+        await _firestore
+            .collection('deliverPost')
+            .doc(uid)
+            .update({'statuswork': "Active"});
+      }
+      if (uid != "" && status == false) {
+        await _firestore
+            .collection('deliverPost')
+            .doc(uid)
+            .update({'statuswork': "DeActive"});
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> setWorking(String uid, bool status) async {
+    try {
+      if (uid != "" && status == true) {
+        await _firestore
+            .collection('deliverPost')
+            .doc(uid)
+            .set({'statuswork': "Active"});
+      }
+      if (uid != "" && status == false) {
+        await _firestore
+            .collection('deliverPost')
+            .doc(uid)
+            .set({'statuswork': "Null"});
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<String?> getWorkingsts(String uid) async {
+    try {
+      if (uid != "") {
+        DocumentSnapshot<Map<String, dynamic>> snapshot =
+            await _firestore.collection('deliverPost').doc(uid).get();
+        if (snapshot.exists) {
+          Map<String, dynamic> data = snapshot.data()!;
+          return data['statuswork'] as String;
+        }
+        return null;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+    return null;
+  }
+
+  Future<void> delateDeliver(String uid) async {
+    try {
+      await _firestore.collection('deliverPost').doc(uid).delete();
     } catch (e) {
       throw e.toString();
     }
