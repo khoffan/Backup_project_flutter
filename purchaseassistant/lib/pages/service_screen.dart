@@ -69,9 +69,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
     }
   }
 
-  int findIndexData(List<Map<String, dynamic>> allData, String targetId){
-    for(int i = 0 ; i <allData.length ; i++){
-      if(allData[i]["cusid"] == targetId){
+  int findIndexData(List<Map<String, dynamic>> allData, String targetId) {
+    for (int i = 0; i < allData.length; i++) {
+      if (allData[i]["cusid"] == targetId) {
         return i;
       }
     }
@@ -89,23 +89,23 @@ class _ServiceScreenState extends State<ServiceScreen> {
         for (Map<String, dynamic> data in allData) {
           int index = findIndexData(allData, uid);
           print(index);
-          if(index != -1){
+          if (index != -1) {
             Map<String, dynamic> data = allData[index];
             if (uid == data["cusid"]) {
-            print(data["cusid"]);
-            Map<String, dynamic> result = await APIMatiching()
-                .getMatckingData(data["cusid"], data["riderid"]);
-            bool? sts = await submituid1(context, result['cusid']);
-            if (sts == true) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => CustomerLoadingScreen(
-                          riderName: result["ridername"],
-                          riderid: result["riderid"],
-                          submitOrder: sts)));
+              print(data["cusid"]);
+              Map<String, dynamic> result = await APIMatiching()
+                  .getMatckingData(data["cusid"], data["riderid"]);
+              bool? sts = await submituid1(context, result['cusid']);
+              if (sts == true) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => CustomerLoadingScreen(
+                            riderName: result["ridername"],
+                            riderid: result["riderid"],
+                            submitOrder: sts)));
+              }
             }
-          }
           }
         }
         return;
