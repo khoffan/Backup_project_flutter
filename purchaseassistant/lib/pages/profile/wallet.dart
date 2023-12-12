@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +51,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
               Container(
                 height: 300,
                 width: MediaQuery.of(context).size.width,
-                color: Colors.amber.withOpacity(0.1),
+                color: themeBg.withRed(200),
                 child: Column(
                   children: [
                     Padding(
@@ -84,7 +86,18 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
                                       fontWeight: FontWeight.w500),
                                 );
                               }
-                              return Container();
+                              totalAmount = 0.00;
+                              debugPrint(
+                                  'ccccccc ->>>> ${totalAmount.runtimeType}');
+                              return Container(
+                                child: Text(
+                                  'ยอดเงินคงเหลือ 0.00 บาท',
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              );
                             }),
                       ),
                     ),

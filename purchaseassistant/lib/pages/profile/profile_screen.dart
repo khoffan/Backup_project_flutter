@@ -99,7 +99,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        color: Colors.amber.withOpacity(0.1),
+                        color: themeBg.withRed(200),
                         padding: const EdgeInsets.only(top: 40, bottom: 40),
                         margin: const EdgeInsets.only(bottom: 20.0),
                         width: double.infinity,
