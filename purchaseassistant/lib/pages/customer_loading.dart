@@ -10,11 +10,12 @@ import 'package:purchaseassistant/services/matching_services.dart';
 
 class CustomerLoadingScreen extends StatefulWidget {
   CustomerLoadingScreen(
-      {super.key, this.submitOrder, this.riderid, this.riderName});
+      {super.key, this.currid, this.currname});
 
-  final bool? submitOrder;
-  final String? riderid;
-  final String? riderName;
+  bool? submitOrder;
+  bool? currStatus;
+  final String? currid;
+  final String? currname;
 
   @override
   State<CustomerLoadingScreen> createState() => _CustomerLoadingScreenState();
@@ -24,17 +25,18 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
-  String riderid = "";
-  String ridername = "";
-  bool? riderSts;
+  String currid = "";
+  String currname = "";
+  bool? submitOrder;
+  bool? currstatus;
 
   void connectChatScreen(BuildContext context) async {
     while (true) {
-      if (riderSts == true && ridername != "" && riderid != "") {
+      if (currstatus == true && submitOrder == true && currname != "" && currid != "") {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ChatScreen(reciveuid: riderid, name: ridername),
+            builder: (_) => ChatScreen(reciveuid: currid, name: currname),
           ),
         );
       }
@@ -47,9 +49,8 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
     super.initState();
     if (_auth.currentUser != null) {
       uid = _auth.currentUser!.uid;
-      riderSts = widget.submitOrder!;
-      riderid = widget.riderid!;
-      ridername = widget.riderName!;
+      currid = widget.currid!;
+      currname = widget.currname!;
 
       connectChatScreen(context);
     } else {

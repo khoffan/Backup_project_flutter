@@ -53,7 +53,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
     return "";
   }
 
-  Future<bool?> submituid1(BuildContext context, String curcusid) async {
+  bool? submituid1(BuildContext context, String curcusid) {
     try {
       // List<Map<String, dynamic>> allData =
       //     await APIMatiching().getMatchingresult();
@@ -95,16 +95,18 @@ class _ServiceScreenState extends State<ServiceScreen> {
               print(data["cusid"]);
               Map<String, dynamic> result = await APIMatiching()
                   .getMatckingData(data["cusid"], data["riderid"]);
-              bool? sts = await submituid1(context, result['cusid']);
-              if (sts == true) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => CustomerLoadingScreen(
-                            riderName: result["ridername"],
-                            riderid: result["riderid"],
-                            submitOrder: sts)));
-              }
+              bool? sts = submituid1(context, result['cusid']);
+              print(sts);
+              bool? status = await APIMatiching().getCustomerStatus(sts, result["cusid"], result["riderid"]);
+              // if (status == true) {
+              //   Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //           builder: (_) => CustomerLoadingScreen(
+              //               currid: result["ridername"],
+              //               currname: result["riderid"],
+              //               currStatus: sts)));
+              // }
             }
           }
         }
@@ -161,9 +163,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
             // print('locate: ${match.locate}');
             APIMatiching().setMatchingResult(match.customerid!, match.riderid!,
                 match.customername!, match.ridername!, match.locate!);
-            cusid = match.customerid!;
-            riderid = match.riderid!;
-
+            cusid = match.customerid ?? "";
+            riderid = match.riderid ?? "";
+            if ((cusid, riderid) != "") {
+              List<String> dataid = [cusid, riderid];
+              Provider.of<DeliveryDataProvider>(context, listen: false)
+                  .updateDeliveryData(dataid);
+            }
             // DeliverHistory(cusid: cusid,riderid: riderid,);
           }
         } else {

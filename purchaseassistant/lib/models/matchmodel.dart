@@ -105,8 +105,15 @@ class Riderlist {
 }
 
 class DeliveryData {
-  String? cusid = "";
-  String? riderid = "";
+  String? cusid;
+  String? riderid;
 
   DeliveryData({this.cusid, this.riderid});
+
+  List<String> getDeliveryId(){
+    return [
+      cusid ?? '',
+      riderid ?? '',
+    ];
+  }
 }
