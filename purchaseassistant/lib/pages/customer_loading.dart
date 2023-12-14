@@ -9,13 +9,10 @@ import 'package:purchaseassistant/pages/chat/chat_screen.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
 
 class CustomerLoadingScreen extends StatefulWidget {
-  CustomerLoadingScreen(
-      {super.key, this.currid, this.currname});
+  CustomerLoadingScreen({super.key, this.currid, this.recivefId});
 
-  bool? submitOrder;
-  bool? currStatus;
   final String? currid;
-  final String? currname;
+  final String? recivefId;
 
   @override
   State<CustomerLoadingScreen> createState() => _CustomerLoadingScreenState();
@@ -26,21 +23,11 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String currid = "";
-  String currname = "";
-  bool? submitOrder;
-  bool? currstatus;
+  String recivedId = "";
 
-  void connectChatScreen(BuildContext context) async {
-    while (true) {
-      if (currstatus == true && submitOrder == true && currname != "" && currid != "") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ChatScreen(reciveuid: currid, name: currname),
-          ),
-        );
-      }
-      await Future.delayed(Duration(seconds: 1));
+  void connectMatchingResult(BuildContext context) async {
+    if ((uid, currid, recivedId) != "") {
+      
     }
   }
 
@@ -49,10 +36,10 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
     super.initState();
     if (_auth.currentUser != null) {
       uid = _auth.currentUser!.uid;
-      currid = widget.currid!;
-      currname = widget.currname!;
+      currid = widget.currid ?? "";
+      recivedId = widget.recivefId ?? '';
 
-      connectChatScreen(context);
+      connectMatchingResult(context);
     } else {
       // Handle the case where _auth.currentUser is null, perhaps redirect to login
       // or take appropriate action for your application.

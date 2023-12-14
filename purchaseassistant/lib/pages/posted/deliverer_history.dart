@@ -74,35 +74,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
   }
 
   void confrimeOrder(BuildContext context) async {
-    try {
-      List<Map<String, dynamic>> allData =
-          await APIMatiching().getMatchingresult();
-      print(allData);
-      for (Map<String, dynamic> data in allData) {
-        int index = findIndexData(allData, uid);
-        print(index);
-        if (index != -1) {
-          Map<String, dynamic> data = allData[index];
-          if (uid == data["riderid"]) {
-            print(data["riderid"]);
-            riderid = data["riderid"];
-            Map<String, dynamic> result = await APIMatiching()
-                .getMatckingData(data["cusid"], data["riderid"]);
-            bool? sts = submituid1(context, riderid);
-            bool? satus = await APIMatiching().getRiderStatus(sts, data["cusid"], riderid);
-            // if (satus == true) {
-            //   Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //           builder: (_) => CustomerLoadingScreen(
-            //               currid: result["ridername"],
-            //               currname: result["riderid"],
-            //               submitOrder: sts)));
-            // }
-          }
-        }
-      }
-    } catch (e) {
+    try {} catch (e) {
       throw e.toString();
     }
   }
@@ -115,7 +87,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<DeliveryDataProvider>(context);
+    // final data = Provider.of<DeliveryDataProvider>(context);
     final spacificuser = uid;
     return Scaffold(
       appBar: AppBar(
