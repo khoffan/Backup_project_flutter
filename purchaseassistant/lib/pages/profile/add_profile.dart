@@ -83,6 +83,7 @@ class _EditProfileState extends State<EditProfile> {
       lastnameController.clear();
       phoneController.clear();
       Navigator.pop(context);
+      
     }
     // print(room);
     // print(name);
