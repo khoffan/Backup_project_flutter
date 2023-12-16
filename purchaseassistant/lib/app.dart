@@ -11,12 +11,8 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => DeliveryDataProvider(),
-        ),
-      ],
+    return ChangeNotifierProvider(
+      create: (context) => DeliveryDataProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         routes: AppRoute.all,

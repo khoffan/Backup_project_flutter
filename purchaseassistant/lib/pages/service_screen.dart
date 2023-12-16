@@ -53,7 +53,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
     return "";
   }
 
-  Future<bool?> submituid1(BuildContext context, String curcusid) async {
+  bool? submituid1(BuildContext context, String curcusid) {
     try {
       // List<Map<String, dynamic>> allData =
       //     await APIMatiching().getMatchingresult();
@@ -69,51 +69,53 @@ class _ServiceScreenState extends State<ServiceScreen> {
     }
   }
 
-  int findIndexData(List<Map<String, dynamic>> allData, String targetId) {
-    for (int i = 0; i < allData.length; i++) {
-      if (allData[i]["cusid"] == targetId) {
-        return i;
-      }
-    }
-    return -1;
-  }
+  // int findIndexData(List<Map<String, dynamic>> allData, String targetId) {
+  //   for (int i = 0; i < allData.length; i++) {
+  //     if (allData[i]["cusid"] == targetId) {
+  //       return i;
+  //     }
+  //   }
+  //   return -1;
+  // }
 
-  void waitingRider(BuildContext context) async {
-    try {
-      if ((uid, locateData) != "") {
-        sendData2api(uid, locateData);
+  // void waitingRider(BuildContext context) async {
+  //   try {
+  //     if ((uid, locateData) != "") {
+  //       sendData2api(uid, locateData);
 
-        List<Map<String, dynamic>> allData =
-            await APIMatiching().getMatchingresult();
-        print(allData);
-        for (Map<String, dynamic> data in allData) {
-          int index = findIndexData(allData, uid);
-          print(index);
-          if (index != -1) {
-            Map<String, dynamic> data = allData[index];
-            if (uid == data["cusid"]) {
-              print(data["cusid"]);
-              Map<String, dynamic> result = await APIMatiching()
-                  .getMatckingData(data["cusid"], data["riderid"]);
-              bool? sts = await submituid1(context, result['cusid']);
-              if (sts == true) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => CustomerLoadingScreen(
-                            riderName: result["ridername"],
-                            riderid: result["riderid"],
-                            submitOrder: sts)));
-              }
-            }
-          }
-        }
-        return;
-      }
-    } catch (e) {
-      throw e.toString();
-    }
-  }
+  //       List<Map<String, dynamic>> allData =
+  //           await APIMatiching().getMatchingresult();
+  //       print(allData);
+  //       for (Map<String, dynamic> data in allData) {
+  //         int index = findIndexData(allData, uid);
+  //         print(index);
+  //         if (index != -1) {
+  //           Map<String, dynamic> data = allData[index];
+  //           if (uid == data["cusid"]) {
+  //             print(data["cusid"]);
+  //             Map<String, dynamic> result = await APIMatiching()
+  //                 .getMatckingData(data["cusid"], data["riderid"]);
+  //             bool? sts = submituid1(context, result['cusid']);
+  //             print(sts);
+  //             bool? status = await APIMatiching().getCustomerStatus(sts, result["cusid"], result["riderid"]);
+  //             // if (status == true) {
+  //             //   Navigator.push(
+  //             //       context,
+  //             //       MaterialPageRoute(
+  //             //           builder: (_) => CustomerLoadingScreen(
+  //             //               currid: result["ridername"],
+  //             //               currname: result["riderid"],
+  //             //               currStatus: sts)));
+  //             // }
+  //           }
+  //         }
+  //       }
+  //       return;
+  //     }
+  //   } catch (e) {
+  //     throw e.toString();
+  //   }
+  // }
 
   // void submitProvider(BuildContext context) {
   //   DeliveryData data = DeliveryData(cusid: cusid, riderid: riderid);
@@ -161,9 +163,20 @@ class _ServiceScreenState extends State<ServiceScreen> {
             // print('locate: ${match.locate}');
             APIMatiching().setMatchingResult(match.customerid!, match.riderid!,
                 match.customername!, match.ridername!, match.locate!);
-            cusid = match.customerid!;
-            riderid = match.riderid!;
-
+            cusid = match.customerid ?? "";
+            riderid = match.riderid ?? "";
+            if ((cusid, riderid) != "") {
+              // List<String> dataid = [cusid, riderid];
+              // Provider.of<DeliveryDataProvider>(context, listen: false)
+              //     .updateDeliveryData(dataid);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => CustomerLoadingScreen(
+                            currid: cusid,
+                            recivefId: riderid,
+                          )));
+            }
             // DeliverHistory(cusid: cusid,riderid: riderid,);
           }
         } else {
@@ -313,7 +326,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         if (((valueFirst == true || valueSecond == true) &&
                                 valueThird != true) &&
                             amount > 10.00) {
-                          waitingRider(context);
+                          sendData2api(uid, locateData);
                         } else {
                           String msgErr = "";
                           if (amount < 50.00) {

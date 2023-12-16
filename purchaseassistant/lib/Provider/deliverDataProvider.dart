@@ -3,21 +3,17 @@ import 'package:flutter/foundation.dart';
 import 'package:purchaseassistant/models/matchmodel.dart';
 
 class DeliveryDataProvider with ChangeNotifier{
-  DeliveryData _deliveryData = DeliveryData();
+  List<String> _deliveryData = [];
 
-  DeliveryData getDeliveryData() {
+  List<String> getDeliveryData() {
+    print(_deliveryData);
     return _deliveryData;
   }
 
-  String getDeliveyDataCusid(){
-    return _deliveryData.cusid.toString();
-  }
-  String getDeliveyDataRiderid(){
-    return _deliveryData.riderid.toString();
-  }
-
-  void updateDeliveryData(DeliveryData data){
+  void updateDeliveryData(List<String> data){
+    print("Updating delivery data: ${data}");
     _deliveryData = data;
+    print("deliveryData ${_deliveryData}");
     notifyListeners();
   }
 }

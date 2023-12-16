@@ -7,7 +7,7 @@ import 'package:purchaseassistant/utils/formatDate.dart';
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class APIMatiching {
-  String baseUrl = "https://14db-2a09-bac1-6f00-98-00-1f1-1a1.ngrok-free.app/api";
+  String baseUrl = "https://e4f0-104-28-214-147.ngrok-free.app/api";
   Map<String, dynamic> dataresponse = {};
   Future<Map<String, dynamic>> sendData(
       String endpoint, Map<String, dynamic> data) async {
@@ -73,6 +73,8 @@ class APIMatiching {
           "cusname": cusname,
           "ridername": ridername,
           "location": locate,
+          "rider_status": false,
+          "cus_status": false,
           "date": datetime
         });
         print("set data success");
@@ -132,5 +134,70 @@ class APIMatiching {
     } catch(e){
       throw e.toString();
     }
+  }
+
+  Future<void> setRiderStatus(bool? status, String cusid, String riderid) async {
+    try{
+      List<String> ids = [cusid,riderid];
+      ids.sort();
+      String match_id = ids.join("_");
+
+      if(status == true){
+        await _firestore.collection('matchingResult').doc(match_id).update({"rider_status": status,});
+      }
+      return null;
+    } catch(e){
+      throw e.toString();
+    } 
+  }
+
+  Future<bool?> getRiderStatus(bool? status, String cusid, String riderid) async {
+    try{
+      List<String> ids = [cusid,riderid];
+      ids.sort();
+      String match_id = ids.join("_");
+      setRiderStatus(status, cusid, riderid);
+      DocumentSnapshot snapshot =  await _firestore.collection('matchingResult').doc(match_id).get();
+      if(snapshot.exists){
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        return data["rider_status"] as bool;
+      }
+      return null;
+    } catch(e){
+      throw e.toString();
+    } 
+  }
+
+  Future<void> setCustomerStatus(bool? status, String cusid, String riderid) async {
+    try{
+      List<String> ids = [cusid,riderid];
+      ids.sort();
+      String match_id = ids.join("_");
+
+      if(status == true){
+        await _firestore.collection('matchingResult').doc(match_id).update({"cus_status": status,});
+      }
+      return null;
+    } catch(e){
+      throw e.toString();
+    } 
+  }
+
+  Future<bool?> getCustomerStatus(bool? status, String cusid, String riderid) async {
+    try{
+      List<String> ids = [cusid,riderid];
+      ids.sort();
+      String match_id = ids.join("_");
+      setCustomerStatus(status,cusid,riderid);
+      DocumentSnapshot snapshot =  await _firestore.collection('matchingResult').doc(match_id).get();
+      if(snapshot.exists){
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        return data["cus_status"] as bool;
+      }
+      
+      return null;
+    } catch(e){
+      throw e.toString();
+    } 
   }
 }

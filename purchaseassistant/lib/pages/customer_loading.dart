@@ -9,12 +9,10 @@ import 'package:purchaseassistant/pages/chat/chat_screen.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
 
 class CustomerLoadingScreen extends StatefulWidget {
-  CustomerLoadingScreen(
-      {super.key, this.submitOrder, this.riderid, this.riderName});
+  CustomerLoadingScreen({super.key, this.currid, this.recivefId});
 
-  final bool? submitOrder;
-  final String? riderid;
-  final String? riderName;
+  final String? currid;
+  final String? recivefId;
 
   @override
   State<CustomerLoadingScreen> createState() => _CustomerLoadingScreenState();
@@ -24,21 +22,12 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
-  String riderid = "";
-  String ridername = "";
-  bool? riderSts;
+  String currid = "";
+  String recivedId = "";
 
-  void connectChatScreen(BuildContext context) async {
-    while (true) {
-      if (riderSts == true && ridername != "" && riderid != "") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ChatScreen(reciveuid: riderid, name: ridername),
-          ),
-        );
-      }
-      await Future.delayed(Duration(seconds: 1));
+  void connectMatchingResult(BuildContext context) async {
+    if ((uid, currid, recivedId) != "") {
+      
     }
   }
 
@@ -47,11 +36,10 @@ class _CustomerLoadingScreenState extends State<CustomerLoadingScreen> {
     super.initState();
     if (_auth.currentUser != null) {
       uid = _auth.currentUser!.uid;
-      riderSts = widget.submitOrder!;
-      riderid = widget.riderid!;
-      ridername = widget.riderName!;
+      currid = widget.currid ?? "";
+      recivedId = widget.recivefId ?? '';
 
-      connectChatScreen(context);
+      connectMatchingResult(context);
     } else {
       // Handle the case where _auth.currentUser is null, perhaps redirect to login
       // or take appropriate action for your application.
