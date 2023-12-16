@@ -103,7 +103,8 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                     "โปรไฟล์และการตั้งค่า",
                     style: TextStyle(color: Colors.black, fontSize: 18),
                   ),
-                  automaticallyImplyLeading: false,
+                  automaticallyImplyLeading: true,
+                  iconTheme: IconThemeData(color: Colors.black),
                   // leading: IconButton(
                   //     onPressed: () {
                   //       if (widget.myNavigate() != null) {
