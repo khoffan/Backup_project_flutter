@@ -47,6 +47,7 @@ class _ShowPostState extends State<ShowPost> {
     super.initState();
     uid = _auth.currentUser?.uid ?? '';
   }
+  
 
   @override
   Widget build(BuildContext context) {

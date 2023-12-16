@@ -20,7 +20,7 @@ class App extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         routes: AppRoute.all,
-        home:  const CheckLogin(),
+        home: const LoginScreen(),
       ),
     );
   }

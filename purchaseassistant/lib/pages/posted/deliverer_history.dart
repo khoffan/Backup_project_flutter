@@ -65,9 +65,9 @@ class _DeliverHistoryState extends State<DeliverHistory> {
           await APIMatiching().getMatchingresult();
       for (Map<String, dynamic> data in allData) {
         int index = findIndexData(allData, uid);
-        if(index != -1){
+        if (index != -1) {
           Map<String, dynamic> data = allData[index];
-          if(uid == data["riderid"]){
+          if (uid == data["riderid"]) {
             return true;
           }
           return false;
