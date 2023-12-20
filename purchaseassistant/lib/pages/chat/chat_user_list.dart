@@ -32,7 +32,7 @@ class _ListUserchatState extends State<ListUserchat> {
           "แชต",
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
-        leading: null,
+        automaticallyImplyLeading: false,
         backgroundColor: themeBg,
       ),
       body: _buildShowUser(),

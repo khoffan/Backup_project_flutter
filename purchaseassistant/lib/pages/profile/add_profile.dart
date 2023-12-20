@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../services/profile_services.dart';
 
@@ -82,6 +83,7 @@ class _EditProfileState extends State<EditProfile> {
       lastnameController.clear();
       phoneController.clear();
       Navigator.pop(context);
+      
     }
     // print(room);
     // print(name);
@@ -105,7 +107,17 @@ class _EditProfileState extends State<EditProfile> {
           }
           if (snap.hasData) {
             return Scaffold(
-              appBar: AppBar(),
+              appBar: AppBar(
+                title: Text(
+                  'สร้างโปรไฟล์',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500),
+                ),
+                backgroundColor: themeBg,
+                automaticallyImplyLeading: false,
+              ),
               body: Container(
                 width: double.infinity,
                 height: double.infinity,
@@ -207,6 +219,9 @@ class _EditProfileState extends State<EditProfile> {
                           width: 150,
                           padding: const EdgeInsets.symmetric(horizontal: 100),
                           child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: themeBg, // Background color
+                            ),
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {
                                 if (_image != null) {
@@ -216,7 +231,13 @@ class _EditProfileState extends State<EditProfile> {
                                 }
                               }
                             },
-                            child: const Text("Save profile"),
+                            child: const Text(
+                              "Save profile",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400),
+                            ),
                           ),
                         ),
                       ],

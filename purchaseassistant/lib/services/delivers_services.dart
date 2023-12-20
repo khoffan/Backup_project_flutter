@@ -135,13 +135,13 @@ class ServiceDeliver {
       String name = "";
       String stdid = "";
       String userstatus = "";
-      
+
       if (uid != '') {
         DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
             await _firestore.collection('userProfile').doc(uid).get();
         bool? loginstatus = await UserLogin.getLogin();
         String? getWork = await getWorkingsts(uid);
-        
+
         if (loginstatus == true) {
           userstatus = "online";
         }
@@ -158,20 +158,20 @@ class ServiceDeliver {
             'locattion': locate,
             'role': status,
             'status': userstatus,
-            'statuswork' : getWork,
+            'statuswork': getWork,
             'date': timestamp
           });
-        } else if(status == false){
+        } else if (status == false) {
           Timestamp timestamp = Timestamp.now();
-        await _firestore.collection('deliverPost').doc(uid).set({
-          'stdid': stdid,
-          'name': name,
-          'locattion': locate,
-          'role': status,
-          'status': userstatus,
-          'statuswork' : "Null",
-          'date': timestamp
-        });
+          await _firestore.collection('deliverPost').doc(uid).set({
+            'stdid': stdid,
+            'name': name,
+            'locattion': locate,
+            'role': status,
+            'status': userstatus,
+            'statuswork': "Null",
+            'date': timestamp
+          });
         }
       }
       print("update success");
@@ -216,7 +216,7 @@ class ServiceDeliver {
       throw e.toString();
     }
   }
-  
+
   Future<void> updateWorking(String uid, bool status) async {
     try {
       if (uid != "" && status == true) {

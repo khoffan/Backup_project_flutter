@@ -31,37 +31,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: themeBg,
         title: const Text(
           'Purchase Assistant',
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
-        leading: IconButton(onPressed: () {
-          bypasssignout();
-        }, icon: Icon(Icons.arrow_back)),
         centerTitle: true,
         actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              bypasssignout();
-            },
-            icon: const Icon(Icons.search_outlined),
-            color: Colors.amber[800],
-          ),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.notifications_outlined),
             color: Colors.amber[800],
           ),
         ],
-        // leading: IconButton(
-        //   onPressed: () {},
-        //   icon: IconButton(
-        //     color: Colors.amber[800],
-        //     icon: const Icon(Icons.search_outlined),
-        //     onPressed: () {},
-        //   ),
-        // ),
       ),
       body: ShowPost(),
     );

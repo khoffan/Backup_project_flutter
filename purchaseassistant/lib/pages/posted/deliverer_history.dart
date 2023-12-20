@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:purchaseassistant/services/matching_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../utils/update_post.dart';
+import '../customer_loading.dart';
 import '../profile/profile_screen.dart';
 import 'deliverer_screen.dart';
 
@@ -52,29 +55,26 @@ class _DeliverHistoryState extends State<DeliverHistory> {
 
   int findIndexData(List<Map<String, dynamic>> allData, String targetId) {
     for (int i = 0; i < allData.length; i++) {
-      if (allData[i]["cusid"] == targetId) {
+      if (allData[i]["riderid"] == targetId) {
         return i;
       }
     }
     return -1;
   }
 
-  Future<bool?> submituid1(BuildContext context) async {
+  bool? submituid1(BuildContext context, String riderid) {
     try {
-      List<Map<String, dynamic>> allData =
-          await APIMatiching().getMatchingresult();
-      for (Map<String, dynamic> data in allData) {
-        int index = findIndexData(allData, uid);
-        if(index != -1){
-          Map<String, dynamic> data = allData[index];
-          if(uid == data["riderid"]){
-            return true;
-          }
-          return false;
-        }
+      if (uid == riderid) {
+        return true;
       }
-      return null;
+      return false;
     } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  void confrimeOrder(BuildContext context) async {
+    try {} catch (e) {
       throw e.toString();
     }
   }
@@ -87,6 +87,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
 
   @override
   Widget build(BuildContext context) {
+    // final data = Provider.of<DeliveryDataProvider>(context);
     final spacificuser = uid;
     return Scaffold(
       appBar: AppBar(
@@ -125,20 +126,25 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                 color: Colors.black,
               ),
             ),
-            // Consumer<DeliveryDataProvider>(
-            //   builder: (context, provider, chlid) {
-            //     DeliveryData deliveryData = provider.getDeliveryData();
-            //     String cusid = deliveryData.cusid.toString();
-            //     String riderid = deliveryData.riderid.toString();
+            // Consumer(
+            //   builder: (context, DeliveryDataProvider provider, _) {
+            //     List<String> data = provider.getDeliveryData();
+            //     if (data.isNotEmpty) {
+            //       return IconButton(
+            //         onPressed: () {
+            //           print(data);
+            //         },
+            //         icon: Icon(
+            //           Icons.notifications,
+            //           color: Colors.black26,
+            //         ),
+            //       );
+            //     }
+
+            //     // Default case when deliveryData is null or cusid/riderid are empty
             //     return IconButton(
             //       onPressed: () {
-            //         if (cusid.isNotEmpty && riderid.isNotEmpty) {
-            //           print("cusid: ${cusid}, riderid: ${riderid} -> of 1");
-            //         } else {
-            //           print("data not found of submit 1");
-            //         }
-            //         // Additional logic if needed
-            //         // For example, you can update the UI based on the data
+            //         print("cusid and riderid not data");
             //       },
             //       icon: Icon(
             //         Icons.notifications,
@@ -147,9 +153,23 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             //     );
             //   },
             // ),
+
+            // IconButton(
+            //   onPressed: () {
+            //     // String cusid = data.getDeliveyDataCusid();
+            //     // String riderid = data.getDeliveyDataRiderid();
+            //     List<String> objdeli = deliData.getDeliveryId();
+            //     if(objdeli.isNotEmpty){
+            //       print(objdeli);
+            //     }
+            //     // print(cusid);
+            //     // print(riderid);
+            //   },
+            //   icon: Icon(Icons.notifications),
+            // ),
             IconButton(
               onPressed: () {
-                submituid1(context);
+                confrimeOrder(context);
               },
               icon: Icon(Icons.notifications),
             ),
@@ -175,155 +195,175 @@ class _DeliverHistoryState extends State<DeliverHistory> {
           final fillterDeliver = deliverDocs
               .where((deliverDoc) => deliverDoc.id == spacificuser)
               .toList();
-          return ListView.builder(
-            itemCount: fillterDeliver.length,
-            itemBuilder: (context, index) {
-              final deliverDoc = fillterDeliver[index];
-              final deliverUserDocs =
-                  deliverDoc.reference.collection('deliverContent');
-              return StreamBuilder(
-                stream: deliverUserDocs.snapshots(),
-                builder: (context, deliverSnapshot) {
-                  if (deliverSnapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${deliverSnapshot.error}'),
-                    );
-                  }
-                  if (!deliverSnapshot.hasData) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: fillterDeliver.length,
+              itemBuilder: (context, index) {
+                final deliverDoc = fillterDeliver[index];
+                final deliverUserDocs =
+                    deliverDoc.reference.collection('deliverContent');
+                return StreamBuilder(
+                  stream: deliverUserDocs.snapshots(),
+                  builder: (context, deliverSnapshot) {
+                    if (deliverSnapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${deliverSnapshot.error}'),
+                      );
+                    }
+                    if (!deliverSnapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
 
-                  final deliveruserDocs = deliverSnapshot.data!.docs;
+                    final deliveruserDocs = deliverSnapshot.data!.docs;
 
-                  if (deliverSnapshot.hasData) {
-                    return Column(
-                      // Use a Column instead of nested ListView.builder
-                      children: deliveruserDocs.map((deliverUserDoc) {
-                        final deliverUser =
-                            deliverUserDoc.data() as Map<String, dynamic>;
+                    if (deliverSnapshot.hasData) {
+                      return Column(
+                        // Use a Column instead of nested ListView.builder
+                        children: deliveruserDocs.map((deliverUserDoc) {
+                          final deliverUser =
+                              deliverUserDoc.data() as Map<String, dynamic>;
 
-                        String docid = deliverUserDoc.id;
-                        String userId = deliverDoc.id;
+                          String docid = deliverUserDoc.id;
+                          String userId = deliverDoc.id;
 
-                        String name = deliverUser['name'] ?? '';
-                        String lname = deliverUser['lname'] ?? '';
-                        String title = deliverUser['title'] ?? '';
-                        String imageLink = deliverUser['imageurl'] ?? '';
-                        // print("DocId: ${docid}");
-                        final Timestamp timestamp = Timestamp.now();
-                        final datenow = timestamp.toDate();
-                        final date = DateFormat('d-MMM-yyyy').format(datenow);
-                        return Card(
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        child: Image(
-                                          image: NetworkImage(
-                                            "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                          ),
-                                          width: 40.0,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      SizedBox(
-                                        child: Text("${name} ${lname}"),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(date),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.more_vert,
-                                        size: 15,
-                                      ),
-                                      SizedBox(
-                                        width: 15,
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                children: [
-                                  Text("${title}"),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 200,
-                                    child: imageLink != ''
-                                        ? Image(
-                                            image: NetworkImage(
-                                              imageLink,
-                                            ),
-                                          )
-                                        : Image(
+                          String name = deliverUser['name'] ?? '';
+                          String lname = deliverUser['lname'] ?? '';
+                          String title = deliverUser['title'] ?? '';
+                          String imageLink = deliverUser['imageurl'] ?? '';
+                          // print("DocId: ${docid}");
+                          final Timestamp timestamp = Timestamp.now();
+                          final datenow = timestamp.toDate();
+                          final date = DateFormat('d-MMM-yyyy').format(datenow);
+                          return Card(
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          child: Image(
                                             image: NetworkImage(
                                               "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
                                             ),
-                                            width: 20,
+                                            width: 40.0,
                                           ),
-                                  ),
-                                ],
-                              ),
-                              ButtonBar(
-                                alignment: MainAxisAlignment.end,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => UpdatePosted(
-                                                imageLink: imageLink,
-                                                postedDocid: docid,
-                                                postedUserid: userId,
-                                                title: title),
-                                          ));
-                                    },
-                                    child: Text('Edit'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      removePosted(userId, docid);
-                                    },
-                                    child: Text('Remove'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  }
-                  return Container();
-                },
-              );
-            },
-          );
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        SizedBox(
+                                          child: Text("${name} ${lname}"),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(date),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.more_vert,
+                                          size: 15,
+                                        ),
+                                        SizedBox(
+                                          width: 15,
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Text("${title}"),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 200,
+                                      child: imageLink != ''
+                                          ? Image(
+                                              image: NetworkImage(
+                                                imageLink,
+                                              ),
+                                            )
+                                          : Image(
+                                              image: NetworkImage(
+                                                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                              ),
+                                              width: 20,
+                                            ),
+                                    ),
+                                  ],
+                                ),
+                                ButtonBar(
+                                  alignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => UpdatePosted(
+                                                  imageLink: imageLink,
+                                                  postedDocid: docid,
+                                                  postedUserid: userId,
+                                                  title: title),
+                                            ));
+                                      },
+                                      child: Text('Edit'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        removePosted(userId, docid);
+                                      },
+                                      child: Text('Remove'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    }
+                    return Container();
+                  },
+                );
+              },
+            );
+          } else {
+            return Container(
+              alignment: Alignment.center,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "ไม่รายการที่ได้โพสไว้",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Text(
+                    "สามารถกดเพิ่มโพศที่ปุ่มด้านซ้ายล่าง",
+                    style: TextStyle(fontSize: 18),
+                  )
+                ],
+              ),
+            );
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(

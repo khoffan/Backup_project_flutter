@@ -1,11 +1,15 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/utils/constants.dart';
+import 'package:quickalert/models/quickalert_type.dart';
 
 import 'dart:developer' as developer;
+
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class WalletScreenApp extends StatefulWidget {
   const WalletScreenApp({super.key});
@@ -146,6 +150,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
             // ),
             controller: amountController,
             onSubmitted: (_) => submit(),
+            keyboardType: TextInputType.number,
           ),
           actions: [
             TextButton(
@@ -157,18 +162,28 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
       );
 
   Future submit() async {
-    await firestore
-        .collection('userProfile')
-        .doc(auth.currentUser?.uid)
-        .collection('transaction')
-        .add({
-      'totalAmount': totalAmount + int.tryParse(amountController.text)!,
-      'amount': int.tryParse(amountController.text)!,
-      'option': 'i',
-      'timeStamp': DateTime.timestamp()
-    });
+    if (double.tryParse(amountController.text) != null &&
+        (double.tryParse(amountController.text)! >= 1)) {
+      await firestore
+          .collection('userProfile')
+          .doc(auth.currentUser?.uid)
+          .collection('transaction')
+          .add({
+        'totalAmount': totalAmount + int.tryParse(amountController.text)!,
+        'amount': int.tryParse(amountController.text)!,
+        'option': 'i',
+        'timeStamp': DateTime.timestamp()
+      });
 
-    Navigator.of(context).pop(amountController.text);
-    amountController.clear();
+      Navigator.of(context).pop(amountController.text);
+      amountController.clear();
+    } else {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.warning,
+        title: 'คำเตือน',
+        text: 'กรุณาใส่จำนวนเงินให้ถูกต้อง',
+      );
+    }
   }
 }
