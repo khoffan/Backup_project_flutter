@@ -64,7 +64,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
                       child: Center(
                         child: StreamBuilder(
                             stream: firestore
-                                .collection('userProfile')
+                                .collection('Profile')
                                 .doc(auth.currentUser!.uid)
                                 .collection("transaction")
                                 .orderBy("totalAmount", descending: true)
@@ -165,7 +165,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
     if (double.tryParse(amountController.text) != null &&
         (double.tryParse(amountController.text)! >= 1)) {
       await firestore
-          .collection('userProfile')
+          .collection('Profile')
           .doc(auth.currentUser?.uid)
           .collection('transaction')
           .add({

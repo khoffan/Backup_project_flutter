@@ -45,12 +45,12 @@ class ServiceDeliver {
         Timestamp timestamp = Timestamp.now();
 
         String imageurl = await uploadImagetoStorage('deliverImage', file);
-        await _firestore.collection('deliverPost').doc(uid).set({
+        await _firestore.collection('Posts').doc(uid).set({
           'status': status,
         });
 
-        final deliverRef = _firestore.collection('deliverPost').doc(uid);
-        await deliverRef.collection('deliverContent').add({
+        final deliverRef = _firestore.collection('Posts').doc(uid);
+        await deliverRef.collection('Contents').add({
           'name': name,
           'lastname': lname,
           'stdid': stdid,
@@ -86,13 +86,13 @@ class ServiceDeliver {
         Timestamp timestamp = Timestamp.now();
 
         String imageurl = await uploadImagetoStorage('deliverImage', file);
-        await _firestore.collection('deliverPost').doc(uid).set({
+        await _firestore.collection('Posts').doc(uid).set({
           'status': status,
         });
 
-        final deliverRef = _firestore.collection('deliverPost').doc(uid);
+        final deliverRef = _firestore.collection('Posts').doc(uid);
         await deliverRef
-            .collection('deliverContent')
+            .collection('Contents')
             .doc(Docid)
             .update({'imageurl': imageurl, 'title': title, 'date': timestamp});
         print('save data success');
@@ -106,9 +106,9 @@ class ServiceDeliver {
       {required String uid, required String docid}) async {
     try {
       await _firestore
-          .collection('deliverPost')
+          .collection('Posts')
           .doc(uid)
-          .collection('deliverContent')
+          .collection('Contents')
           .doc(docid)
           .delete();
     } catch (e) {
@@ -119,7 +119,7 @@ class ServiceDeliver {
   Future<void> updateStatus(bool status, String uid, String locate) async {
     try {
       if (uid != '' && status != '') {
-        await _firestore.collection('deliverPost').doc(uid).update({
+        await _firestore.collection('Posts').doc(uid).update({
           'role': status,
           'locattion': locate,
         });
@@ -130,7 +130,7 @@ class ServiceDeliver {
     }
   }
 
-  Future<void> setStatus(bool status, String uid, String locate) async {
+  Future<void> setStatus(bool status, String uid) async {
     try {
       String name = "";
       String stdid = "";
@@ -138,7 +138,7 @@ class ServiceDeliver {
 
       if (uid != '') {
         DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-            await _firestore.collection('userProfile').doc(uid).get();
+            await _firestore.collection('Profile').doc(uid).get();
         bool? loginstatus = await UserLogin.getLogin();
         String? getWork = await getWorkingsts(uid);
 
@@ -150,29 +150,17 @@ class ServiceDeliver {
           name = data['name'];
           stdid = data['stdid'];
         }
-        if (status == true) {
-          Timestamp timestamp = Timestamp.now();
-          await _firestore.collection('deliverPost').doc(uid).set({
-            'stdid': stdid,
-            'name': name,
-            'locattion': locate,
-            'role': status,
-            'status': userstatus,
-            'statuswork': getWork,
-            'date': timestamp
-          });
-        } else if (status == false) {
-          Timestamp timestamp = Timestamp.now();
-          await _firestore.collection('deliverPost').doc(uid).set({
-            'stdid': stdid,
-            'name': name,
-            'locattion': locate,
-            'role': status,
-            'status': userstatus,
-            'statuswork': "Null",
-            'date': timestamp
-          });
-        }
+
+        Timestamp timestamp = Timestamp.now();
+        await _firestore.collection('Posts').doc(uid).set({
+          'stdid': stdid,
+          'name': name,
+          'locattion': "null",
+          'role': status,
+          'status': userstatus,
+          'statuswork': getWork,
+          'date': timestamp
+        });
       }
       print("update success");
     } catch (e) {
@@ -184,7 +172,7 @@ class ServiceDeliver {
     try {
       if (uid != '') {
         DocumentSnapshot<Map<String, dynamic>> snapshot =
-            await _firestore.collection('deliverPost').doc(uid).get();
+            await _firestore.collection('Posts').doc(uid).get();
         if (snapshot.exists) {
           Map<String, dynamic> data = snapshot.data()!;
           return data['role'] as bool;
@@ -202,12 +190,12 @@ class ServiceDeliver {
       if (uid != "") {
         if (userstatus == false) {
           await _firestore
-              .collection('deliverPost')
+              .collection('Posts')
               .doc(uid)
               .update({'status': "offline"});
         } else {
           await _firestore
-              .collection('deliverPost')
+              .collection('Posts')
               .doc(uid)
               .update({'status': "online"});
         }
@@ -221,13 +209,13 @@ class ServiceDeliver {
     try {
       if (uid != "" && status == true) {
         await _firestore
-            .collection('deliverPost')
+            .collection('Posts')
             .doc(uid)
             .update({'statuswork': "Active"});
       }
       if (uid != "" && status == false) {
         await _firestore
-            .collection('deliverPost')
+            .collection('Posts')
             .doc(uid)
             .update({'statuswork': "DeActive"});
       }
@@ -240,13 +228,13 @@ class ServiceDeliver {
     try {
       if (uid != "" && status == true) {
         await _firestore
-            .collection('deliverPost')
+            .collection('Posts')
             .doc(uid)
             .set({'statuswork': "Active"});
       }
       if (uid != "" && status == false) {
         await _firestore
-            .collection('deliverPost')
+            .collection('Posts')
             .doc(uid)
             .set({'statuswork': "Null"});
       }
@@ -259,7 +247,7 @@ class ServiceDeliver {
     try {
       if (uid != "") {
         DocumentSnapshot<Map<String, dynamic>> snapshot =
-            await _firestore.collection('deliverPost').doc(uid).get();
+            await _firestore.collection('Posts').doc(uid).get();
         if (snapshot.exists) {
           Map<String, dynamic> data = snapshot.data()!;
           return data['statuswork'] as String;
@@ -274,9 +262,21 @@ class ServiceDeliver {
 
   Future<void> delateDeliver(String uid) async {
     try {
-      await _firestore.collection('deliverPost').doc(uid).delete();
+      await _firestore.collection('Posts').doc(uid).delete();
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  Stream<QuerySnapshot> streamPosts() {
+    try {
+      return _firestore.collection("Posts").snapshots();
+    } catch (e) {
+      // Handle the exception or log the error if needed
+      print(e.toString());
+
+      // Throw an exception to ensure that the function doesn't complete normally
+      throw Exception("An error occurred while fetching the stream of posts");
     }
   }
 }

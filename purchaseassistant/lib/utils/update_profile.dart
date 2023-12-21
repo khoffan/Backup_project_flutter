@@ -51,8 +51,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
     if (pickImagURL != null) {
       final imageFile = File(pickImagURL.path);
 
-      final imageURL =
-          await ProfileService().uploadImagetoStorage('/profileImage', imageFile);
+      final imageURL = await ProfileService()
+          .uploadImagetoStorage('/profileImage', imageFile);
 
       setState(() {
         newImage = imageURL;
@@ -230,6 +230,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                       context, "โทรศัพท์", valueItem),
                                 ],
                               ),
+                              
                             ],
                           ),
                         ),
@@ -425,5 +426,6 @@ Widget _buildTextFieldOrder(
       ),
     );
   }
+  
   return Container();
 }

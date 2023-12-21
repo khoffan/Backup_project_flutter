@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:purchaseassistant/services/auth_service.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
+import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/services/user_provider.dart';
 import '../../models/login.dart';
 import '../../routes/routes.dart';
@@ -170,19 +171,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                             AppRoute.widget_navigation);
 
                                         ServiceDeliver().setStatus(
-                                            false,
-                                            FirebaseAuth
-                                                .instance.currentUser!.uid,
-                                            " ");
-                                        ServiceDeliver().updateStatus(
-                                            false,
-                                            FirebaseAuth
-                                                .instance.currentUser!.uid,
-                                            "");
+                                          false,
+                                          FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                        );
+
                                         ServiceDeliver().setWorking(
                                             FirebaseAuth
                                                 .instance.currentUser!.uid,
                                             false);
+                                        ProfileService().updateRole(
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                            "customer");
                                         UserLogin.setLogin(true);
                                         sts = await UserLogin.getLogin();
                                         ServiceDeliver().updateUser(

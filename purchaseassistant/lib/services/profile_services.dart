@@ -45,7 +45,7 @@ class ProfileService {
           gender.isNotEmpty &&
           phone.isNotEmpty) {
         // String? _image = await uploadImagetoStorage('/profileImage', file);
-        await _firestore.collection("userProfile").doc(_user.uid ?? '').set({
+        await _firestore.collection("Profile").doc(_user.uid ?? '').set({
           'name': name,
           'lname': lname,
           'room': room,
@@ -54,6 +54,8 @@ class ProfileService {
           'gender': gender,
           'phone': phone,
           'imageLink': file,
+          'active': "0",
+          'role': "customer"
         });
         print("Data saved successfully!");
         resp = "Success";
@@ -88,7 +90,7 @@ class ProfileService {
           stdid.isNotEmpty &&
           gender.isNotEmpty &&
           phone.isNotEmpty) {
-        await _firestore.collection("userProfile").doc(_user.uid ?? '').update({
+        await _firestore.collection("Profile").doc(_user.uid ?? '').update({
           'name': name,
           'lname': lname,
           'room': room,
@@ -113,7 +115,7 @@ class ProfileService {
   Future<DocumentSnapshot<Map<String, dynamic>>> getDataProfile() async {
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot =
-          await _firestore.collection('userProfile').doc(_user.uid ?? '').get();
+          await _firestore.collection('Profile').doc(_user.uid ?? '').get();
       return snapshot;
     } catch (e) {
       throw e.toString();
@@ -122,7 +124,7 @@ class ProfileService {
 
   Future<void> deleteProfile(String uid) async {
     try {
-      await _firestore.collection('userProfile').doc(uid).delete();
+      await _firestore.collection('Profile').doc(uid).delete();
     } catch (e) {
       throw e.toString();
     }
@@ -131,12 +133,12 @@ class ProfileService {
   Future<String> getImage(String uid) async {
     try {
       if (uid == "" || uid.isEmpty) {
-      // Return a default value or handle the case where uid is empty or null
-      return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    }
+        // Return a default value or handle the case where uid is empty or null
+        return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+      }
 
       DocumentSnapshot<Map<String, dynamic>> snapshot =
-          await _firestore.collection("userProfile").doc(uid).get();
+          await _firestore.collection("Profile").doc(uid).get();
 
       if (snapshot.exists) {
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
@@ -150,6 +152,19 @@ class ProfileService {
       print("Error fetching image link: $e");
       // Return a default value in case of an error
       return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    }
+  }
+
+  Future<void> updateRole(String uid, String role) async {
+    try {
+      if(uid != "" && role != ""){
+        await _firestore.collection("Profile").doc(uid).update({"role": role});
+      }
+      else{
+        print("update fail");
+      }
+    } catch (e) {
+      throw e.toString();
     }
   }
 }

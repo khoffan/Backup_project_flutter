@@ -20,6 +20,8 @@ TextEditingController stdidController = TextEditingController();
 TextEditingController dormController = TextEditingController();
 TextEditingController genderController = TextEditingController();
 TextEditingController phoneController = TextEditingController();
+TextEditingController activeController = TextEditingController();
+TextEditingController statusController = TextEditingController();
 
 List<String> list = <String>['ชาย', 'หญิง'];
 
@@ -83,7 +85,6 @@ class _EditProfileState extends State<EditProfile> {
       lastnameController.clear();
       phoneController.clear();
       Navigator.pop(context);
-      
     }
     // print(room);
     // print(name);
@@ -414,5 +415,6 @@ Widget _buildTextFieldOrder(
       ),
     );
   }
+
   return Container();
 }

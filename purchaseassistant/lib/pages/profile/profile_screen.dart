@@ -63,7 +63,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: _firestore.collection('userProfile').doc(uid).snapshots(),
+        stream: _firestore.collection('Profile').doc(uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -251,7 +251,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                             ),
                             StreamBuilder(
                               stream: _firestore
-                                  .collection('userProfile')
+                                  .collection('Profile')
                                   .doc(uid)
                                   .collection("transaction")
                                   .orderBy("totalAmount", descending: true)
