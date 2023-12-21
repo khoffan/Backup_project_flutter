@@ -170,16 +170,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                         Navigator.pushReplacementNamed(context,
                                             AppRoute.widget_navigation);
 
-                                        ServiceDeliver().setStatus(
-                                          false,
-                                          FirebaseAuth
-                                              .instance.currentUser!.uid,
-                                        );
-
-                                        ServiceDeliver().setWorking(
-                                            FirebaseAuth
-                                                .instance.currentUser!.uid,
-                                            false);
                                         ProfileService().updateRole(
                                             FirebaseAuth
                                                 .instance.currentUser!.uid,

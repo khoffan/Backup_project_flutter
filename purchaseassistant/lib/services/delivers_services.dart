@@ -102,6 +102,62 @@ class ServiceDeliver {
     }
   }
 
+  Future<void> setData(String uid) async {
+    try {
+      String name = "";
+      String stdid = "";
+      String userstatus = "";
+      String locatePost = "";
+
+      if (uid != '') {
+        DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
+            await _firestore.collection('Profile').doc(uid).get();
+        bool? loginstatus = await UserLogin.getLogin();
+        String? getWork = await getWorkingsts(uid);
+
+        DocumentSnapshot<Map<String, dynamic>> getLocateioninPost =
+            await _firestore.collection("Posts").doc(uid).get();
+
+        if (getLocateioninPost.exists) {
+          Map<String, dynamic> data = getLocateioninPost.data()!;
+          locatePost = data['locattion'];
+        }
+
+        if (getProfilesnapshot.exists) {
+          Map<String, dynamic> data = getProfilesnapshot.data()!;
+          name = data['name'];
+          stdid = data['stdid'];
+        }
+        if (loginstatus == true) {
+          userstatus = "online";
+          Timestamp timestamp = Timestamp.now();
+          await _firestore.collection('Posts').doc(uid).set({
+            'stdid': stdid,
+            'name': name,
+            'locattion': locatePost,
+            'role': false,
+            'status': userstatus,
+            'statuswork': "unActive",
+            'date': timestamp
+          });
+        }
+        Timestamp timestamp = Timestamp.now();
+        await _firestore.collection('Posts').doc(uid).set({
+          'stdid': stdid,
+          'name': name,
+          'locattion': "null",
+          'role': false,
+          'status': userstatus,
+          'statuswork': "unActive",
+          'date': timestamp
+        });
+      }
+      print("update success");
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   Future<void> removeDeliverer(
       {required String uid, required String docid}) async {
     try {
@@ -122,44 +178,6 @@ class ServiceDeliver {
         await _firestore.collection('Posts').doc(uid).update({
           'role': status,
           'locattion': locate,
-        });
-      }
-      print("update success");
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
-  Future<void> setStatus(bool status, String uid) async {
-    try {
-      String name = "";
-      String stdid = "";
-      String userstatus = "";
-
-      if (uid != '') {
-        DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-            await _firestore.collection('Profile').doc(uid).get();
-        bool? loginstatus = await UserLogin.getLogin();
-        String? getWork = await getWorkingsts(uid);
-
-        if (loginstatus == true) {
-          userstatus = "online";
-        }
-        if (getProfilesnapshot.exists) {
-          Map<String, dynamic> data = getProfilesnapshot.data()!;
-          name = data['name'];
-          stdid = data['stdid'];
-        }
-
-        Timestamp timestamp = Timestamp.now();
-        await _firestore.collection('Posts').doc(uid).set({
-          'stdid': stdid,
-          'name': name,
-          'locattion': "null",
-          'role': status,
-          'status': userstatus,
-          'statuswork': getWork,
-          'date': timestamp
         });
       }
       print("update success");
@@ -218,25 +236,6 @@ class ServiceDeliver {
             .collection('Posts')
             .doc(uid)
             .update({'statuswork': "DeActive"});
-      }
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
-  Future<void> setWorking(String uid, bool status) async {
-    try {
-      if (uid != "" && status == true) {
-        await _firestore
-            .collection('Posts')
-            .doc(uid)
-            .set({'statuswork': "Active"});
-      }
-      if (uid != "" && status == false) {
-        await _firestore
-            .collection('Posts')
-            .doc(uid)
-            .set({'statuswork': "Null"});
       }
     } catch (e) {
       throw e.toString();
