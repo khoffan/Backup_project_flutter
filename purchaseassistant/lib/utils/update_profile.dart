@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
+import '../services/delivers_services.dart';
 import '../services/profile_services.dart';
 import '../services/pickerimg.dart';
 
@@ -35,7 +37,7 @@ String dropdownValue = list.first; // Default value for dropdown
 class _UpdateProfileState extends State<UpdateProfile> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final _formKey = GlobalKey<FormState>();
-
+  FirebaseAuth _auth = FirebaseAuth.instance;
   void valueItem(value) {
     setState(() {
       dropdownValue = value;
@@ -51,8 +53,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
     if (pickImagURL != null) {
       final imageFile = File(pickImagURL.path);
 
-      final imageURL =
-          await ProfileService().uploadImagetoStorage('/profileImage', imageFile);
+      final imageURL = await ProfileService()
+          .uploadImagetoStorage('/profileImage', imageFile);
 
       setState(() {
         newImage = imageURL;
@@ -62,7 +64,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
     print(newImage);
   }
 
-  void updateProfile() async {
+  void updateProfile(String uid) async {
     String name = nameController.text;
     String room = roomController.text;
     String stdid = stdidController.text;
@@ -92,6 +94,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
         phone: phone,
         lname: lname,
       );
+      await ServiceDeliver().setData(uid);
     }
 
     Navigator.pop(context);
@@ -230,6 +233,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                       context, "โทรศัพท์", valueItem),
                                 ],
                               ),
+                              
                             ],
                           ),
                         ),
@@ -245,7 +249,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                     MaterialStateProperty.all<Color>(themeBg)),
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {
-                                updateProfile();
+                                updateProfile(_auth.currentUser!.uid);
                               }
                             },
                             child: Text(
@@ -425,5 +429,6 @@ Widget _buildTextFieldOrder(
       ),
     );
   }
+  
   return Container();
 }

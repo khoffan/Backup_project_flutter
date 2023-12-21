@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/services/comment_services.dart';
+import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/profile_services.dart';
 import 'comment_screen.dart';
 
@@ -62,12 +63,11 @@ class _ShowPostState extends State<ShowPost> {
     uid = _auth.currentUser?.uid ?? '';
     someFunction(uid);
   }
-  
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('deliverPost').snapshots(),
+      stream: ServiceDeliver().streamPosts(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -87,7 +87,7 @@ class _ShowPostState extends State<ShowPost> {
           itemBuilder: (context, index) {
             final deliverDoc = deliverDocs[index];
             final deliverUserCollection =
-                deliverDoc.reference.collection('deliverContent');
+                deliverDoc.reference.collection('Contents');
             return StreamBuilder(
               stream: deliverUserCollection.snapshots(),
               builder: (context, deliverSnapshot) {
@@ -127,7 +127,7 @@ class _ShowPostState extends State<ShowPost> {
                       final date = DateFormat('d-MMM-yyyy').format(datenow);
                       return StreamBuilder(
                           stream: _firestore
-                              .collection("userProfile")
+                              .collection("Profile")
                               .doc(userid)
                               .snapshots(),
                           builder: (context, snapshot) {
@@ -139,7 +139,8 @@ class _ShowPostState extends State<ShowPost> {
                               final profileData = snapshot.data!.data();
                               if (profileData != null) {
                                 data = profileData;
-                                String imagelinkprofile = data["imageLink"] ?? ""; 
+                                String imagelinkprofile =
+                                    data["imageLink"] ?? "";
                                 return Card(
                                   child: Container(
                                     margin: const EdgeInsets.all(15.0),
@@ -155,18 +156,21 @@ class _ShowPostState extends State<ShowPost> {
                                               Row(
                                                 children: [
                                                   Container(
-                                                    child:
-                                                        imagelinkprofile != ""
-                                                            ?CircleAvatar(
-                                                              backgroundImage: NetworkImage(imagelinkprofile, scale: 0.8),
-                                                              maxRadius: 20.0,
-                                                            )
-                                                            : Image(
-                                                                image: NetworkImage(
-                                                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                                    child: imagelinkprofile !=
+                                                            ""
+                                                        ? CircleAvatar(
+                                                            backgroundImage:
+                                                                NetworkImage(
+                                                                    imagelinkprofile,
                                                                     scale: 0.8),
-                                                                width: 40.0,
-                                                              ),
+                                                            maxRadius: 20.0,
+                                                          )
+                                                        : Image(
+                                                            image: NetworkImage(
+                                                                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                                                scale: 0.8),
+                                                            width: 40.0,
+                                                          ),
                                                   ),
                                                   Container(
                                                     margin: EdgeInsets.only(
@@ -236,12 +240,14 @@ class _ShowPostState extends State<ShowPost> {
                               }
                             }
                             return Container();
-                          }
-                          );
+                          });
                     }).toList(),
                   );
                 }
-                return Container();
+                return Container(
+                  alignment: Alignment.center,
+                  child: Text("nodata"),
+                );
               },
             );
           },
@@ -383,7 +389,7 @@ StreamBuilder<DocumentSnapshot<Map<String, dynamic>>> _showDiaslogProfile(
   String uid,
 ) {
   return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-    stream: _firestore.collection('userProfile').doc(uid).snapshots(),
+    stream: _firestore.collection('Profile').doc(uid).snapshots(),
     builder: (context, snapshot) {
       if (snapshot.hasError) {
         return Center(

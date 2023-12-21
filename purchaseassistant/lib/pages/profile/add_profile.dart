@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../services/profile_services.dart';
@@ -20,6 +22,8 @@ TextEditingController stdidController = TextEditingController();
 TextEditingController dormController = TextEditingController();
 TextEditingController genderController = TextEditingController();
 TextEditingController phoneController = TextEditingController();
+TextEditingController activeController = TextEditingController();
+TextEditingController statusController = TextEditingController();
 
 List<String> list = <String>['ชาย', 'หญิง'];
 
@@ -28,6 +32,7 @@ String dropdownValue = list.first; // Default value for dropdown
 class _EditProfileState extends State<EditProfile> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final _formKey = GlobalKey<FormState>();
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   void valueItem(value) {
     setState(() {
@@ -50,7 +55,7 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  void saveFile() async {
+  void saveFile(BuildContext context,String uid) async {
     String name = nameController.text;
     String room = roomController.text;
     String stdid = stdidController.text;
@@ -76,14 +81,14 @@ class _EditProfileState extends State<EditProfile> {
         phone: phone,
         lname: lname,
       );
+      await ServiceDeliver().setData(uid);
       nameController.clear();
       roomController.clear();
       stdidController.clear();
       dormController.clear();
       lastnameController.clear();
-      phoneController.clear();
+      phoneController.clear();      
       Navigator.pop(context);
-      
     }
     // print(room);
     // print(name);
@@ -225,7 +230,7 @@ class _EditProfileState extends State<EditProfile> {
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {
                                 if (_image != null) {
-                                  saveFile();
+                                  saveFile(context,_auth.currentUser!.uid);
                                 } else {
                                   const Text("no data");
                                 }
@@ -414,5 +419,6 @@ Widget _buildTextFieldOrder(
       ),
     );
   }
+
   return Container();
 }

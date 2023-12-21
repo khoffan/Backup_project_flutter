@@ -10,6 +10,7 @@ import 'package:purchaseassistant/models/matchmodel.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
+import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../utils/update_post.dart';
@@ -106,6 +107,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                 onPressed: () {
                   Navigator.pop(context);
                   // ServiceDeliver().updateStatus(false, uid);
+                  ProfileService().updateRole(uid, "customer");
                 },
                 tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
               );
@@ -175,7 +177,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             ),
           ]),
       body: StreamBuilder(
-        stream: _firestore.collection('deliverPost').snapshots(),
+        stream: ServiceDeliver().streamPosts(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Container(
@@ -201,7 +203,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
               itemBuilder: (context, index) {
                 final deliverDoc = fillterDeliver[index];
                 final deliverUserDocs =
-                    deliverDoc.reference.collection('deliverContent');
+                    deliverDoc.reference.collection('Contents');
                 return StreamBuilder(
                   stream: deliverUserDocs.snapshots(),
                   builder: (context, deliverSnapshot) {

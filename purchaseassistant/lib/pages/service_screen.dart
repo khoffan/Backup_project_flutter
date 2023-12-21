@@ -11,6 +11,7 @@ import 'package:purchaseassistant/pages/testPage.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
 import '../models/matchmodel.dart';
+import '../services/profile_services.dart';
 import '../utils/constants.dart';
 
 import 'customer_loading.dart';
@@ -430,16 +431,19 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 String title = "หอพัก - ภายในหมาวิทยาลัย";
                                 ServiceDeliver().updateStatus(true, uid, title);
                                 ServiceDeliver().updateWorking(uid, true);
+                                ProfileService().updateRole(uid, "rider");
                               }
                               if (valueSecond == true && valueThird == false) {
                                 String title = "หอพัก - โลตัสหน้า ม.อ.";
                                 ServiceDeliver().updateStatus(true, uid, title);
                                 ServiceDeliver().updateWorking(uid, true);
+                                ProfileService().updateRole(uid, "rider");
                               }
                               if (valueThird == true) {
                                 String title = "รับทุกงาน";
                                 ServiceDeliver().updateStatus(true, uid, title);
                                 ServiceDeliver().updateWorking(uid, true);
+                                ProfileService().updateRole(uid, "rider");
                               }
                               // ServiceDeliver().setStatus(true, uid, "");
 
