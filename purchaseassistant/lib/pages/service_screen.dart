@@ -34,7 +34,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   String cusid = "";
   String riderid = "";
   DeliveryData deliData = DeliveryData();
-  double amount = 50.00;
+  double amount = 0.00;
   Map<String, dynamic> responseData = {};
   Map<String, dynamic> responseDatariders = {};
 
@@ -90,7 +90,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
         };
 
         await APIMatiching().setCustomerData(userData);
-        
 
         // DeliverHistory(cusid: cusid,riderid: riderid,);
       }
@@ -134,267 +133,304 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: themeBg,
-          title: const Text(
-            "เลือกบริการ",
-            style: TextStyle(color: Colors.black, fontSize: 18),
-          ),
-          leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-                padding: const EdgeInsets.all(22.0),
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Row(
-                      children: [
-                        Text(
-                          'เลือกขอบเขตสถานที่ใช้บริการ',
-                          style: TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                    CheckboxListTile(
-                      secondary: const Icon(Icons.area_chart),
-                      title: const Text('หอพัก - ภายในหมาวิทยาลัย'),
-                      subtitle: Text('ค่าบริการขั้นต่ำ 10 บาท'),
-                      value: this.valueFirst,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          this.valueFirst = value!;
-                          value
-                              ? (this.valueSecond
-                                  ? valueThird = true
-                                  : print('not all'))
-                              : valueThird = false;
-                        });
-                      },
-                    ),
-                    CheckboxListTile(
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      secondary: const Icon(Icons.alarm),
-                      title: const Text('หอพัก - โลตัสหน้า ม.อ.'),
-                      subtitle: Text('ค่าบริการขั้นต่ำ 15 บาท'),
-                      value: valueSecond,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          valueSecond = value!;
-                          value
-                              ? (valueFirst
-                                  ? valueThird = true
-                                  : print('not all'))
-                              : valueThird = false;
-                        });
-                      },
-                    ),
-                    CheckboxListTile(
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      secondary: const Icon(Icons.alarm),
-                      title: const Text('รับงานทุกพื้นที่'),
-                      subtitle: Text(
-                        '***เฉพาะผู้ส่งสินค้า',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                      value: this.valueThird,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          this.valueThird = value!;
-                          if (this.valueThird) {
-                            this.valueFirst = value;
-                            this.valueSecond = value;
-                          } else {
-                            this.valueFirst = value;
-                            this.valueSecond = value;
-                          }
-                        });
-                      },
-                    ),
-                  ],
-                )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                    width: 170,
-                    height: 100,
-                    child: InkWell(
-                      onTap: () {
-                        if (((valueFirst == true || valueSecond == true) &&
-                                valueThird != true) &&
-                            amount > 10.00) {
-                          sendData2api(uid, locateData);
-                        } else {
-                          String msgErr = "";
-                          if (amount < 50.00) {
-                            msgErr = "เงินในวอลเล็ตของคุณไม่เพียงพอ";
-                          } else if ((valueFirst == false ||
-                              valueSecond == false ||
-                              valueThird == false)) {
-                            msgErr = "กรุณาเลือกสถานที่ที่ต้องการใช้บริการ";
-                          } else if (valueThird == true &&
-                              valueFirst == true &&
-                              valueSecond == true) {
-                            msgErr =
-                                "ไม่สามารถเลือกรายการนี้ได้ กรุณาเลือกสถานที่ใหม่";
-                          }
-                          Fluttertoast.showToast(msg: msgErr);
-                        }
-                        print(amount);
-                        if (valueFirst == true &&
-                            valueThird == false &&
-                            valueSecond == false) {
-                          String title = "หอพัก - ภายในหมาวิทยาลัย";
-                          ServiceDeliver().updateStatus(false, uid, title);
-
-                          locateData = getLocationData(title);
-                        }
-                        if (valueSecond == true &&
-                            valueThird == false &&
-                            valueFirst == false) {
-                          String title = "หอพัก - โลตัสหน้า ม.อ.";
-                          ServiceDeliver().updateStatus(false, uid, title);
-
-                          locateData = getLocationData(title);
-                        }
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
+    return StreamBuilder(
+        stream: _firestore
+            .collection('Profile')
+            .doc(uid)
+            .collection('transaction')
+            .orderBy('timeStamp', descending: true)
+            .limit(1)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Container(
+              child: Text('Get Data Errors'),
+            );
+          }
+          final getTotalAmount = snapshot.data!.docs.first;
+          dynamic data = getTotalAmount.data();
+          amount = data["totalAmount"];
+          return Scaffold(
+              appBar: AppBar(
+                backgroundColor: themeBg,
+                title: const Text(
+                  "เลือกบริการ",
+                  style: TextStyle(color: Colors.black, fontSize: 18),
+                ),
+                leading: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.black,
+                    )),
+              ),
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                      padding: const EdgeInsets.all(22.0),
+                      child: Column(
+                        children: <Widget>[
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Row(
                             children: [
-                              Container(
-                                padding: EdgeInsets.all(2.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
-                                child: const Icon(
-                                  Icons.face,
-                                  color: Colors.white,
-                                ),
+                              Text(
+                                'เลือกขอบเขตสถานที่ใช้บริการ',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w500),
                               ),
-                              const SizedBox(
-                                height: 5.0,
-                              ),
-                              const Text(
-                                "ลูกค้า",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )
                             ],
                           ),
-                        ),
-                      ),
-                    )),
-                SizedBox(
-                    width: 170,
-                    height: 100,
-                    child: InkWell(
-                      onTap: () {
-                        print("Rider");
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextButton(
-                            onPressed: () {
-                              if ((valueFirst == true ||
-                                      valueSecond == true ||
-                                      valueThird == true) &&
-                                  amount > 10.00) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) {
-                                    return DeliverHistory();
-                                  }),
-                                );
-                              } else {
-                                String msgErr2 = "";
-                                if (amount < 10.00) {
-                                  msgErr2 = "เงินในวอลเล็ตของคุณไม่เพียงพอ";
-                                } else if (valueFirst == false ||
-                                    valueSecond == false ||
-                                    valueThird == false) {
-                                  msgErr2 = "กรุณาเลือกสถานที่ที่ต้องการรับส่ง";
+                          CheckboxListTile(
+                            secondary: const Icon(Icons.area_chart),
+                            title: const Text('หอพัก - ภายในหมาวิทยาลัย'),
+                            subtitle: Text('ค่าบริการขั้นต่ำ 10 บาท'),
+                            value: this.valueFirst,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                this.valueFirst = value!;
+                                value
+                                    ? (this.valueSecond
+                                        ? valueThird = true
+                                        : print('not all'))
+                                    : valueThird = false;
+                              });
+                            },
+                          ),
+                          CheckboxListTile(
+                            controlAffinity: ListTileControlAffinity.trailing,
+                            secondary: const Icon(Icons.alarm),
+                            title: const Text('หอพัก - โลตัสหน้า ม.อ.'),
+                            subtitle: Text('ค่าบริการขั้นต่ำ 15 บาท'),
+                            value: valueSecond,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                valueSecond = value!;
+                                value
+                                    ? (valueFirst
+                                        ? valueThird = true
+                                        : print('not all'))
+                                    : valueThird = false;
+                              });
+                            },
+                          ),
+                          CheckboxListTile(
+                            controlAffinity: ListTileControlAffinity.trailing,
+                            secondary: const Icon(Icons.alarm),
+                            title: const Text('รับงานทุกพื้นที่'),
+                            subtitle: Text(
+                              '***เฉพาะผู้ส่งสินค้า',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            value: this.valueThird,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                this.valueThird = value!;
+                                if (this.valueThird) {
+                                  this.valueFirst = value;
+                                  this.valueSecond = value;
+                                } else {
+                                  this.valueFirst = value;
+                                  this.valueSecond = value;
                                 }
-                                Fluttertoast.showToast(msg: msgErr2);
+                              });
+                            },
+                          ),
+                        ],
+                      )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                          width: 170,
+                          height: 100,
+                          child: InkWell(
+                            onTap: () {
+                              if (((valueFirst == true ||
+                                          valueSecond == true) &&
+                                      valueThird != true) &&
+                                  amount > 10.00) {
+                                sendData2api(uid, locateData);
+                              } else {
+                                String msgErr = "";
+                                if (amount < 50.00) {
+                                  msgErr = "เงินในวอลเล็ตของคุณไม่เพียงพอ";
+                                } else if ((valueFirst == false ||
+                                    valueSecond == false ||
+                                    valueThird == false)) {
+                                  msgErr =
+                                      "กรุณาเลือกสถานที่ที่ต้องการใช้บริการ";
+                                } else if (valueThird == true &&
+                                    valueFirst == true &&
+                                    valueSecond == true) {
+                                  msgErr =
+                                      "ไม่สามารถเลือกรายการนี้ได้ กรุณาเลือกสถานที่ใหม่";
+                                }
+                                Fluttertoast.showToast(msg: msgErr);
                               }
                               print(amount);
-                              if (valueFirst == true && valueThird == false) {
+                              if (valueFirst == true &&
+                                  valueThird == false &&
+                                  valueSecond == false) {
                                 String title = "หอพัก - ภายในหมาวิทยาลัย";
-                                ServiceDeliver().updateStatus(true, uid, title);
-                                ServiceDeliver().updateWorking(uid, true);
-                                ProfileService().updateRole(uid, "rider");
+                                ServiceDeliver()
+                                    .updateStatus(false, uid, title);
+                                // ServiceDeliver().setWorking(uid, false);
+                                locateData = getLocationData(title);
                               }
-                              if (valueSecond == true && valueThird == false) {
+                              if (valueSecond == true &&
+                                  valueThird == false &&
+                                  valueFirst == false) {
                                 String title = "หอพัก - โลตัสหน้า ม.อ.";
-                                ServiceDeliver().updateStatus(true, uid, title);
-                                ServiceDeliver().updateWorking(uid, true);
-                                ProfileService().updateRole(uid, "rider");
+                                ServiceDeliver()
+                                    .updateStatus(false, uid, title);
+                                // ServiceDeliver().setWorking(uid, false);
+                                locateData = getLocationData(title);
                               }
-                              if (valueThird == true) {
-                                String title = "รับทุกงาน";
-                                ServiceDeliver().updateStatus(true, uid, title);
-                                ServiceDeliver().updateWorking(uid, true);
-                                ProfileService().updateRole(uid, "rider");
-                              }
-                              // ServiceDeliver().setStatus(true, uid, "");
-
-                              print("save status success");
+                              // getRiderlist();
                             },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(2.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  child: const Icon(
-                                    Icons.electric_moped,
-                                    color: Colors.white,
-                                  ),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(2.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                      child: const Icon(
+                                        Icons.face,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5.0,
+                                    ),
+                                    const Text(
+                                      "ลูกค้า",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
                                 ),
-                                const SizedBox(
-                                  height: 5.0,
-                                ),
-                                const Text(
-                                  "ผู้ส่งสินค้า",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                )
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    )),
-              ],
-            ),
-            Spacer(),
-            
-          ],
-        )
-        // ],
-        );
+                          )),
+                      SizedBox(
+                          width: 170,
+                          height: 100,
+                          child: InkWell(
+                            onTap: () {
+                              print("Rider");
+                            },
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextButton(
+                                  onPressed: () {
+                                    if ((valueFirst == true ||
+                                            valueSecond == true ||
+                                            valueThird == true) &&
+                                        amount > 10.00) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) {
+                                          return DeliverHistory();
+                                        }),
+                                      );
+                                    } else {
+                                      String msgErr2 = "";
+                                      if (amount < 10.00) {
+                                        msgErr2 =
+                                            "เงินในวอลเล็ตของคุณไม่เพียงพอ";
+                                      } else if (valueFirst == false ||
+                                          valueSecond == false ||
+                                          valueThird == false) {
+                                        msgErr2 =
+                                            "กรุณาเลือกสถานที่ที่ต้องการรับส่ง";
+                                      }
+                                      Fluttertoast.showToast(msg: msgErr2);
+                                    }
+                                    print(amount);
+                                    if (valueFirst == true &&
+                                        valueThird == false) {
+                                      String title = "หอพัก - ภายในหมาวิทยาลัย";
+                                      ServiceDeliver()
+                                          .updateStatus(true, uid, title);
+                                      ServiceDeliver().updateWorking(uid, true);
+                                      ProfileService().updateRole(uid, "rider");
+                                    }
+                                    if (valueSecond == true &&
+                                        valueThird == false) {
+                                      String title = "หอพัก - โลตัสหน้า ม.อ.";
+                                      ServiceDeliver()
+                                          .updateStatus(true, uid, title);
+                                      ServiceDeliver().updateWorking(uid, true);
+                                      ProfileService().updateRole(uid, "rider");
+                                    }
+                                    if (valueThird == true) {
+                                      String title = "รับทุกงาน";
+                                      ServiceDeliver()
+                                          .updateStatus(true, uid, title);
+                                      ServiceDeliver().updateWorking(uid, true);
+                                      ProfileService().updateRole(uid, "rider");
+                                    }
+                                    // ServiceDeliver().setStatus(true, uid, "");
+
+                                    print("save status success");
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(2.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                        child: const Icon(
+                                          Icons.electric_moped,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 5.0,
+                                      ),
+                                      const Text(
+                                        "ผู้ส่งสินค้า",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )),
+                    ],
+                  ),
+                  // Spacer(),
+                  Column(
+                    children: [Text("${amount}")],
+                  )
+                ],
+              )
+              // ],
+              );
+        });
   }
 }
