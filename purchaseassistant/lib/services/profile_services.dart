@@ -157,10 +157,9 @@ class ProfileService {
 
   Future<void> updateRole(String uid, String role) async {
     try {
-      if(uid != "" && role != ""){
+      if (uid != "" && role != "") {
         await _firestore.collection("Profile").doc(uid).update({"role": role});
-      }
-      else{
+      } else {
         print("update fail");
       }
     } catch (e) {
@@ -168,3 +167,29 @@ class ProfileService {
     }
   }
 }
+
+// Future<int> getTotalAmount(String uid) async {
+//   try {
+//     QuerySnapshot snapshot = await _firestore.collection('Profile').get();
+
+//     final docsProfile = snapshot.docs;
+//     for (QueryDocumentSnapshot docProfile in docsProfile) {
+//       CollectionReference subCol =
+//           docProfile.reference.collection('transaction');
+//       QuerySnapshot subsnapshot = await subCol.get();
+//       subsnapshot.docs.forEach((DocumentSnapshot subDoc) {
+//         print(subDoc.data());
+//       });
+//     DocumentSnapshot snapshot =
+//         await _firestore.collection('Profile').doc(uid).get();
+//     CollectionReference subCol = snapshot.reference.collection('transaction');
+//     QuerySnapshot colTransaction = await subCol.get();
+//     for (QueryDocumentSnapshot document in colTransaction.docs) {
+//       print(document["totalAmount"]);
+//     }
+
+//     return 0;
+//   } catch (e) {
+//     throw e.toString();
+//   }
+// }
