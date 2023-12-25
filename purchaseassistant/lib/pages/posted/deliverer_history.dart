@@ -54,32 +54,6 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     Navigator.pop(context);
   }
 
-  int findIndexData(List<Map<String, dynamic>> allData, String targetId) {
-    for (int i = 0; i < allData.length; i++) {
-      if (allData[i]["riderid"] == targetId) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  bool? submituid1(BuildContext context, String riderid) {
-    try {
-      if (uid == riderid) {
-        return true;
-      }
-      return false;
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
-  void confrimeOrder(BuildContext context) async {
-    try {} catch (e) {
-      throw e.toString();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -128,51 +102,8 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                 color: Colors.black,
               ),
             ),
-            // Consumer(
-            //   builder: (context, DeliveryDataProvider provider, _) {
-            //     List<String> data = provider.getDeliveryData();
-            //     if (data.isNotEmpty) {
-            //       return IconButton(
-            //         onPressed: () {
-            //           print(data);
-            //         },
-            //         icon: Icon(
-            //           Icons.notifications,
-            //           color: Colors.black26,
-            //         ),
-            //       );
-            //     }
-
-            //     // Default case when deliveryData is null or cusid/riderid are empty
-            //     return IconButton(
-            //       onPressed: () {
-            //         print("cusid and riderid not data");
-            //       },
-            //       icon: Icon(
-            //         Icons.notifications,
-            //         color: Colors.black26,
-            //       ),
-            //     );
-            //   },
-            // ),
-
-            // IconButton(
-            //   onPressed: () {
-            //     // String cusid = data.getDeliveyDataCusid();
-            //     // String riderid = data.getDeliveyDataRiderid();
-            //     List<String> objdeli = deliData.getDeliveryId();
-            //     if(objdeli.isNotEmpty){
-            //       print(objdeli);
-            //     }
-            //     // print(cusid);
-            //     // print(riderid);
-            //   },
-            //   icon: Icon(Icons.notifications),
-            // ),
             IconButton(
-              onPressed: () {
-                confrimeOrder(context);
-              },
+              onPressed: () {},
               icon: Icon(Icons.notifications),
             ),
           ]),

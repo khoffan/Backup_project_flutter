@@ -10,6 +10,7 @@ import 'package:purchaseassistant/pages/chat/chat_screen.dart';
 import 'package:purchaseassistant/pages/testPage.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
+import 'package:purchaseassistant/utils/formatDate.dart';
 import '../models/matchmodel.dart';
 import '../services/profile_services.dart';
 import '../utils/constants.dart';
@@ -70,119 +71,28 @@ class _ServiceScreenState extends State<ServiceScreen> {
     }
   }
 
-  // int findIndexData(List<Map<String, dynamic>> allData, String targetId) {
-  //   for (int i = 0; i < allData.length; i++) {
-  //     if (allData[i]["cusid"] == targetId) {
-  //       return i;
-  //     }
-  //   }
-  //   return -1;
-  // }
-
-  // void waitingRider(BuildContext context) async {
-  //   try {
-  //     if ((uid, locateData) != "") {
-  //       sendData2api(uid, locateData);
-
-  //       List<Map<String, dynamic>> allData =
-  //           await APIMatiching().getMatchingresult();
-  //       print(allData);
-  //       for (Map<String, dynamic> data in allData) {
-  //         int index = findIndexData(allData, uid);
-  //         print(index);
-  //         if (index != -1) {
-  //           Map<String, dynamic> data = allData[index];
-  //           if (uid == data["cusid"]) {
-  //             print(data["cusid"]);
-  //             Map<String, dynamic> result = await APIMatiching()
-  //                 .getMatckingData(data["cusid"], data["riderid"]);
-  //             bool? sts = submituid1(context, result['cusid']);
-  //             print(sts);
-  //             bool? status = await APIMatiching().getCustomerStatus(sts, result["cusid"], result["riderid"]);
-  //             // if (status == true) {
-  //             //   Navigator.push(
-  //             //       context,
-  //             //       MaterialPageRoute(
-  //             //           builder: (_) => CustomerLoadingScreen(
-  //             //               currid: result["ridername"],
-  //             //               currname: result["riderid"],
-  //             //               currStatus: sts)));
-  //             // }
-  //           }
-  //         }
-  //       }
-  //       return;
-  //     }
-  //   } catch (e) {
-  //     throw e.toString();
-  //   }
-  // }
-
-  // void submitProvider(BuildContext context) {
-  //   DeliveryData data = DeliveryData(cusid: cusid, riderid: riderid);
-  //   var provider = Provider.of<DeliveryDataProvider>(context, listen: false);
-  //   provider.updateDeliveryData(data);
-  // }
-
   void sendData2api(String uid, String locate) async {
     try {
       String name = "";
-
+      Timestamp datenow = Timestamp.now();
       if (uid != "") {
         DocumentSnapshot snapshot =
-            await _firestore.collection("deliverPost").doc(uid).get();
+            await _firestore.collection("Post").doc(uid).get();
         final datasnap = snapshot.data()! as Map<String, dynamic>;
         name = datasnap["name"] ?? '';
       }
       if (uid != "" && locate != "") {
         Map<String, dynamic> userData = {
-          "customers": [
-            {
-              "id": uid,
-              'name': name,
-              "location": locate,
-            }
-          ]
+          "id": uid,
+          'name': name,
+          "location": locate,
+          "date": FormatDate(datenow)
         };
 
-        Map<String, dynamic> response =
-            await APIMatiching().sendData('matching', userData);
-        // Handle the response as needed
+        await APIMatiching().setCustomerData(userData);
+        
 
-        if (response != {}) {
-          responseData = await APIMatiching().setResponse(response);
-          print("service_page: ${response["matches"]}");
-          String datamatch = json.encode(responseData["matches"]);
-          List<dynamic> jasonmatch = json.decode(datamatch);
-          MatchList matchList = MatchList.fromJson(jasonmatch);
-          for (Match match in matchList.matches) {
-            // print('Name: ${match.customername}');
-            // print('Date: ${match.date}');
-            // print('cusID: ${match.customerid}');
-            // print('Name: ${match.ridername}');
-            // print('riderID: ${match.riderid}');
-            // print('locate: ${match.locate}');
-            APIMatiching().setMatchingResult(match.customerid!, match.riderid!,
-                match.customername!, match.ridername!, match.locate!);
-            cusid = match.customerid ?? "";
-            riderid = match.riderid ?? "";
-            if ((cusid, riderid) != "") {
-              // List<String> dataid = [cusid, riderid];
-              // Provider.of<DeliveryDataProvider>(context, listen: false)
-              //     .updateDeliveryData(dataid);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => CustomerLoadingScreen(
-                            currid: cusid,
-                            recivefId: riderid,
-                          )));
-            }
-            // DeliverHistory(cusid: cusid,riderid: riderid,);
-          }
-        } else {
-          print("data is null");
-        }
+        // DeliverHistory(cusid: cusid,riderid: riderid,);
       }
     } catch (e) {
       // Handle errors
@@ -350,7 +260,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                             valueSecond == false) {
                           String title = "หอพัก - ภายในหมาวิทยาลัย";
                           ServiceDeliver().updateStatus(false, uid, title);
-                          // ServiceDeliver().setWorking(uid, false);
+
                           locateData = getLocationData(title);
                         }
                         if (valueSecond == true &&
@@ -358,10 +268,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
                             valueFirst == false) {
                           String title = "หอพัก - โลตัสหน้า ม.อ.";
                           ServiceDeliver().updateStatus(false, uid, title);
-                          // ServiceDeliver().setWorking(uid, false);
+
                           locateData = getLocationData(title);
                         }
-                        // getRiderlist();
                       },
                       child: Card(
                         child: Padding(
@@ -482,37 +391,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
               ],
             ),
             Spacer(),
-            // SizedBox(
-            //   height: 120.0,
-            //   child: Center(
-            //     child: TextButton(
-            //       onPressed: () {
-            //         if (valueFirst == true) {
-            //           String title = "หอพัก - ภายในหมาวิทยาลัย";
-            //           sendLocationRider(title);
-            //         }
-            //         if (valueSecond == true) {
-            //           String title = "หอพัก - โลตัสหน้า ม.อ.";
-            //           sendLocationRider(title);
-            //         }
-            //         if (valueThird == true &&
-            //             valueSecond == true &&
-            //             valueFirst == true) {
-            //           String title = "รับทุกงาน";
-            //           sendLocationRider(title);
-            //         }
-            //       },
-            //       child: Text(
-            //         "     Matching    ",
-            //         style: TextStyle(fontSize: 20, color: Colors.black),
-            //       ),
-            //       style: TextButton.styleFrom(
-            //           backgroundColor: Colors.purple[100],
-            //           shape: const BeveledRectangleBorder(
-            //               borderRadius: BorderRadius.all(Radius.circular(5)))),
-            //     ),
-            //   ),
-            // )
+            
           ],
         )
         // ],
