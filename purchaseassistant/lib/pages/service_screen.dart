@@ -33,8 +33,8 @@ class ServiceScreen extends StatefulWidget {
 }
 
 class _ServiceScreenState extends State<ServiceScreen> {
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late FirebaseAuth _auth = FirebaseAuth.instance;
+  late FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String locateData = "";
   String cusid = "";
@@ -43,7 +43,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   double amount = 0.00;
   Map<String, dynamic> responseData = {};
   Map<String, dynamic> responseDatariders = {};
-
+  late StreamSubscription<double> subscription;
   bool valueFirst = false;
   bool valueSecond = false;
   bool valueThird = false;
@@ -61,98 +61,67 @@ class _ServiceScreenState extends State<ServiceScreen> {
     return "";
   }
 
-  bool? submituid1(BuildContext context, String curcusid) {
-    try {
-      // List<Map<String, dynamic>> allData =
-      //     await APIMatiching().getMatchingresult();
-      // for (Map<String, dynamic> data in allData) {
-      //   ;
-      // }
-      if (uid == curcusid) {
-        return true;
-      }
-      return false;
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
   void sendData2api(String uid, String locate) async {
     try {
-      String name = "";
-      Timestamp datenow = Timestamp.now();
-      if (uid != "") {
+      // Check if uid is not empty or null
+      if (uid != "" && uid.trim().isNotEmpty && locate != "") {
+        String name = "";
+        Timestamp datenow = Timestamp.now();
+
         DocumentSnapshot snapshot =
-            await _firestore.collection("Post").doc(uid).get();
-        final datasnap = snapshot.data()! as Map<String, dynamic>;
-        name = datasnap["name"] ?? '';
-      }
-      if (uid != "" && locate != "") {
-        Map<String, dynamic> userData = {
-          "id": uid,
-          'name': name,
-          "location": locate,
-          "date": FormatDate(datenow)
-        };
+            await _firestore.collection("Profile").doc(uid).get();
 
-        await APIMatiching().setCustomerData(userData);
+        if (snapshot.exists) {
+          final datasnap = snapshot.data()! as Map<String, dynamic>;
+          name = datasnap["name"] ?? '';
 
-        // DeliverHistory(cusid: cusid,riderid: riderid,);
-      }
-    } catch (e) {
-      // Handle errors
-      print('Error: $e, Error: uid or locate is null');
-    }
-  }
+          Map<String, dynamic> userData = <String, dynamic>{
+            "id": uid,
+            'name': name,
+            "location": locate,
+            "date": FormatDate(datenow),
+          };
 
-  void getRiderlist() async {
-    try {
-      Map<String, dynamic> datariders =
-          await APIMatiching().getRiderlist("riderlist");
+          await APIMatiching().setCustomerData(userData);
 
-      if (datariders != {}) {
-        responseDatariders = await APIMatiching().setResponse(datariders);
-        print("riders-list: ${responseDatariders["riders"]}");
-        String ridersdata = json.encode(responseDatariders["riders"]);
-        List<dynamic> jsonlist = json.decode(ridersdata);
-        Riderlist ridersList = Riderlist.fromJson(jsonlist);
-
-        for (RiderModel rider in ridersList.riders) {
-          print('Name: ${rider.name}');
-          print('Location: ${rider.location}');
-          print('Date: ${rider.date}');
-          print('ID: ${rider.id}');
-          print('Status User: ${rider.statususer}');
-          print('------------');
+          // DeliverHistory(cusid: cusid, riderid: riderid,);
+        } else {
+          // Handle the case when the document doesn't exist
+          print('Error: Document does not exist for uid: $uid');
         }
+      } else {
+        // Handle the case when uid is empty or null
+        print('Error: uid is empty or null');
       }
     } catch (e) {
-      throw e.toString();
+      // Handle other errors
+      print('Error: $e');
     }
   }
 
   getAmount(BuildContext context, String uid) {
     try {
-      StreamSubscription<double> subscription =
-          ServiceWallet().getTotalAmount(uid).listen(
-        (double totalAmount) {
-          if(totalAmount == 0.00){
-            return alertNOtAmout(context);
-          }
-          setState(() {
-            amount = totalAmount;
-          });
-          print('Total Amount: $totalAmount');
-        },
-        onError: (dynamic error) {
-          // Handle errors
-          print('Error: $error');
-        },
-        onDone: () {
-          // Handle when the stream is closed
-          print('Stream is closed');
-        },
-      );
+      if (uid != "") {
+        subscription = ServiceWallet().getTotalAmount(uid).listen(
+          (double totalAmount) {
+            if (totalAmount == 0.00) {
+              return alertNOtAmout(context);
+            }
+            setState(() {
+              amount = totalAmount;
+            });
+            print('Total Amount: $totalAmount');
+          },
+          onError: (dynamic error) {
+            // Handle errors
+            print('Error: $error');
+          },
+          onDone: () {
+            // Handle when the stream is closed
+            print('Stream is closed');
+          },
+        );
+      }
     } catch (e) {
       throw e.toString();
     }
@@ -161,7 +130,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   @override
   void initState() {
     super.initState();
-    uid = _auth.currentUser?.uid ?? '';
+    uid = _auth.currentUser!.uid;
     getAmount(context, uid);
   }
 
@@ -275,6 +244,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 valueThird != true) &&
                             amount > 10.00) {
                           sendData2api(uid, locateData);
+                          print(uid);
                         } else {
                           String msgErr = "";
                           if (amount < 50.00) {

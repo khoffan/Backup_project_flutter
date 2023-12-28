@@ -57,25 +57,42 @@ class APIMatiching {
     }
   }
 
+  Future<void> updateStatusCustomer(String uid) async {
+    try {
+      if (uid != "") {
+        await _firestore.collection("customerData").doc(uid).update({
+          "cus_status": false,
+        });
+      }
+      else {
+        return;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   // sett data in firestore
   Future<void> setCustomerData(Map<String, dynamic> data) async {
     try {
       if (data != {}) {
-        String cusid = data['cusid'];
-        String cusname = data['cusname'];
-        String locate = data['locate'];
-        String datetime = data["date"];
-        await _firestore.collection("matching").doc(cusid).set({
-          "cusid": cusid,
-          "cusname": cusname,
-          "location": locate,
-          "cus_status": true,
-          "date": datetime
-        });
+        String cusid = data['id'] ?? "";
+        String cusname = data['name'] ?? "";
+        String locate = data['location'] ?? "";
+        String datetime = data["date"] ?? "";
+        if ((cusid, cusname, locate, datetime) != "") {
+          await _firestore.collection("customerData").doc(cusid).set({
+            "cusid": cusid,
+            "cusname": cusname,
+            "location": locate,
+            "cus_status": true,
+            "date": datetime
+          });
+        }
         print("set data success");
       }
-    } on FirebaseException catch (e) {
-      throw e.code;
+    } catch (e) {
+      throw e.toString();
     }
   }
 }
