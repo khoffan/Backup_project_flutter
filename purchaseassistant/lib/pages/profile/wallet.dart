@@ -1,13 +1,8 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import 'package:quickalert/models/quickalert_type.dart';
-
-import 'dart:developer' as developer;
 
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 
@@ -42,6 +37,11 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
           'Wallet',
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back)),
         backgroundColor: themeBg,
         automaticallyImplyLeading: true,
         iconTheme: const IconThemeData(

@@ -18,16 +18,7 @@ class _AddcommentState extends State<Addcomment> {
   TextEditingController _commentController = TextEditingController();
   String uid = "";
 
-  // void saveComment() async {
-  //   try {
-  //     String comment = _commentController.text;
-
-  //     await ServiceDeliver().saveDeliverComment(uid: uid, title: comment, postId: );
-  //     _commentController.clear();
-  //   } catch (e) {
-  //     throw e.toString();
-  //   }
-  // }
+ 
 
   @override
   void initState() {
