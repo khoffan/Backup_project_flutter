@@ -50,6 +50,22 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     }
   }
 
+  void showMediaCustoerSide(BuildContext context, FirebaseFirestore store) {
+    final Widget customerStream = showCustomerStream(context, store);
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+          child: Column(
+            children: [Expanded(child: customerStream)],
+          ),
+        );
+      },
+    );
+  }
+
   void navigetPOP() {
     Navigator.pop(context);
   }
@@ -103,7 +119,9 @@ class _DeliverHistoryState extends State<DeliverHistory> {
               ),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                showMediaCustoerSide(context, FirebaseFirestore.instance);
+              },
               icon: Icon(Icons.notifications),
             ),
           ]),
@@ -313,4 +331,83 @@ class _DeliverHistoryState extends State<DeliverHistory> {
       ),
     );
   }
+}
+
+Widget showCustomerStream(BuildContext context, FirebaseFirestore firestore) {
+  return StreamBuilder(
+    stream: firestore.collection("customerData").snapshots(),
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return Center(
+          child: Text("Error: ${snapshot.error}"),
+        );
+      }
+      if (!snapshot.hasData) {
+        return Center(
+          child: Text("No data in collection"),
+        );
+      }
+      final customerDocs = snapshot.data!.docs;
+      return ListView(
+          children: customerDocs.map((customerDoc) {
+        final customerdata = customerDoc.data() as Map<String, dynamic>;
+        return  Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                color: themeBg,
+                height: 100,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Name: ${customerdata['cusname']}",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text("${customerdata['location']}")
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            ElevatedButton(
+                                onPressed: () {},
+                                child: Text("ตอบรับ"),
+                                style: ElevatedButton.styleFrom(
+                                    primary: themeBg, onPrimary: Colors.black)),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            ElevatedButton(
+                              onPressed: () {},
+                              child: Text("ยกเลิก"),
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.red, onPrimary: Colors.white),
+                            ),
+                          ],
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList());
+    },
+  );
 }
