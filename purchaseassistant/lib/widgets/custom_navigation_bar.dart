@@ -74,14 +74,15 @@ class _BottomNavigationState extends State<BottomNavigation> {
           child: const Icon(Icons.add),
           backgroundColor: Colors.green,
           onPressed: () {
-            if (amout < 20.00) {
-              Fluttertoast.showToast(
-                msg: "เงินคงเหลือไม่เพียงพอ กรุณาเติมเงิน",
-              );
-              amout += 5;
-            } else {
-              Navigator.pushNamed(context, AppRoute.service);
-            }
+            // if (amout < 20.00) {
+            //   Fluttertoast.showToast(
+            //     msg: "เงินคงเหลือไม่เพียงพอ กรุณาเติมเงิน",
+            //   );
+            //   amout += 5;
+            // } else {
+            //   Navigator.pushNamed(context, AppRoute.service);
+            // }
+            Navigator.pushNamed(context, AppRoute.service);
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

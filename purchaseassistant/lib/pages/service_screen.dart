@@ -11,6 +11,7 @@ import 'package:purchaseassistant/Provider/deliverDataProvider.dart';
 import 'package:purchaseassistant/pages/chat/chat_screen.dart';
 import 'package:purchaseassistant/pages/profile/profile_screen.dart';
 import 'package:purchaseassistant/pages/testPage.dart';
+import 'package:purchaseassistant/routes/routes.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
 import 'package:purchaseassistant/services/wallet_service.dart';
@@ -399,9 +400,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
               ],
             ),
             // Spacer(),
-            Column(
-              children: [Text("${amount}")],
-            )
+            // Column(
+            //   children: [Text("${amount}")],
+            // )
           ],
         )
         // ],
@@ -411,23 +412,14 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
 alertNOtAmout(BuildContext context) {
   return QuickAlert.show(
-      context: context,
-      type: QuickAlertType.confirm,
-      text: "คุณยังไม่ได้เติมเงิน กรุณาเติมเงินเข้าบัญชี",
-      confirmBtnColor: Colors.blue,
-      widget: Row(
-        children: [
-          ElevatedButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => WalletScreenApp()));
-              },
-              child: Text("เติมเงิน")),
-          ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("ยกเลิก"))
-        ],
-      ));
+    context: context,
+    type: QuickAlertType.confirm,
+    title: 'เงินคงเหลือไม่เพียงพอ',
+    text: "กรุณาเติมเงินก่อนทำรายการ",
+    confirmBtnText: 'เติมเงิน',
+    onConfirmBtnTap: () =>
+        Navigator.pushReplacementNamed(context, AppRoute.wallet),
+    confirmBtnColor: Colors.blue,
+    cancelBtnText: 'ตกลง',
+  );
 }
