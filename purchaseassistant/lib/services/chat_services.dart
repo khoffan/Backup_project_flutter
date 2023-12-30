@@ -11,10 +11,10 @@ class ChatServices extends ChangeNotifier {
     try {
       final String currentid = _auth.currentUser?.uid ?? '';
       DocumentSnapshot<Map<String, dynamic>> snapshot =
-          await _firestore.collection('userProfile').doc(currentid).get();
+          await _firestore.collection('Profile').doc(currentid).get();
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       final Timestamp _time = Timestamp.now();
-
+      print(recivesid);
       Message? newMessage;
       if (recivesid != '' && currentid != '' && message != '') {
         newMessage = Message(
@@ -47,6 +47,7 @@ class ChatServices extends ChangeNotifier {
   
 
   Stream<QuerySnapshot> getMessage(String userid, String otherid) {
+
     List<String> ids = [userid, otherid];
     ids.sort();
     String chat_room_id = ids.join("_");

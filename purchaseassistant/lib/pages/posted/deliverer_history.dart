@@ -7,11 +7,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:purchaseassistant/Provider/deliverDataProvider.dart';
 import 'package:purchaseassistant/models/matchmodel.dart';
+import 'package:purchaseassistant/pages/chat/chat_screen.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
 import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
+import 'package:purchaseassistant/utils/formatDate.dart';
 
 import '../../utils/update_post.dart';
 import '../customer_loading.dart';
@@ -64,6 +66,46 @@ class _DeliverHistoryState extends State<DeliverHistory> {
         );
       },
     );
+  }
+
+  void riderConfirme(String uid, String docId, String cusname) async {
+    Timestamp datetime = Timestamp.now();
+    String datenow = FormatDate(datetime);
+    if (uid != "") {
+      DocumentSnapshot snapshot =
+          await _firestore.collection("Profile").doc(uid).get();
+      final data = snapshot.data() as Map<String, dynamic>;
+      String name = data["name"];
+      if (name != "") {
+        Map<String, dynamic> userdata = {
+          "id": uid,
+          "name": name,
+          "date": datenow,
+        };
+
+        await APIMatiching().updateDataRiderConfrime(userdata, docId);
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(reciveuid: docId,name: cusname,)));
+      }
+    }
+  }
+  void riderCancel(String uid, String docId) async {
+    Timestamp datetime = Timestamp.now();
+    String datenow = FormatDate(datetime);
+    if (uid != "") {
+      DocumentSnapshot snapshot =
+          await _firestore.collection("Profile").doc(uid).get();
+      final data = snapshot.data() as Map<String, dynamic>;
+      String name = data["name"];
+      if (name != "") {
+        Map<String, dynamic> userdata = {
+          "id": uid,
+          "name": name,
+          "date": datenow,
+        };
+
+        await APIMatiching().updateDataRiderConfrime(userdata, docId);
+      }
+    }
   }
 
   void navigetPOP() {
@@ -331,83 +373,92 @@ class _DeliverHistoryState extends State<DeliverHistory> {
       ),
     );
   }
-}
 
-Widget showCustomerStream(BuildContext context, FirebaseFirestore firestore) {
-  return StreamBuilder(
-    stream: firestore.collection("customerData").snapshots(),
-    builder: (context, snapshot) {
-      if (snapshot.hasError) {
-        return Center(
-          child: Text("Error: ${snapshot.error}"),
-        );
-      }
-      if (!snapshot.hasData) {
-        return Center(
-          child: Text("No data in collection"),
-        );
-      }
-      final customerDocs = snapshot.data!.docs;
-      return ListView(
-          children: customerDocs.map((customerDoc) {
-        final customerdata = customerDoc.data() as Map<String, dynamic>;
-        return  Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                color: themeBg,
-                height: 100,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  
+  Widget buildContent(Map<String, dynamic> customerdata, String docid) {
+    String name = customerdata['cusname'];
+
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            color: themeBg,
+            height: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Name: ${customerdata['cusname']}",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text("${customerdata['location']}")
-                      ],
+                    Text(
+                      "Name: ${name}",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Text("${customerdata['location']}")
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            ElevatedButton(
-                                onPressed: () {},
-                                child: Text("ตอบรับ"),
-                                style: ElevatedButton.styleFrom(
-                                    primary: themeBg, onPrimary: Colors.black)),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: Text("ยกเลิก"),
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.red, onPrimary: Colors.white),
-                            ),
-                          ],
-                        )
+                        ElevatedButton(
+                            onPressed: () {
+                              riderConfirme(uid, docid, name);
+                            },
+                            child: Text("ตอบรับ"),
+                            style: ElevatedButton.styleFrom(
+                                primary: themeBg, onPrimary: Colors.black)),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            riderCancel(uid,docid);
+                          },
+                          child: Text("ยกเลิก"),
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.red, onPrimary: Colors.white),
+                        ),
                       ],
                     )
                   ],
-                ),
-              ),
-            ],
+                )
+              ],
+            ),
           ),
-        );
-      }).toList());
-    },
-  );
+        ],
+      ),
+    );
+  }
+
+  Widget showCustomerStream(BuildContext context, FirebaseFirestore firestore) {
+    return StreamBuilder(
+      stream: firestore.collection("customerData").snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text("Error: ${snapshot.error}"),
+          );
+        }
+        if (!snapshot.hasData) {
+          return Center(
+            child: Text("No data in collection"),
+          );
+        }
+        final customerDocs = snapshot.data!.docs;
+        return ListView(
+            children: customerDocs.map((customerDoc) {
+          final customerdata = customerDoc.data() as Map<String, dynamic>;
+          return buildContent(customerdata, customerDoc.id);
+        }).toList());
+      },
+    );
+  }
 }

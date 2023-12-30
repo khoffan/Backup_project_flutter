@@ -31,6 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isShowIcon = true;
   void sendMessge() async {
     if (_messageController.text.isNotEmpty) {
+      print(otherid);
       await ChatServices().sendMessge(otherid, _messageController.text);
       _messageController.clear();
     }
@@ -41,6 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     uid = _auth.currentUser!.uid;
     otherid = widget.reciveuid ?? '';
+    print(otherid);
     _focusNode.addListener(() {
       setState(() {
         isShowIcon = !_focusNode.hasFocus;
@@ -211,6 +213,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     icon: Icon(Icons.send), // You can choose any icon you like.
                     onPressed: () {
                       sendMessge();
+                      _messageController.clear();
                     },
                   ),
                   prefixIcon: isShowIcon

@@ -57,21 +57,6 @@ class APIMatiching {
     }
   }
 
-  Future<void> updateStatusCustomer(String uid) async {
-    try {
-      if (uid != "") {
-        await _firestore.collection("customerData").doc(uid).update({
-          "cus_status": false,
-        });
-      }
-      else {
-        return;
-      }
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
   // sett data in firestore
   Future<void> setCustomerData(Map<String, dynamic> data) async {
     try {
@@ -81,15 +66,69 @@ class APIMatiching {
         String locate = data['location'] ?? "";
         String datetime = data["date"] ?? "";
         if ((cusid, cusname, locate, datetime) != "") {
-          await _firestore.collection("customerData").doc(cusid).set({
+          await _firestore.collection("customerData").doc(cusid).update({
             "cusid": cusid,
             "cusname": cusname,
             "location": locate,
             "cus_status": true,
-            "date": datetime
+            "date": datetime,
           });
         }
         print("set data success");
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  // update data
+  Future<void> updateStatusCustomer(String uid) async {
+    try {
+      if (uid != "") {
+        await _firestore.collection("customerData").doc(uid).update({
+          "cus_status": false,
+        });
+      } else {
+        return;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  // update rider status
+  Future<void> updateDataRiderConfrime(
+      Map<String, dynamic> data, String docid) async {
+    try {
+      if (data != {}) {
+        String riderid = data["id"];
+        String ridername = data["name"];
+        String daterider = data["date"];
+        await _firestore.collection("customerData").doc(docid).update({
+          "riderid": riderid,
+          "ridername": ridername,
+          "rider_status": true,
+          "dateRider": daterider
+        });
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> updateDataRiderCancel(
+      Map<String, dynamic> data, String docid) async {
+    try {
+      if (data != {}) {
+        String riderid = data["id"];
+        String ridername = data["name"];
+        String daterider = data["date"];
+        await _firestore.collection("customerData").doc(docid).update({
+          "riderid": riderid,
+          "ridername": ridername,
+          "rider_status": true,
+          "dateRider": daterider
+        });
       }
     } catch (e) {
       throw e.toString();
