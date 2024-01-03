@@ -31,24 +31,22 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
           if (data["rider_status"] == true) {
             String reciveuid = data["riderid"];
             String name = data["ridername"];
-            bool status = data["rider_status"];
-            if (status != true) {
-              QuickAlert.show(
-                context: context,
-                type: QuickAlertType.confirm,
-                text: 'จับคู่สำเร็จ ยอมรับการจับคู่หรือไม่',
-                confirmBtnText: 'ตกลง',
-                cancelBtnText: "ยกเลิก",
-                onConfirmBtnTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) =>
-                              ChatScreen(reciveuid: reciveuid, name: name)));
-                },
-                confirmBtnColor: Colors.green,
-              );
-            }
+
+            QuickAlert.show(
+              context: context,
+              type: QuickAlertType.confirm,
+              text: 'จับคู่สำเร็จ ยอมรับการจับคู่หรือไม่',
+              confirmBtnText: 'ตกลง',
+              cancelBtnText: "ยกเลิก",
+              onConfirmBtnTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            ChatScreen(reciveuid: reciveuid, name: name)));
+              },
+              confirmBtnColor: Colors.green,
+            );
           }
         }
       } else {
@@ -75,8 +73,11 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('รอการจับคู่'),
+      ),
+      body: Container(
         color: Colors.white,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 10),
