@@ -31,7 +31,6 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
       if (currid != "") {
         DocumentSnapshot snapshot =
             await _firestore.collection("customerData").doc(currid).get();
-
         if (snapshot.exists) {
           final data = snapshot.data() as Map<String, dynamic>;
           if (currstatus == true) {
@@ -55,9 +54,8 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
                 confirmBtnColor: Colors.green,
               );
             }
-          }
-          else {
-            Future.delayed(Duration(seconds: 10),(){
+          } else {
+            Future.delayed(Duration(seconds: 10), () {
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.confirm,
@@ -77,19 +75,24 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
     }
   }
 
-  void getStatus(String uid) async {
+  void getStatus(BuildContext context, String uid) async {
     try {
-      stream = APIMatiching().getStatusRider(uid).listen((bool status) {
-        if(status == true){
-          setState(() {
-            currstatus = status;
-          });
-        }
-       },onError: (dynamic error){
-        print("Error: ${error}");
-       }, onDone: (){
-        print("Stream is close");
-       });
+      stream = APIMatiching().getStatusRider(uid).listen(
+        (bool status) {
+          if (status == true) {
+            print(status);
+            setState(() {
+              currstatus = status;
+            });
+          }
+        },
+        onError: (dynamic error) {
+          print("Error: $error");
+        },
+        onDone: () {
+          print("Stream is done");
+        },
+      );
     } catch (e) {
       throw e.toString();
     }
@@ -106,10 +109,17 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
       // or take appropriate action for your application.
       print("User not authenticated");
     }
-    getStatus(uid);
-    connectMatchingResult();
+    getStatus(context, currid);
+    print(currstatus);
+    if(currstatus == true){
+      connectMatchingResult();
+    }
   }
-
+  @override
+  void dispose(){
+    super.dispose();
+    stream.cancel();
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
