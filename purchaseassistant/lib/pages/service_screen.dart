@@ -84,7 +84,14 @@ class _ServiceScreenState extends State<ServiceScreen> {
           };
 
           await APIMatiching().setCustomerData(userData);
-          Navigator.push(context, MaterialPageRoute(builder: (_) => LoadingCustomerScreen(riderid: uid,)));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => LoadingCustomerScreen(
+                riderid: uid,
+              ),
+            ),
+          );
           // DeliverHistory(cusid: cusid, riderid: riderid,);
         } else {
           // Handle the case when the document doesn't exist
@@ -99,8 +106,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
       print('Error: $e');
     }
   }
-
-  
 
   getAmount(BuildContext context, String uid) {
     try {
@@ -134,6 +139,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
+    print(uid);
     getAmount(context, uid);
   }
 

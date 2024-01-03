@@ -74,36 +74,47 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     if (uid != "") {
       DocumentSnapshot snapshot =
           await _firestore.collection("Profile").doc(uid).get();
-      final data = snapshot.data() as Map<String, dynamic>;
-      String name = data["name"];
-      if (name != "") {
-        Map<String, dynamic> userdata = {
-          "id": uid,
-          "name": name,
-          "date": datenow,
-        };
+      if (snapshot.exists) {
+        final data = snapshot.data() as Map<String, dynamic>;
+        String name = data["name"];
+        if (name != "") {
+          Map<String, dynamic> userdata = {
+            "id": uid,
+            "name": name,
+            "date": datenow,
+          };
 
-        await APIMatiching().updateDataRiderConfrime(userdata, docId);
-        Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(reciveuid: docId,name: cusname,)));
+          await APIMatiching().updateDataRiderConfrime(userdata, docId);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ChatScreen(
+                        reciveuid: docId,
+                        name: cusname,
+                      )));
+        }
       }
     }
   }
+
   void riderCancel(String uid, String docId) async {
     Timestamp datetime = Timestamp.now();
     String datenow = FormatDate(datetime);
     if (uid != "") {
       DocumentSnapshot snapshot =
           await _firestore.collection("Profile").doc(uid).get();
-      final data = snapshot.data() as Map<String, dynamic>;
-      String name = data["name"];
-      if (name != "") {
-        Map<String, dynamic> userdata = {
-          "id": uid,
-          "name": name,
-          "date": datenow,
-        };
+      if (snapshot.exists) {
+        final data = snapshot.data() as Map<String, dynamic>;
+        String name = data["name"];
+        if (name != "") {
+          Map<String, dynamic> userdata = {
+            "id": uid,
+            "name": name,
+            "date": datenow,
+          };
 
-        await APIMatiching().updateDataRiderConfrime(userdata, docId);
+          await APIMatiching().updateDataRiderCancel(userdata, docId);
+        }
       }
     }
   }
@@ -420,7 +431,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            riderCancel(uid,docid);
+                            riderCancel(uid, docid);
                           },
                           child: Text("ยกเลิก"),
                           style: ElevatedButton.styleFrom(
@@ -440,7 +451,9 @@ class _DeliverHistoryState extends State<DeliverHistory> {
 
   Widget showCustomerStream(BuildContext context, FirebaseFirestore firestore) {
     return StreamBuilder(
-      stream: firestore.collection("customerData").snapshots(),
+      stream: firestore
+          .collection("customerData").orderBy("date")
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(

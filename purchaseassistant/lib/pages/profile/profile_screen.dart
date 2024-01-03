@@ -105,16 +105,16 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                   ),
                   automaticallyImplyLeading: true,
                   iconTheme: IconThemeData(color: Colors.black),
-                  // leading: IconButton(
-                  //     onPressed: () {
-                  //       if (widget.myNavigate() != null) {
-                  //         widget.myNavigate();
-                  //       }
-                  //     },
-                  //     icon: const Icon(
-                  //       Icons.arrow_back,
-                  //       color: Colors.black,
-                  //     )),
+                  leading: IconButton(
+                      onPressed: () {
+                        if (widget.myNavigate() != null) {
+                          widget.myNavigate();
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                      )),
                   actions: [
                     IconButton(
                       onPressed: () {

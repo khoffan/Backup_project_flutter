@@ -66,6 +66,33 @@ class APIMatiching {
         String locate = data['location'] ?? "";
         String datetime = data["date"] ?? "";
         if ((cusid, cusname, locate, datetime) != "") {
+          await _firestore.collection("customerData").doc(cusid).set({
+            "cusid": cusid,
+            "cusname": cusname,
+            "location": locate,
+            "cus_status": true,
+            "date": datetime,
+            "riderid": "null",
+            "ridername": "null",
+            "rider_status": false,
+            "dateRider": "null"
+          });
+        }
+        print("set data success");
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> updateCustomerData(Map<String, dynamic> data) async {
+    try {
+      if (data != {}) {
+        String cusid = data['id'] ?? "";
+        String cusname = data['name'] ?? "";
+        String locate = data['location'] ?? "";
+        String datetime = data["date"] ?? "";
+        if ((cusid, cusname, locate, datetime) != "") {
           await _firestore.collection("customerData").doc(cusid).update({
             "cusid": cusid,
             "cusname": cusname,
