@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -159,6 +160,25 @@ class APIMatiching {
       }
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  Stream<bool> getStatusRider(String uid) async* {
+    try {
+      StreamController<bool> controller = StreamController<bool>();
+      CollectionReference snapshot = _firestore.collection("customerData");
+
+      snapshot.doc(uid).snapshots().listen((DocumentSnapshot quryData) { 
+        final data = quryData.data() as Map<String, dynamic>;
+        controller.add(data["rider_status"]);
+      }, onError: (dynamic error){
+        controller.addError(error);
+      }, onDone: () {
+        controller.close();
+      },);
+      yield* controller.stream;
+    } catch (e) {
+      print("Error: &{e}");
     }
   }
 }
