@@ -168,17 +168,61 @@ class APIMatiching {
       StreamController<bool> controller = StreamController<bool>();
       CollectionReference snapshot = _firestore.collection("customerData");
 
-      snapshot.doc(uid).snapshots().listen((DocumentSnapshot quryData) { 
-        final data = quryData.data() as Map<String, dynamic>;
-        controller.add(data["rider_status"]);
-      }, onError: (dynamic error){
-        controller.addError(error);
-      }, onDone: () {
-        controller.close();
-      },);
+      snapshot.doc(uid).snapshots().listen(
+        (DocumentSnapshot quryData) {
+          final data = quryData.data() as Map<String, dynamic>;
+          controller.add(data["rider_status"]);
+        },
+        onError: (dynamic error) {
+          controller.addError(error);
+        },
+        onDone: () {
+          controller.close();
+        },
+      );
       yield* controller.stream;
     } catch (e) {
       print("Error: &{e}");
+    }
+  }
+
+  //get data stream document function
+  Stream<Map<String, dynamic>> getData(String currid) async* {
+    StreamController<Map<String, dynamic>> _snapshotController =
+        StreamController<Map<String, dynamic>>();
+    StreamSubscription<DocumentSnapshot>? subscription;
+
+    try {
+      DocumentReference docRef =
+          await _firestore.collection("customerData").doc(currid);
+
+      subscription = docRef.snapshots().listen(
+        (DocumentSnapshot quryData) {
+          final data = quryData.data() as Map<String, dynamic>;
+          Map<String, dynamic> riderDatas = {
+            "riderid": data["riderid"],
+            "ridername": data["ridername"],
+            "rider_status": data["rider_status"],
+            "dateRider": data["dateRider"]
+          };
+          _snapshotController.add(riderDatas);
+        },
+        onError: (dynamic error) {
+          _snapshotController.addError(error);
+        },
+        onDone: () {
+          // Do not close the _snapshotController here
+        },
+      );
+
+      yield* _snapshotController.stream;
+    } on FirebaseException catch (e) {
+      throw e.message.toString();
+    } finally {
+      // Close the StreamController when it's no longer needed
+      _snapshotController.close();
+      // Cancel the subscription when it's no longer needed
+      subscription?.cancel();
     }
   }
 }

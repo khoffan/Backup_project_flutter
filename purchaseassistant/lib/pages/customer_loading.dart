@@ -24,20 +24,19 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String currid = "";
-  late bool currstatus;
+  bool currstatus = false;
   late StreamSubscription<bool> stream;
-  void connectMatchingResult() async {
+
+  late StreamSubscription<Map<String, dynamic>> streamData;
+
+  void connectMatchingResult() {
     try {
       if (currid != "") {
-        DocumentSnapshot snapshot =
-            await _firestore.collection("customerData").doc(currid).get();
-        if (snapshot.exists) {
-          final data = snapshot.data() as Map<String, dynamic>;
-          if (currstatus == true) {
-            String reciveuid = data["riderid"];
-            String name = data["ridername"];
-            bool status = data["rider_status"];
-            if (status != true) {
+        streamData = APIMatiching().getData(currid).listen(
+          (Map<String, dynamic> snapshotData) {
+            if(snapshotData["rider_status"] == true){
+              String name = snapshotData["ridername"];
+              String reciveuid = snapshotData["riderid"]; 
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.confirm,
@@ -54,21 +53,16 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
                 confirmBtnColor: Colors.green,
               );
             }
-          } else {
-            Future.delayed(Duration(seconds: 10), () {
-              QuickAlert.show(
-                context: context,
-                type: QuickAlertType.confirm,
-                text: 'ตอนนนี้ไม่ผู้ให้บริการ คุณต้องการที่จะจับคู่ต่อหรือไม่',
-                confirmBtnText: 'ตกลง',
-                cancelBtnText: 'ยกเลิก',
-                confirmBtnColor: Colors.green,
-              );
-            });
-          }
-        }
+          },
+          onError: (dynamic error) {
+            print("Error: ${error}");
+          },
+          onDone: () {
+            print("Stream is closed");
+          },
+        );
       } else {
-        print("document not update");
+        print("Document not updated");
       }
     } on FirebaseAuthException catch (e) {
       print(e.message);
@@ -80,7 +74,6 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
       stream = APIMatiching().getStatusRider(uid).listen(
         (bool status) {
           if (status == true) {
-            print(status);
             setState(() {
               currstatus = status;
             });
@@ -111,15 +104,17 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
     }
     getStatus(context, currid);
     print(currstatus);
-    if(currstatus == true){
-      connectMatchingResult();
-    }
+
+    connectMatchingResult();
   }
+
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     stream.cancel();
+    streamData.cancel();
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
