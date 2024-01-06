@@ -163,6 +163,42 @@ class APIMatiching {
     }
   }
 
+  // update status rider when closechat or cancel order
+  Future<void> updateStatusRider(String uid) async {
+    try {
+      if (uid != "") {
+        await _firestore.collection("customerData").doc(uid).update({
+          "rider_status": false,
+        });
+      } else {
+        return;
+      }
+    } on FirebaseException catch (e) {
+      print(e.code);
+      print(e.message);
+      throw e.toString();
+    }
+  }
+  // get rider id
+
+  Future<String> getRiderid(String uid) async {
+    try {
+      QuerySnapshot snapshot =
+          await _firestore.collection("customerData").get();
+      if (snapshot.docs.isNotEmpty) {
+        final datadoc = snapshot.docs;
+        for(DocumentSnapshot data in datadoc){
+          if(data.id == uid){
+            return data["riderid"];
+          }
+        }
+      }
+      return "";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   Stream<bool> getStatusRider(String uid) async* {
     try {
       StreamController<bool> controller = StreamController<bool>();

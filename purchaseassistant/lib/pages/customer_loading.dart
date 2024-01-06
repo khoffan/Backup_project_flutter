@@ -34,9 +34,9 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
       if (currid != "") {
         streamData = APIMatiching().getData(currid).listen(
           (Map<String, dynamic> snapshotData) {
-            if(snapshotData["rider_status"] == true){
+            if (snapshotData["rider_status"] == true) {
               String name = snapshotData["ridername"];
-              String reciveuid = snapshotData["riderid"]; 
+              String reciveuid = snapshotData["riderid"];
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.confirm,
@@ -52,7 +52,7 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
                 },
                 confirmBtnColor: Colors.green,
               );
-            }
+            } else {}
           },
           onError: (dynamic error) {
             print("Error: ${error}");

@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/pages/chat/order_tracker.dart';
+import 'package:purchaseassistant/routes/routes.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:intl/intl.dart';
+import 'package:purchaseassistant/services/matching_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import '../../utils/ChatBouble.dart';
+
+
 
 class ChatScreen extends StatefulWidget {
   ChatScreen({
@@ -23,17 +29,53 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController _messageController = TextEditingController();
+  late StreamSubscription<bool> stream;
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = "";
   String otherid = "";
   Timestamp? _lastMessageTimestamp;
   FocusNode _focusNode = FocusNode();
   bool isShowIcon = true;
+ 
+
   void sendMessge() async {
     if (_messageController.text.isNotEmpty) {
       print(otherid);
       await ChatServices().sendMessge(otherid, _messageController.text);
       _messageController.clear();
+    }
+  }
+
+  void closeChatState() async {
+    try {
+      String id = await APIMatiching().getRiderid(otherid);
+      print("is id: ${id} and uid is: ${uid}");
+      if (uid.trim() != id.trim()) {
+        APIMatiching().updateStatusRider(otherid);
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  void checkStatusRider() {
+    try {
+      stream = APIMatiching().getStatusRider(otherid).listen(
+        (bool status) {
+          if (status == false) {
+            Navigator.popUntil(context, ModalRoute.withName(AppRoute.service));
+          }
+        },
+        onError: (dynamic error) {
+          print("Error: $error");
+        },
+        onDone: () {
+          print("Stream is done");
+        },
+      );
+    } catch (e) {
+      throw e.toString();
     }
   }
 
@@ -53,6 +95,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     _focusNode.dispose();
+    stream.cancel();
     super.dispose();
   }
 
@@ -66,7 +109,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              closeChatState();
             },
             icon: const Icon(
               Icons.arrow_back,
