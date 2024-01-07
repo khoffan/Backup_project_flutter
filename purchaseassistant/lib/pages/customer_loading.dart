@@ -44,6 +44,7 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
                 confirmBtnText: 'ตกลง',
                 cancelBtnText: "ยกเลิก",
                 onConfirmBtnTap: () {
+                  APIMatiching().updateStatusChatCustomer(uid);
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -51,6 +52,10 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
                               ChatScreen(reciveuid: reciveuid, name: name)));
                 },
                 confirmBtnColor: Colors.green,
+                onCancelBtnTap: () {
+                  APIMatiching().updateStatusCustomer(uid);
+                  Navigator.pop(context);
+                },
               );
             } else {}
           },
@@ -127,6 +132,14 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const CircularProgressIndicator(),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "รอการจับคู่...",
+                style: TextStyle(
+                    fontSize: 14, color: Colors.black, textBaseline: null),
+              ),
             ]),
       ),
     );

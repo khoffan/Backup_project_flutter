@@ -71,7 +71,6 @@ class _DelivererScreenState extends State<DelivererScreen> {
         backgroundColor: themeBg,
         leading: GestureDetector(
           onTap: () async {
-            
             Navigator.pop(context);
           },
           child: Icon(
@@ -79,18 +78,6 @@ class _DelivererScreenState extends State<DelivererScreen> {
             color: Colors.black,
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => DelivererScreen(),
-                  ));
-            },
-            icon: Icon(Icons.add),
-          ),
-        ],
       ),
       body: ListView(
         children: [

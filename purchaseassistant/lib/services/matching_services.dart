@@ -67,7 +67,7 @@ class APIMatiching {
         String locate = data['location'] ?? "";
         String datetime = data["date"] ?? "";
         if ((cusid, cusname, locate, datetime) != "") {
-          await _firestore.collection("customerData").doc(cusid).set({
+          await _firestore.collection("Matchings").doc(cusid).set({
             "cusid": cusid,
             "cusname": cusname,
             "location": locate,
@@ -76,7 +76,8 @@ class APIMatiching {
             "riderid": "null",
             "ridername": "null",
             "rider_status": false,
-            "dateRider": "null"
+            "dateRider": "null",
+            "status": "InActive",
           });
         }
         print("set data success");
@@ -94,7 +95,7 @@ class APIMatiching {
         String locate = data['location'] ?? "";
         String datetime = data["date"] ?? "";
         if ((cusid, cusname, locate, datetime) != "") {
-          await _firestore.collection("customerData").doc(cusid).update({
+          await _firestore.collection("Matchings").doc(cusid).update({
             "cusid": cusid,
             "cusname": cusname,
             "location": locate,
@@ -113,7 +114,7 @@ class APIMatiching {
   Future<void> updateStatusCustomer(String uid) async {
     try {
       if (uid != "") {
-        await _firestore.collection("customerData").doc(uid).update({
+        await _firestore.collection("Matchings").doc(uid).update({
           "cus_status": false,
         });
       } else {
@@ -121,6 +122,21 @@ class APIMatiching {
       }
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  // update status chat customer
+  Future<void> updateStatusChatCustomer(String uid) async {
+    try {
+      if (uid != "") {
+        await _firestore.collection("Matchings").doc(uid).update({
+          "status": "Active",
+        });
+      } else {
+        return;
+      }
+    } on FirebaseException catch (e) {
+      throw e.message.toString();
     }
   }
 
@@ -132,7 +148,7 @@ class APIMatiching {
         String riderid = data["id"];
         String ridername = data["name"];
         String daterider = data["date"];
-        await _firestore.collection("customerData").doc(docid).update({
+        await _firestore.collection("Matchings").doc(docid).update({
           "riderid": riderid,
           "ridername": ridername,
           "rider_status": true,
@@ -151,7 +167,7 @@ class APIMatiching {
         String riderid = data["id"];
         String ridername = data["name"];
         String daterider = data["date"];
-        await _firestore.collection("customerData").doc(docid).update({
+        await _firestore.collection("Matchings").doc(docid).update({
           "riderid": riderid,
           "ridername": ridername,
           "rider_status": true,
@@ -167,7 +183,7 @@ class APIMatiching {
   Future<void> updateStatusRider(String uid) async {
     try {
       if (uid != "") {
-        await _firestore.collection("customerData").doc(uid).update({
+        await _firestore.collection("Matchings").doc(uid).update({
           "rider_status": false,
         });
       } else {
@@ -183,12 +199,11 @@ class APIMatiching {
 
   Future<String> getRiderid(String uid) async {
     try {
-      QuerySnapshot snapshot =
-          await _firestore.collection("customerData").get();
+      QuerySnapshot snapshot = await _firestore.collection("Matchings").get();
       if (snapshot.docs.isNotEmpty) {
         final datadoc = snapshot.docs;
-        for(DocumentSnapshot data in datadoc){
-          if(data.id == uid){
+        for (DocumentSnapshot data in datadoc) {
+          if (data.id == uid) {
             return data["riderid"];
           }
         }
@@ -199,10 +214,19 @@ class APIMatiching {
     }
   }
 
+  // del document for user to rider
+  Future<void> delCustomertoRider(String uid) async {
+    try {
+      await _firestore.collection("Matchings").doc(uid).delete();
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   Stream<bool> getStatusRider(String uid) async* {
     try {
       StreamController<bool> controller = StreamController<bool>();
-      CollectionReference snapshot = _firestore.collection("customerData");
+      CollectionReference snapshot = _firestore.collection("Matchings");
 
       snapshot.doc(uid).snapshots().listen(
         (DocumentSnapshot quryData) {
@@ -230,7 +254,7 @@ class APIMatiching {
 
     try {
       DocumentReference docRef =
-          await _firestore.collection("customerData").doc(currid);
+          await _firestore.collection("Matchings").doc(currid);
 
       subscription = docRef.snapshots().listen(
         (DocumentSnapshot quryData) {
