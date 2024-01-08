@@ -53,9 +53,8 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
               },
               confirmBtnColor: Colors.green,
             );
-          }
-          else {
-            Future.delayed(Duration(seconds: 10),(){
+          } else {
+            Future.delayed(Duration(seconds: 10), () {
               QuickAlert.show(
                 context: context,
                 type: QuickAlertType.confirm,
@@ -78,16 +77,16 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   void getStatus(String uid) async {
     try {
       stream = APIMatiching().getStatusRider(uid).listen((bool status) {
-        if(status == true){
+        if (status == true) {
           setState(() {
             currstatus = status;
           });
         }
-       },onError: (dynamic error){
+      }, onError: (dynamic error) {
         print("Error: ${error}");
-       }, onDone: (){
+      }, onDone: () {
         print("Stream is close");
-       });
+      });
     } catch (e) {
       throw e.toString();
     }
