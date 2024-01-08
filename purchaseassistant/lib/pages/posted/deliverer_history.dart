@@ -21,10 +21,9 @@ import '../profile/profile_screen.dart';
 import 'deliverer_screen.dart';
 
 class DeliverHistory extends StatefulWidget {
-  DeliverHistory({super.key, this.cusid, this.riderid});
+  DeliverHistory({super.key, this.riderLocate});
 
-  final String? cusid;
-  final String? riderid;
+  String? riderLocate;
 
   @override
   State<DeliverHistory> createState() => _DeliverHistoryState();
@@ -34,8 +33,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
-  String cusid = "";
-  String riderid = "";
+  String riderLocate = "";
   DeliveryData deliData = DeliveryData();
   void removePosted(String uid, String docid) async {
     try {
@@ -53,7 +51,8 @@ class _DeliverHistoryState extends State<DeliverHistory> {
   }
 
   void showMediaCustoerSide(BuildContext context, FirebaseFirestore store) {
-    final Widget customerStream = showCustomerStream(context, store);
+    final Widget customerStream =
+        showCustomerStream(context, store, riderLocate);
 
     showModalBottomSheet(
       context: context,
@@ -97,28 +96,6 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     }
   }
 
-  void riderCancel(String uid, String docId) async {
-    Timestamp datetime = Timestamp.now();
-    String datenow = FormatDate(datetime);
-    if (uid != "") {
-      DocumentSnapshot snapshot =
-          await _firestore.collection("Profile").doc(uid).get();
-      if (snapshot.exists) {
-        final data = snapshot.data() as Map<String, dynamic>;
-        String name = data["name"];
-        if (name != "") {
-          Map<String, dynamic> userdata = {
-            "id": uid,
-            "name": name,
-            "date": datenow,
-          };
-
-          await APIMatiching().updateDataRiderCancel(userdata, docId);
-        }
-      }
-    }
-  }
-
   void navigetPOP() {
     Navigator.pop(context);
   }
@@ -127,6 +104,8 @@ class _DeliverHistoryState extends State<DeliverHistory> {
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
+    riderLocate = widget.riderLocate ?? "";
+    print("riderlocate = ${riderLocate}");
   }
 
   @override
@@ -173,9 +152,17 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             ),
             IconButton(
               onPressed: () {
-                showMediaCustoerSide(context, FirebaseFirestore.instance);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DelivererScreen(),
+                  ),
+                );
               },
-              icon: Icon(Icons.notifications),
+              icon: Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
             ),
           ]),
       body: StreamBuilder(
@@ -328,13 +315,13 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                                                   title: title),
                                             ));
                                       },
-                                      child: Text('Edit'),
+                                      child: Text('แก้ไข'),
                                     ),
                                     TextButton(
                                       onPressed: () {
                                         removePosted(userId, docid);
                                       },
-                                      child: Text('Remove'),
+                                      child: Text('ลบ'),
                                     ),
                                   ],
                                 ),
@@ -373,12 +360,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => DelivererScreen(),
-            ),
-          );
+          showMediaCustoerSide(context, FirebaseFirestore.instance);
         },
         child: Icon(Icons.add),
       ),
@@ -387,6 +369,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
 
   Widget buildContent(Map<String, dynamic> customerdata, String docid) {
     String name = customerdata['cusname'];
+    String locate = customerdata["location"];
 
     return Container(
       child: Column(
@@ -425,17 +408,10 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                             },
                             child: Text("ตอบรับ"),
                             style: ElevatedButton.styleFrom(
-                                primary: themeBg, onPrimary: Colors.black)),
+                                primary: Colors.green,
+                                onPrimary: Colors.white)),
                         SizedBox(
                           width: 10,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            riderCancel(uid, docid);
-                          },
-                          child: Text("ยกเลิก"),
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.red, onPrimary: Colors.white),
                         ),
                       ],
                     )
@@ -449,11 +425,37 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     );
   }
 
-  Widget showCustomerStream(BuildContext context, FirebaseFirestore firestore) {
+  Widget showCustomerStream(
+      BuildContext context, FirebaseFirestore firestore, String locaterider) {
+    if (locaterider != "รับทุกงาน") {
+      return StreamBuilder(
+        stream: firestore
+            .collection("Matchings")
+            .where("location", isEqualTo: locaterider)
+            .orderBy("date")
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("Error: ${snapshot.error}"),
+            );
+          }
+          if (!snapshot.hasData) {
+            return Center(
+              child: Text("No data in collection"),
+            );
+          }
+          final customerDocs = snapshot.data!.docs;
+          return ListView(
+              children: customerDocs.map((customerDoc) {
+            final customerdata = customerDoc.data() as Map<String, dynamic>;
+            return buildContent(customerdata, customerDoc.id);
+          }).toList());
+        },
+      );
+    }
     return StreamBuilder(
-      stream: firestore
-          .collection("customerData").orderBy("date")
-          .snapshots(),
+      stream: firestore.collection("Matchings").orderBy("date").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(

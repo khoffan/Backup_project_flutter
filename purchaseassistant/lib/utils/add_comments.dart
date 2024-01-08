@@ -18,8 +18,6 @@ class _AddcommentState extends State<Addcomment> {
   TextEditingController _commentController = TextEditingController();
   String uid = "";
 
- 
-
   @override
   void initState() {
     super.initState();
@@ -61,7 +59,7 @@ class _AddcommentState extends State<Addcomment> {
                     // saveComment();
                   }
                 },
-                child: Text("comment"),
+                child: Text("แสดงความคิดเห็น"),
               ),
             ],
           ),

@@ -6,6 +6,9 @@ String FormatDate(Timestamp timestamp) {
   String year = datetime.year.toString();
   String mount = datetime.month.toString();
   String day = datetime.day.toString();
-  String formatDate = '$year/$mount/$day';
+  String hour = datetime.hour.toString();
+  String minute = datetime.minute.toString();
+  String secound = datetime.second.toString();
+  String formatDate = '$year/$mount/$day $hour:$minute:$secound';
   return formatDate;
 }

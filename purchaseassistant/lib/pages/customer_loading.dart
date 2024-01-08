@@ -24,11 +24,15 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String currid = "";
-  late bool currstatus;
+  bool currstatus = false;
   late StreamSubscription<bool> stream;
-  void connectMatchingResult() async {
+
+  late StreamSubscription<Map<String, dynamic>> streamData;
+
+  void connectMatchingResult() {
     try {
       if (currid != "") {
+<<<<<<< HEAD
         DocumentSnapshot snapshot =
             await _firestore.collection("customerData").doc(currid).get();
 
@@ -66,16 +70,53 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
             });
           }
         }
+=======
+        streamData = APIMatiching().getData(currid).listen(
+          (Map<String, dynamic> snapshotData) {
+            if (snapshotData["rider_status"] == true) {
+              String name = snapshotData["ridername"];
+              String reciveuid = snapshotData["riderid"];
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.confirm,
+                text: 'จับคู่สำเร็จ ยอมรับการจับคู่หรือไม่',
+                confirmBtnText: 'ตกลง',
+                cancelBtnText: "ยกเลิก",
+                onConfirmBtnTap: () {
+                  APIMatiching().updateStatusChatCustomer(uid);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) =>
+                              ChatScreen(reciveuid: reciveuid, name: name)));
+                },
+                confirmBtnColor: Colors.green,
+                onCancelBtnTap: () {
+                  APIMatiching().updateStatusCustomer(uid);
+                  Navigator.pop(context);
+                },
+              );
+            } else {}
+          },
+          onError: (dynamic error) {
+            print("Error: ${error}");
+          },
+          onDone: () {
+            print("Stream is closed");
+          },
+        );
+>>>>>>> 3d25233523b789543cbe5f1a07ead0a6837b3eeb
       } else {
-        print("document not update");
+        print("Document not updated");
       }
     } on FirebaseAuthException catch (e) {
       print(e.message);
     }
   }
 
-  void getStatus(String uid) async {
+  void getStatus(BuildContext context, String uid) async {
     try {
+<<<<<<< HEAD
       stream = APIMatiching().getStatusRider(uid).listen((bool status) {
         if (status == true) {
           setState(() {
@@ -87,6 +128,23 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
       }, onDone: () {
         print("Stream is close");
       });
+=======
+      stream = APIMatiching().getStatusRider(uid).listen(
+        (bool status) {
+          if (status == true) {
+            setState(() {
+              currstatus = status;
+            });
+          }
+        },
+        onError: (dynamic error) {
+          print("Error: $error");
+        },
+        onDone: () {
+          print("Stream is done");
+        },
+      );
+>>>>>>> 3d25233523b789543cbe5f1a07ead0a6837b3eeb
     } catch (e) {
       throw e.toString();
     }
@@ -103,8 +161,17 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
       // or take appropriate action for your application.
       print("User not authenticated");
     }
-    getStatus(uid);
+    getStatus(context, currid);
+    print(currstatus);
+
     connectMatchingResult();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    stream.cancel();
+    streamData.cancel();
   }
 
   @override
@@ -122,6 +189,14 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const CircularProgressIndicator(),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                "รอการจับคู่...",
+                style: TextStyle(
+                    fontSize: 14, color: Colors.black, textBaseline: null),
+              ),
             ]),
       ),
     );
