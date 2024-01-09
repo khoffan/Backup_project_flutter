@@ -160,25 +160,6 @@ class APIMatiching {
     }
   }
 
-  Future<void> updateDataRiderCancel(
-      Map<String, dynamic> data, String docid) async {
-    try {
-      if (data != {}) {
-        String riderid = data["id"];
-        String ridername = data["name"];
-        String daterider = data["date"];
-        await _firestore.collection("Matchings").doc(docid).update({
-          "riderid": riderid,
-          "ridername": ridername,
-          "rider_status": true,
-          "dateRider": daterider
-        });
-      }
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
   // update status rider when closechat or cancel order
   Future<void> updateStatusRider(String uid) async {
     try {

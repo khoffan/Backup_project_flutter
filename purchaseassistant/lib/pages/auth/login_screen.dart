@@ -125,24 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             const Padding(
                                 padding:
                                     EdgeInsets.only(top: 10.0, bottom: 15.0)),
-                            // Padding(
-                            //   padding: const EdgeInsets.only(
-                            //     top: 10.0,
-                            //     bottom: 15.0,
-                            //   ),
-                            //   // child: Align(
-                            //   //   alignment: Alignment.centerLeft,
-                            //   //   child: InkWell(
-                            //   //     onTap: () {},
-                            //   //     child: const Text(
-                            //   //       "Forgot password",
-                            //   //       style: TextStyle(
-                            //   //         color: Color(0xFFDA3340),
-                            //   //       ),
-                            //   //     ),
-                            //   //   ),
-                            //   // ),
-                            // ),
                             Container(
                               height: 40.0,
                               width: 160,

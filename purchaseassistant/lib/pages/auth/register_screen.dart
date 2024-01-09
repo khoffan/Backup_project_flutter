@@ -32,15 +32,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             );
           }
 
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CustomFormRegister(formKey: formKey, register: register);
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           }
-
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return CustomFormRegister(formKey: formKey, register: register);
         },
       ),
     );

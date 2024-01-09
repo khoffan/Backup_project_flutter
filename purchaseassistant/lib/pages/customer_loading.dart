@@ -24,7 +24,10 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String currid = "";
+  String reciveuid = "";
+  String name = "";
   bool currstatus = false;
+  bool? isLoading;
   late StreamSubscription<bool> stream;
 
   late StreamSubscription<Map<String, dynamic>> streamData;
@@ -44,12 +47,12 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
                 confirmBtnText: 'ตกลง',
                 cancelBtnText: "ยกเลิก",
                 onConfirmBtnTap: () {
+                  setState(() {
+                    reciveuid = reciveuid;
+                    name = name;
+                    isLoading = true;
+                  });
                   APIMatiching().updateStatusChatCustomer(uid);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) =>
-                              ChatScreen(reciveuid: reciveuid, name: name)));
                 },
                 confirmBtnColor: Colors.green,
                 onCancelBtnTap: () {
@@ -98,6 +101,9 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
 
   @override
   void initState() {
+    setState(() {
+      isLoading = false;
+    });
     super.initState();
     if (_auth.currentUser != null) {
       uid = _auth.currentUser!.uid;
@@ -123,25 +129,29 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Container(
-        color: Colors.white,
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "รอการจับคู่...",
-                style: TextStyle(
-                    fontSize: 14, color: Colors.black, textBaseline: null),
-              ),
-            ]),
-      ),
+      child: isLoading != true
+          ? Container(
+              color: Colors.white,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "รอการจับคู่...",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                          textBaseline: null),
+                    ),
+                  ]),
+            )
+          : ChatScreen(reciveuid: reciveuid, name: name),
     );
   }
 }

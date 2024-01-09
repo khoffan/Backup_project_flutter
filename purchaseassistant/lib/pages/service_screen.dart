@@ -147,7 +147,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
-    getAmount(context, uid);
+    Future.delayed(Duration(seconds: 5), () {
+      getAmount(context, uid);
+    });
   }
 
   @override
@@ -385,8 +387,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 locateData = getLocationData(title);
                               }
                               // ServiceDeliver().setStatus(true, uid, "");
-
-                              print("save status success");
                             },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -441,6 +441,6 @@ alertNOtAmout(BuildContext context) {
     onConfirmBtnTap: () =>
         Navigator.pushReplacementNamed(context, AppRoute.wallet),
     confirmBtnColor: Colors.blue,
-    cancelBtnText: 'ตกลง',
+    cancelBtnText: 'ยกเลิก',
   );
 }

@@ -11,8 +11,6 @@ import 'package:purchaseassistant/services/matching_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import '../../utils/ChatBouble.dart';
 
-
-
 class ChatScreen extends StatefulWidget {
   ChatScreen({
     super.key,
@@ -36,7 +34,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Timestamp? _lastMessageTimestamp;
   FocusNode _focusNode = FocusNode();
   bool isShowIcon = true;
- 
 
   void sendMessge() async {
     if (_messageController.text.isNotEmpty) {
@@ -107,14 +104,6 @@ class _ChatScreenState extends State<ChatScreen> {
           "${widget.name}",
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
-        leading: IconButton(
-            onPressed: () {
-              closeChatState();
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
         backgroundColor: themeBg,
         actions: [
           IconButton(
@@ -216,8 +205,6 @@ class _ChatScreenState extends State<ChatScreen> {
             if (data['message'] != null &&
                 data['message'].toString().isNotEmpty)
               ChatBouble(message: data['message'])
-
-// Display the image
           ],
         ),
       ),

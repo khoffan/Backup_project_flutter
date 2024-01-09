@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/models/profile.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
 import '../services/delivers_services.dart';
@@ -38,6 +39,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final _formKey = GlobalKey<FormState>();
   FirebaseAuth _auth = FirebaseAuth.instance;
+
   void valueItem(value) {
     setState(() {
       dropdownValue = value;
@@ -73,27 +75,14 @@ class _UpdateProfileState extends State<UpdateProfile> {
     String lname = lastnameController.text;
 
     if (imgState == false) {
-      await ProfileService().updateProfile(
-        name: name,
-        room: room,
-        file: _image,
-        stdid: stdid,
-        dorm: dorm,
-        gender: dropdownValue,
-        phone: phone,
-        lname: lname,
-      );
+      Profiles profile = Profiles(
+          name, lname, dorm, dropdownValue, _image, room, phone, stdid);
+      await ProfileService().updateProfile(profile.toMap());
+      await ServiceDeliver().setData(uid);
     } else {
-      await ProfileService().updateProfile(
-        name: name,
-        room: room,
-        file: newImage!,
-        stdid: stdid,
-        dorm: dorm,
-        gender: dropdownValue,
-        phone: phone,
-        lname: lname,
-      );
+      Profiles profile = Profiles(
+          name, lname, dorm, dropdownValue, newImage!, room, phone, stdid);
+      await ProfileService().updateProfile(profile.toMap());
       await ServiceDeliver().setData(uid);
     }
 
@@ -233,7 +222,6 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                       context, "โทรศัพท์", valueItem),
                                 ],
                               ),
-                              
                             ],
                           ),
                         ),
@@ -429,6 +417,6 @@ Widget _buildTextFieldOrder(
       ),
     );
   }
-  
+
   return Container();
 }
