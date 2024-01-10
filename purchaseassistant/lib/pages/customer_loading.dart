@@ -26,41 +26,45 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   String currid = "";
   String reciveuid = "";
   String name = "";
-  bool currstatus = false;
   bool? isLoading;
-  late StreamSubscription<bool> stream;
-
+  bool isFunc = false;
   late StreamSubscription<Map<String, dynamic>> streamData;
+
+  _showAlert(String uid) {
+    if (mounted) {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.confirm,
+        title: "จับคู่สำเร็จ",
+        text: "คุณยอมรับการจับคู่หรือไม่",
+        confirmBtnText: 'ตกลง',
+        cancelBtnText: "ยกเลิก",
+        onConfirmBtnTap: () {
+          setState(() {
+            isLoading = true;
+          });
+          APIMatiching().updateStatusChatCustomer(uid);
+          Navigator.pop(context);
+        },
+        confirmBtnColor: Colors.green,
+        onCancelBtnTap: () {
+          APIMatiching().updateStatusCustomer(uid);
+          Navigator.pop(context);
+        },
+      );
+    }
+  }
 
   void connectMatchingResult() {
     try {
-      if (currid != "") {
+      if (!isFunc && currid != "") {
         streamData = APIMatiching().getData(currid).listen(
           (Map<String, dynamic> snapshotData) {
-            if (snapshotData["rider_status"] == true) {
-              String name = snapshotData["ridername"];
-              String reciveuid = snapshotData["riderid"];
-              QuickAlert.show(
-                context: context,
-                type: QuickAlertType.confirm,
-                text: 'จับคู่สำเร็จ ยอมรับการจับคู่หรือไม่',
-                confirmBtnText: 'ตกลง',
-                cancelBtnText: "ยกเลิก",
-                onConfirmBtnTap: () {
-                  setState(() {
-                    reciveuid = reciveuid;
-                    name = name;
-                    isLoading = true;
-                  });
-                  APIMatiching().updateStatusChatCustomer(uid);
-                },
-                confirmBtnColor: Colors.green,
-                onCancelBtnTap: () {
-                  APIMatiching().updateStatusCustomer(uid);
-                  Navigator.pop(context);
-                },
-              );
-            } else {}
+            if (snapshotData["rider_status"] == true && isLoading == false) {
+              name = snapshotData["ridername"];
+              reciveuid = snapshotData["riderid"];
+              _showAlert(uid);
+            }
           },
           onError: (dynamic error) {
             print("Error: ${error}");
@@ -69,33 +73,12 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
             print("Stream is closed");
           },
         );
+        isFunc = true;
       } else {
         print("Document not updated");
       }
     } on FirebaseAuthException catch (e) {
       print(e.message);
-    }
-  }
-
-  void getStatus(BuildContext context, String uid) async {
-    try {
-      stream = APIMatiching().getStatusRider(uid).listen(
-        (bool status) {
-          if (status == true) {
-            setState(() {
-              currstatus = status;
-            });
-          }
-        },
-        onError: (dynamic error) {
-          print("Error: $error");
-        },
-        onDone: () {
-          print("Stream is done");
-        },
-      );
-    } catch (e) {
-      throw e.toString();
     }
   }
 
@@ -109,20 +92,14 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
       uid = _auth.currentUser!.uid;
       currid = widget.riderid ?? "";
     } else {
-      // Handle the case where _auth.currentUser is null, perhaps redirect to login
-      // or take appropriate action for your application.
       print("User not authenticated");
     }
-    getStatus(context, currid);
-    print(currstatus);
-
     connectMatchingResult();
   }
 
   @override
   void dispose() {
     super.dispose();
-    stream.cancel();
     streamData.cancel();
   }
 

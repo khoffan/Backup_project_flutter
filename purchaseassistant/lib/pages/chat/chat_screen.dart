@@ -27,7 +27,6 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController _messageController = TextEditingController();
-  late StreamSubscription<bool> stream;
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = "";
   String otherid = "";
@@ -56,26 +55,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void checkStatusRider() {
-    try {
-      stream = APIMatiching().getStatusRider(otherid).listen(
-        (bool status) {
-          if (status == false) {
-            Navigator.popUntil(context, ModalRoute.withName(AppRoute.service));
-          }
-        },
-        onError: (dynamic error) {
-          print("Error: $error");
-        },
-        onDone: () {
-          print("Stream is done");
-        },
-      );
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -92,7 +71,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     _focusNode.dispose();
-    stream.cancel();
     super.dispose();
   }
 
@@ -105,6 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
         backgroundColor: themeBg,
+        leading: null,
         actions: [
           IconButton(
               onPressed: () {
