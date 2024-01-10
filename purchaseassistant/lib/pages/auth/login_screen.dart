@@ -7,6 +7,9 @@ import 'package:purchaseassistant/services/auth_service.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/services/user_provider.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../models/login.dart';
 import '../../routes/routes.dart';
 import '../../utils/constants.dart';
@@ -21,7 +24,18 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final formKey = GlobalKey<FormState>();
+  ConnectivityResult _connectivity = ConnectivityResult.none;
   Login login = Login();
+
+  @override
+  void initState() {
+    super.initState();
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() {
+        _connectivity = result;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,35 +158,37 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (formKey.currentState!.validate()) {
                                       formKey.currentState?.save();
                                       try {
-                                        bool? sts;
-                                        await AuthServices()
-                                            .SigninwithEmailandPassword(
-                                                login.email, login.password);
-                                        formKey.currentState?.reset();
-                                        Navigator.pushReplacementNamed(context,
-                                            AppRoute.widget_navigation);
+                                        if (_connectivity !=
+                                            ConnectivityResult.none) {
+                                          bool? sts;
+                                          await AuthServices()
+                                              .SigninwithEmailandPassword(
+                                                  login.email, login.password);
+                                          formKey.currentState?.reset();
+                                          Navigator.pushReplacementNamed(
+                                              context,
+                                              AppRoute.widget_navigation);
 
-                                        ProfileService().updateRole(
-                                            FirebaseAuth
-                                                .instance.currentUser!.uid,
-                                            "customer");
-                                        UserLogin.setLogin(true);
-                                        sts = await UserLogin.getLogin();
-                                        ServiceDeliver().updateUser(
-                                            FirebaseAuth
-                                                .instance.currentUser!.uid,
-                                            sts);
+                                          ProfileService().updateRole(
+                                              FirebaseAuth
+                                                  .instance.currentUser!.uid,
+                                              "customer");
+                                          UserLogin.setLogin(true);
+                                          sts = await UserLogin.getLogin();
+                                          ServiceDeliver().updateUser(
+                                              FirebaseAuth
+                                                  .instance.currentUser!.uid,
+                                              sts);
+                                        } else {
+                                          Fluttertoast.showToast(
+                                              msg:
+                                                  "กรุณาเชื่อมต่ออินเตอร์เน็ต");
+                                        }
                                       } on FirebaseException catch (e) {
                                         print("ecode: ${e.code}");
-                                        String message = "";
-                                        if (e.code == "wrong-password" ||
-                                            e.code == "user-not-found") {
-                                          message =
-                                              "username หรือ password ไม่ถูกต้อง";
-                                        }
-                                        Fluttertoast.showToast(
-                                            msg: message,
-                                            gravity: ToastGravity.CENTER);
+                                        String message = _getMessageError(e);
+
+                                        showAlert(context, message);
                                       }
                                     }
                                   },
@@ -215,4 +231,26 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}
+
+String _getMessageError(FirebaseException e) {
+  switch (e.code) {
+    case "wrong-password":
+      return "username หรือ password ไม่ถูกต้อง";
+    case "user-not-found":
+      return "username หรือ password ไม่ถูกต้อง";
+    case "network-request-failed":
+      return "กรุณาตรวจสอบการเชื่อมต่ออินเตอร์เน็ต";
+    default:
+      return "กรุณาลองใหม่อีกครั้ง";
+  }
+}
+
+void showAlert(BuildContext context, String message) {
+  QuickAlert.show(
+    context: context,
+    type: QuickAlertType.error,
+    title: "Error",
+    text: message,
+  );
 }
