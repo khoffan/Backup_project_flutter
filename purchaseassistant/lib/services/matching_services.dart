@@ -160,31 +160,15 @@ class APIMatiching {
     }
   }
 
-  Future<void> updateDataRiderCancel(
-      Map<String, dynamic> data, String docid) async {
-    try {
-      if (data != {}) {
-        String riderid = data["id"];
-        String ridername = data["name"];
-        String daterider = data["date"];
-        await _firestore.collection("Matchings").doc(docid).update({
-          "riderid": riderid,
-          "ridername": ridername,
-          "rider_status": true,
-          "dateRider": daterider
-        });
-      }
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
   // update status rider when closechat or cancel order
-  Future<void> updateStatusRider(String uid) async {
+  Future<void> updateRiderData(String uid) async {
     try {
       if (uid != "") {
         await _firestore.collection("Matchings").doc(uid).update({
+          "riderid": "null",
+          "ridername": "null",
           "rider_status": false,
+          "dateRider": "null",
         });
       } else {
         return;
@@ -220,29 +204,6 @@ class APIMatiching {
       await _firestore.collection("Matchings").doc(uid).delete();
     } catch (e) {
       throw e.toString();
-    }
-  }
-
-  Stream<bool> getStatusRider(String uid) async* {
-    try {
-      StreamController<bool> controller = StreamController<bool>();
-      CollectionReference snapshot = _firestore.collection("Matchings");
-
-      snapshot.doc(uid).snapshots().listen(
-        (DocumentSnapshot quryData) {
-          final data = quryData.data() as Map<String, dynamic>;
-          controller.add(data["rider_status"]);
-        },
-        onError: (dynamic error) {
-          controller.addError(error);
-        },
-        onDone: () {
-          controller.close();
-        },
-      );
-      yield* controller.stream;
-    } catch (e) {
-      print("Error: &{e}");
     }
   }
 
@@ -285,4 +246,55 @@ class APIMatiching {
       subscription?.cancel();
     }
   }
+
+  Stream<bool> getRiderStatus(String uid) async* {
+    StreamController<bool> _streamController = StreamController<bool>();
+    try {
+      CollectionReference collectionRef = _firestore.collection("Matchings");
+
+      Query query = collectionRef.where("cusid", isEqualTo: uid);
+
+      QuerySnapshot querySnap = await query.get();
+
+      if (querySnap.docs.isNotEmpty) {
+        DocumentSnapshot docSnap = querySnap.docs.first;
+
+        final data = docSnap.data() as Map<String, dynamic>;
+        _streamController.add(data["rider_status"]);
+
+        var subscription = docSnap.reference.snapshots().listen(
+          (DocumentSnapshot quryData) {
+            final data = quryData.data() as Map<String, dynamic>;
+            bool newStatus = data["rider_status"];
+            _streamController.add(newStatus);
+          },
+          onError: (dynamic error) {
+            _streamController.addError(error);
+          },
+          onDone: () {
+            _streamController.close();
+          },
+        );
+        _streamController.done.then((_) {
+          subscription.cancel();
+        });
+      }
+      yield* _streamController.stream;
+    } catch (e) {
+      _streamController.addError(e.toString());
+      _streamController.close();
+    }
+  }
+  // Future<bool> getRiderStatus(String id) async {
+  //   try {
+  //     DocumentSnapshot snapshot =
+  //         await _firestore.collection("Matchings").doc(id).get();
+  //     if (snapshot.exists) {
+  //       return snapshot["rider_status"];
+  //     }
+  //     return true;
+  //   } catch (e) {
+  //     throw e.toString();
+  //   }
+  // }
 }

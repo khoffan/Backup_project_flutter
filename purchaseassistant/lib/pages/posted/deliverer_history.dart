@@ -369,7 +369,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
 
   Widget buildContent(Map<String, dynamic> customerdata, String docid) {
     String name = customerdata['cusname'];
-    String locate = customerdata["location"];
+    bool statusCus = customerdata["cus_status"];
 
     return Container(
       child: Column(
@@ -404,7 +404,9 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                              riderConfirme(uid, docid, name);
+                              if (statusCus == true) {
+                                riderConfirme(uid, docid, name);
+                              }
                             },
                             child: Text("ตอบรับ"),
                             style: ElevatedButton.styleFrom(
@@ -455,7 +457,12 @@ class _DeliverHistoryState extends State<DeliverHistory> {
       );
     }
     return StreamBuilder(
-      stream: firestore.collection("Matchings").orderBy("date").snapshots(),
+      stream: firestore
+          .collection("Matchings")
+          .where("cus_status", isEqualTo: true)
+          .where("rider_status", isEqualTo: false)
+          .orderBy("date")
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(

@@ -24,40 +24,47 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String currid = "";
-  bool currstatus = false;
-  late StreamSubscription<bool> stream;
-
+  String reciveuid = "";
+  String name = "";
+  bool? isLoading;
   late StreamSubscription<Map<String, dynamic>> streamData;
+
+  _showAlert(String uid) {
+    if (mounted) {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.confirm,
+        title: "จับคู่สำเร็จ",
+        text: "คุณยอมรับการจับคู่หรือไม่",
+        confirmBtnText: 'ตกลง',
+        cancelBtnText: "ยกเลิก",
+        onConfirmBtnTap: () {
+          setState(() {
+            isLoading = true;
+          });
+          APIMatiching().updateStatusChatCustomer(uid);
+          APIMatiching().updateStatusCustomer(uid);
+          Navigator.pop(context);
+        },
+        confirmBtnColor: Colors.green,
+        onCancelBtnTap: () {
+          APIMatiching().updateStatusCustomer(uid);
+          Navigator.pop(context);
+        },
+      );
+    }
+  }
 
   void connectMatchingResult() {
     try {
       if (currid != "") {
         streamData = APIMatiching().getData(currid).listen(
           (Map<String, dynamic> snapshotData) {
-            if (snapshotData["rider_status"] == true) {
-              String name = snapshotData["ridername"];
-              String reciveuid = snapshotData["riderid"];
-              QuickAlert.show(
-                context: context,
-                type: QuickAlertType.confirm,
-                text: 'จับคู่สำเร็จ ยอมรับการจับคู่หรือไม่',
-                confirmBtnText: 'ตกลง',
-                cancelBtnText: "ยกเลิก",
-                onConfirmBtnTap: () {
-                  APIMatiching().updateStatusChatCustomer(uid);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) =>
-                              ChatScreen(reciveuid: reciveuid, name: name)));
-                },
-                confirmBtnColor: Colors.green,
-                onCancelBtnTap: () {
-                  APIMatiching().updateStatusCustomer(uid);
-                  Navigator.pop(context);
-                },
-              );
-            } else {}
+            if (snapshotData["rider_status"] == true && isLoading == false) {
+              name = snapshotData["ridername"];
+              reciveuid = snapshotData["riderid"];
+              _showAlert(uid);
+            }
           },
           onError: (dynamic error) {
             print("Error: ${error}");
@@ -74,54 +81,30 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
     }
   }
 
-  void getStatus(BuildContext context, String uid) async {
-    try {
-      stream = APIMatiching().getStatusRider(uid).listen(
-        (bool status) {
-          if (status == true) {
-            setState(() {
-              currstatus = status;
-            });
-          }
-        },
-        onError: (dynamic error) {
-          print("Error: $error");
-        },
-        onDone: () {
-          print("Stream is done");
-        },
-      );
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
   @override
   void initState() {
+    setState(() {
+      isLoading = false;
+    });
     super.initState();
     if (_auth.currentUser != null) {
       uid = _auth.currentUser!.uid;
       currid = widget.riderid ?? "";
     } else {
-      // Handle the case where _auth.currentUser is null, perhaps redirect to login
-      // or take appropriate action for your application.
       print("User not authenticated");
     }
-    getStatus(context, currid);
-    print(currstatus);
-
     connectMatchingResult();
   }
 
   @override
   void dispose() {
     super.dispose();
-    stream.cancel();
     streamData.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return Scaffold(
       appBar: AppBar(
         title: Text('รอการจับคู่'),
@@ -146,5 +129,28 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
             ]),
       ),
     );
+=======
+    return isLoading != true
+        ? Container(
+            color: Colors.white,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "รอการจับคู่...",
+                    style: TextStyle(
+                        fontSize: 14, color: Colors.black, textBaseline: null),
+                  ),
+                ]),
+          )
+        : ChatScreen(reciveuid: reciveuid, name: name);
+>>>>>>> 10df0deee2cfe528850ca98dab4d9d50c90aff13
   }
 }

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/models/profile.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
@@ -55,47 +56,30 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  void saveFile(BuildContext context,String uid) async {
+  void saveFile(BuildContext context, String uid) async {
     String name = nameController.text;
     String room = roomController.text;
     String stdid = stdidController.text;
     String dorm = dormController.text;
     String phone = phoneController.text;
     String lname = lastnameController.text;
+    Profiles? profile;
+    if ((name, room, stdid, dorm, phone, lname, dropdownValue, _image) != "") {
+      profile = Profiles(
+          name, lname, dorm, dropdownValue, _image, room, phone, stdid);
+    }
 
-    if (name.isNotEmpty &&
-        room.isNotEmpty &&
-        stdid.isNotEmpty &&
-        dorm.isNotEmpty &&
-        lname.isNotEmpty &&
-        room.isNotEmpty &&
-        phone.isNotEmpty &&
-        dropdownValue.isNotEmpty) {
-      await ProfileService().saveProfile(
-        name: name,
-        room: room,
-        file: _image!,
-        stdid: stdid,
-        dorm: dorm,
-        gender: dropdownValue,
-        phone: phone,
-        lname: lname,
-      );
+    if (!profile!.checkIsEmpty()) {
+      await ProfileService().saveProfile(profile.toMap());
       await ServiceDeliver().setData(uid);
       nameController.clear();
       roomController.clear();
       stdidController.clear();
       dormController.clear();
       lastnameController.clear();
-      phoneController.clear();      
+      phoneController.clear();
       Navigator.pop(context);
     }
-    // print(room);
-    // print(name);
-    // print(lname);
-    // print(dorm);
-    // print(phone);
-    // print(dropdownValue);
   }
 
   @override
@@ -230,7 +214,7 @@ class _EditProfileState extends State<EditProfile> {
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {
                                 if (_image != null) {
-                                  saveFile(context,_auth.currentUser!.uid);
+                                  saveFile(context, _auth.currentUser!.uid);
                                 } else {
                                   const Text("no data");
                                 }
