@@ -34,7 +34,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Wallet',
+          'เติมเงิน',
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
         leading: IconButton(
@@ -142,7 +142,7 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
   Future<String?> openDialog() => showDialog<String>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('กรุณาใส่จำนวนเงิน'),
+          title: const Text('กรุณาระบุจำนวนเงิน'),
           content: TextField(
             autofocus: true,
             // decoration: InputDecoration(
@@ -155,7 +155,10 @@ class _WalletScreenAppState extends State<WalletScreenApp> {
           actions: [
             TextButton(
               onPressed: submit,
-              child: Text('ยืนยัน'),
+              child: Text(
+                'ยืนยัน',
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
             ),
           ],
         ),

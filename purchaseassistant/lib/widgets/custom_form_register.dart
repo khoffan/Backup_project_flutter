@@ -112,7 +112,7 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                               borderRadius:
                                   BorderRadius.circular(20), // <-- Radius
                             ),
-                            backgroundColor: Colors.red,
+                            backgroundColor: Colors.green,
                             padding: const EdgeInsetsDirectional.symmetric(
                               horizontal: 40,
                               vertical: 8,
@@ -126,18 +126,21 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                             if (widget.formKey.currentState!.validate()) {
                               widget.formKey.currentState?.save();
                               try {
-                                if(widget.register.email != "" && widget.register.password != ""){
-                                  await AuthServices().registerEmailandPassword(widget.register.email!, widget.register.password!);
+                                if (widget.register.email != "" &&
+                                    widget.register.password != "") {
+                                  await AuthServices().registerEmailandPassword(
+                                      widget.register.email!,
+                                      widget.register.password!);
                                 }
                                 widget.formKey.currentState?.reset();
-                                  if (context.mounted) {
-                                    Navigator.pushReplacementNamed(
-                                        context, AppRoute.login);
-                                  }
-                                  Fluttertoast.showToast(
-                                    msg: "สร้างบัญชีผู้ใช้สำเร็จ",
-                                    gravity: ToastGravity.CENTER,
-                                  );
+                                if (context.mounted) {
+                                  Navigator.pushReplacementNamed(
+                                      context, AppRoute.login);
+                                }
+                                Fluttertoast.showToast(
+                                  msg: "สร้างบัญชีผู้ใช้สำเร็จ",
+                                  gravity: ToastGravity.CENTER,
+                                );
                               } on FirebaseAuthException catch (e) {
                                 String message = '';
                                 if (e.code == 'email-already-in-use') {
@@ -171,7 +174,7 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                     child: Text(
                       "Login",
                       style: TextStyle(
-                        color: themeError,
+                        color: Colors.green,
                       ),
                     ),
                   )

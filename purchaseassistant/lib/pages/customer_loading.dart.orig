@@ -32,6 +32,45 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   void connectMatchingResult() {
     try {
       if (currid != "") {
+<<<<<<< HEAD
+        DocumentSnapshot snapshot =
+            await _firestore.collection("customerData").doc(currid).get();
+
+        if (snapshot.exists) {
+          final data = snapshot.data() as Map<String, dynamic>;
+          if (currstatus == true) {
+            String reciveuid = data["riderid"];
+            String name = data["ridername"];
+
+            QuickAlert.show(
+              context: context,
+              type: QuickAlertType.confirm,
+              text: 'จับคู่สำเร็จ ยอมรับการจับคู่หรือไม่',
+              confirmBtnText: 'ตกลง',
+              cancelBtnText: "ยกเลิก",
+              onConfirmBtnTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            ChatScreen(reciveuid: reciveuid, name: name)));
+              },
+              confirmBtnColor: Colors.green,
+            );
+          } else {
+            Future.delayed(Duration(seconds: 10), () {
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.confirm,
+                text: 'ตอนนนี้ไม่ผู้ให้บริการ คุณต้องการที่จะจับคู่ต่อหรือไม่',
+                confirmBtnText: 'ตกลง',
+                cancelBtnText: 'ยกเลิก',
+                confirmBtnColor: Colors.green,
+              );
+            });
+          }
+        }
+=======
         streamData = APIMatiching().getData(currid).listen(
           (Map<String, dynamic> snapshotData) {
             if (snapshotData["rider_status"] == true) {
@@ -66,6 +105,7 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
             print("Stream is closed");
           },
         );
+>>>>>>> 3d25233523b789543cbe5f1a07ead0a6837b3eeb
       } else {
         print("Document not updated");
       }
@@ -76,6 +116,19 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
 
   void getStatus(BuildContext context, String uid) async {
     try {
+<<<<<<< HEAD
+      stream = APIMatiching().getStatusRider(uid).listen((bool status) {
+        if (status == true) {
+          setState(() {
+            currstatus = status;
+          });
+        }
+      }, onError: (dynamic error) {
+        print("Error: ${error}");
+      }, onDone: () {
+        print("Stream is close");
+      });
+=======
       stream = APIMatiching().getStatusRider(uid).listen(
         (bool status) {
           if (status == true) {
@@ -91,6 +144,7 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
           print("Stream is done");
         },
       );
+>>>>>>> 3d25233523b789543cbe5f1a07ead0a6837b3eeb
     } catch (e) {
       throw e.toString();
     }

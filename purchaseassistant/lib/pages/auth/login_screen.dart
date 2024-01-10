@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       borderRadius: BorderRadius.circular(
                                           20), // <-- Radius
                                     ),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: Colors.green,
                                     textStyle: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -213,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             "Register",
                             style: TextStyle(
-                              color: themeError,
+                              color: Colors.green,
                             ),
                           ),
                         )
