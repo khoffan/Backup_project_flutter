@@ -104,32 +104,6 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('รอการจับคู่'),
-      ),
-      body: Container(
-        color: Colors.white,
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "รอการจับคู่...",
-                style: TextStyle(
-                    fontSize: 14, color: Colors.black, textBaseline: null),
-              ),
-            ]),
-      ),
-    );
-=======
     return isLoading != true
         ? Container(
             color: Colors.white,
@@ -151,6 +125,5 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
                 ]),
           )
         : ChatScreen(reciveuid: reciveuid, name: name);
->>>>>>> 10df0deee2cfe528850ca98dab4d9d50c90aff13
   }
 }
