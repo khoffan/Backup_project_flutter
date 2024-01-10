@@ -229,7 +229,7 @@ class _ShowPostState extends State<ShowPost> {
                                                     userid,
                                                     uid ?? '');
                                               },
-                                              child: Text('comment'),
+                                              child: Text('ความคิดเห็น'),
                                             ),
                                           ],
                                         ),

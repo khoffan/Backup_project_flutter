@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/pages/chat/order_tracker.dart';
+import 'package:purchaseassistant/routes/routes.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:intl/intl.dart';
+import 'package:purchaseassistant/services/matching_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import '../../utils/ChatBouble.dart';
 
@@ -24,15 +28,58 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController _messageController = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
+  late StreamSubscription<bool> _stremSub;
   String uid = "";
-  String otherid = "";
+  String? otherid;
+  String anotherid = "";
+  bool isRiderStatus = true;
   Timestamp? _lastMessageTimestamp;
   FocusNode _focusNode = FocusNode();
-  bool isShowIcon = true;
+  bool isShowIcon = false;
+
   void sendMessge() async {
     if (_messageController.text.isNotEmpty) {
-      await ChatServices().sendMessge(otherid, _messageController.text);
+      print(otherid);
+      await ChatServices().sendMessge(otherid!, _messageController.text);
       _messageController.clear();
+    }
+  }
+
+  void closeChatState(String id) async {
+    try {
+      anotherid = await APIMatiching().getRiderid(id);
+      print("is id: ${anotherid} and otherid is: ${id}");
+      if (uid.trim() == anotherid.trim()) {
+        APIMatiching().updateRiderData(id);
+        APIMatiching().updateStatusChatCustomer(id);
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  void checkStatusrider() async {
+    try {
+      _stremSub = APIMatiching().getRiderStatus(uid).listen(
+        (bool isStatus) {
+          setState(() {
+            isRiderStatus = isStatus;
+          });
+          print(isRiderStatus);
+          if (isRiderStatus == false) {
+            Navigator.pop(context);
+          }
+        },
+        onError: (dynamic e) {
+          print(e.toString());
+        },
+        onDone: () {
+          print("Strem is clise");
+        },
+      );
+    } catch (e) {
+      print(e.toString());
     }
   }
 
@@ -41,16 +88,21 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     uid = _auth.currentUser!.uid;
     otherid = widget.reciveuid ?? '';
+    print(otherid);
     _focusNode.addListener(() {
       setState(() {
         isShowIcon = !_focusNode.hasFocus;
       });
     });
+    if (uid != anotherid) {
+      checkStatusrider();
+    }
   }
 
   @override
   void dispose() {
     _focusNode.dispose();
+    _stremSub.cancel();
     super.dispose();
   }
 
@@ -62,15 +114,15 @@ class _ChatScreenState extends State<ChatScreen> {
           "${widget.name}",
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
+        backgroundColor: themeBg,
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              closeChatState(otherid!);
             },
             icon: const Icon(
               Icons.arrow_back,
               color: Colors.black,
             )),
-        backgroundColor: themeBg,
         actions: [
           IconButton(
               onPressed: () {
@@ -102,7 +154,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageList() {
     return StreamBuilder(
-      stream: ChatServices().getMessage(uid, otherid),
+      stream: ChatServices().getMessage(uid, otherid!),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -171,8 +223,6 @@ class _ChatScreenState extends State<ChatScreen> {
             if (data['message'] != null &&
                 data['message'].toString().isNotEmpty)
               ChatBouble(message: data['message'])
-
-// Display the image
           ],
         ),
       ),
@@ -211,6 +261,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     icon: Icon(Icons.send), // You can choose any icon you like.
                     onPressed: () {
                       sendMessge();
+                      _messageController.clear();
                     },
                   ),
                   prefixIcon: isShowIcon

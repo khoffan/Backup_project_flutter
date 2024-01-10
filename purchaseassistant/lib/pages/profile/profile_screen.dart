@@ -105,16 +105,16 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                   ),
                   automaticallyImplyLeading: true,
                   iconTheme: IconThemeData(color: Colors.black),
-                  // leading: IconButton(
-                  //     onPressed: () {
-                  //       if (widget.myNavigate() != null) {
-                  //         widget.myNavigate();
-                  //       }
-                  //     },
-                  //     icon: const Icon(
-                  //       Icons.arrow_back,
-                  //       color: Colors.black,
-                  //     )),
+                  leading: IconButton(
+                      onPressed: () {
+                        if (widget.myNavigate() != null) {
+                          widget.myNavigate();
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                      )),
                   actions: [
                     IconButton(
                       onPressed: () {
@@ -386,15 +386,13 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
       context: context,
       builder: (BuildContext context) {
         return SizedBox(
-          height: 300,
+          height: 200,
           child: Padding(
             padding: const EdgeInsets.only(top: 10, left: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                buildContentMedia(context, "change password"),
-                buildContentMedia(context, "About me"),
-                buildContentMedia(context, "Delete Account"),
+                buildContentMedia(context, "ลบบัญชี"),
                 const SizedBox(
                   height: 10,
                 ),
@@ -405,7 +403,13 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                       onPressed: () async {
                         signoutsubmit();
                       },
-                      child: const Text("Sign Out"),
+                      child: const Text(
+                        "ออกจากระบบ",
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.green),
+                      ),
                     ),
                   ),
                 ),
@@ -418,41 +422,42 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
   }
 
   GestureDetector buildContentMedia(context, String title) {
-    if (title == "change password") {
-      return GestureDetector(
-        onTap: () {},
-        child: Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Row(children: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.key)),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                title,
-                style: const TextStyle(
-                    fontSize: 15, color: Color.fromARGB(255, 56, 56, 56)),
-              ),
-            ),
-          ]),
-        ),
-      );
-    } else if (title == "About me") {
-      return GestureDetector(
-        onTap: () {},
-        child: Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Row(children: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.person_2)),
-            TextButton(
-              onPressed: () {},
-              child: Text(title,
-                  style: const TextStyle(
-                      fontSize: 15, color: Color.fromARGB(255, 56, 56, 56))),
-            ),
-          ]),
-        ),
-      );
-    } else if (title == "Delete Account") {
+    // if (title == "change password") {
+    //   return GestureDetector(
+    //     onTap: () {},
+    //     child: Padding(
+    //       padding: const EdgeInsets.only(top: 10),
+    //       child: Row(children: [
+    //         IconButton(onPressed: () {}, icon: const Icon(Icons.key)),
+    //         TextButton(
+    //           onPressed: () {},
+    //           child: Text(
+    //             title,
+    //             style: const TextStyle(
+    //                 fontSize: 15, color: Color.fromARGB(255, 56, 56, 56)),
+    //           ),
+    //         ),
+    //       ]),
+    //     ),
+    //   );
+    // } else if (title == "About me") {
+    //   return GestureDetector(
+    //     onTap: () {},
+    //     child: Padding(
+    //       padding: const EdgeInsets.only(top: 10),
+    //       child: Row(children: [
+    //         IconButton(onPressed: () {}, icon: const Icon(Icons.person_2)),
+    //         TextButton(
+    //           onPressed: () {},
+    //           child: Text(title,
+    //               style: const TextStyle(
+    //                   fontSize: 15, color: Color.fromARGB(255, 56, 56, 56))),
+    //         ),
+    //       ]),
+    //     ),
+    //   );
+    // } else
+    if (title == "ลบบัญชี") {
       return GestureDetector(
         onTap: () {},
         child: Padding(

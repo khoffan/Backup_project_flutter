@@ -40,7 +40,8 @@ class _DelivererScreenState extends State<DelivererScreen> {
       String title = _txtControllerBody.text;
 
       if (amount > 50.00) {
-        ServiceDeliver().saveDeliver(title: title, file: _image!, uid: uid);
+        ServiceDeliver()
+            .saveDeliverPosts(title: title, file: _image!, uid: uid);
         _txtControllerBody.clear();
         Navigator.pop(context);
         print(amount);
@@ -71,7 +72,6 @@ class _DelivererScreenState extends State<DelivererScreen> {
         backgroundColor: themeBg,
         leading: GestureDetector(
           onTap: () async {
-            
             Navigator.pop(context);
           },
           child: Icon(
@@ -79,18 +79,6 @@ class _DelivererScreenState extends State<DelivererScreen> {
             color: Colors.black,
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => DelivererScreen(),
-                  ));
-            },
-            icon: Icon(Icons.add),
-          ),
-        ],
       ),
       body: ListView(
         children: [

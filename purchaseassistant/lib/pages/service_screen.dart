@@ -62,13 +62,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
     return "";
   }
 
-  void sendData2api(String uid, String locate) async {
-    try {
-      // Check if uid is not empty or null
-      if (uid != "" && uid.trim().isNotEmpty && locate != "") {
-        String name = "";
-        Timestamp datenow = Timestamp.now();
-
+  void sendData2api(String locate) async {
+    String name = "";
+    Timestamp datenow = Timestamp.now();
+    // Check if uid is not empty or null
+    if (uid != "" && uid.trim().isNotEmpty && locate != "") {
+      try {
         DocumentSnapshot snapshot =
             await _firestore.collection("Profile").doc(uid).get();
 
@@ -84,19 +83,35 @@ class _ServiceScreenState extends State<ServiceScreen> {
           };
 
           await APIMatiching().setCustomerData(userData);
-
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => LoadingCustomerScreen(
+                riderid: uid,
+              ),
+            ),
+          );
           // DeliverHistory(cusid: cusid, riderid: riderid,);
         } else {
           // Handle the case when the document doesn't exist
           print('Error: Document does not exist for uid: $uid');
         }
-      } else {
-        // Handle the case when uid is empty or null
-        print('Error: uid is empty or null');
+      } catch (e) {
+        print("Error connect: ${e}");
+      }
+    } else {
+      // Handle the case when uid is empty or null
+      print('Error: uid is empty or null');
+    }
+  }
+
+  void delCustomertoRider(String uid) async {
+    try {
+      if (uid != "") {
+        APIMatiching().delCustomertoRider(uid);
       }
     } catch (e) {
-      // Handle other errors
-      print('Error: $e');
+      throw e.toString();
     }
   }
 
@@ -132,7 +147,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
-    getAmount(context, uid);
+    Future.delayed(Duration(seconds: 5), () {
+      getAmount(context, uid);
+    });
   }
 
   @override
@@ -244,8 +261,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         if (((valueFirst == true || valueSecond == true) &&
                                 valueThird != true) &&
                             amount > 10.00) {
-                          sendData2api(uid, locateData);
                           print(uid);
+                          sendData2api(locateData);
                         } else {
                           String msgErr = "";
                           if (amount < 50.00) {
@@ -303,7 +320,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 height: 5.0,
                               ),
                               const Text(
-                                "ลูกค้า",
+                                "ฝากซื้อ",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               )
                             ],
@@ -327,10 +344,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                       valueSecond == true ||
                                       valueThird == true) &&
                                   amount > 10.00) {
+                                delCustomertoRider(uid);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) {
-                                    return DeliverHistory();
+                                    return DeliverHistory(
+                                      riderLocate: locateData,
+                                    );
                                   }),
                                 );
                               } else {
@@ -350,22 +370,23 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 ServiceDeliver().updateStatus(true, uid, title);
                                 ServiceDeliver().updateWorking(uid, true);
                                 ProfileService().updateRole(uid, "rider");
+                                locateData = getLocationData(title);
                               }
                               if (valueSecond == true && valueThird == false) {
                                 String title = "หอพัก - โลตัสหน้า ม.อ.";
                                 ServiceDeliver().updateStatus(true, uid, title);
                                 ServiceDeliver().updateWorking(uid, true);
                                 ProfileService().updateRole(uid, "rider");
+                                locateData = getLocationData(title);
                               }
                               if (valueThird == true) {
                                 String title = "รับทุกงาน";
                                 ServiceDeliver().updateStatus(true, uid, title);
                                 ServiceDeliver().updateWorking(uid, true);
                                 ProfileService().updateRole(uid, "rider");
+                                locateData = getLocationData(title);
                               }
                               // ServiceDeliver().setStatus(true, uid, "");
-
-                              print("save status success");
                             },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,6 +441,6 @@ alertNOtAmout(BuildContext context) {
     onConfirmBtnTap: () =>
         Navigator.pushReplacementNamed(context, AppRoute.wallet),
     confirmBtnColor: Colors.blue,
-    cancelBtnText: 'ตกลง',
+    cancelBtnText: 'ยกเลิก',
   );
 }

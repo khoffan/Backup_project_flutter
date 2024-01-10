@@ -19,33 +19,25 @@ class ProfileService {
       final downloadURL = await snapshot.ref.getDownloadURL();
       return downloadURL;
     } catch (e) {
-      print("Error uploading image to Firebase Storage: $e");
-      throw e;
+      throw e.toString();
     }
   }
 
-  Future<String> saveProfile({
-    required String name,
-    required String room,
-    required String stdid,
-    required String lname,
-    required String dorm,
-    required String gender,
-    required String phone,
-    required String file,
-  }) async {
+  Future<String> saveProfile(Map<String, dynamic> profile) async {
     String resp = "some Error";
     try {
       print("Attempting to save data...");
-      if (name.isNotEmpty &&
-          room.isNotEmpty &&
-          lname.isNotEmpty &&
-          dorm.isNotEmpty &&
-          stdid.isNotEmpty &&
-          gender.isNotEmpty &&
-          phone.isNotEmpty) {
+      if (profile != {}) {
+        String name = profile['name'] ?? '';
+        String lname = profile['lname'] ?? '';
+        String room = profile['room'] ?? '';
+        String stdid = profile['stdId'] ?? '';
+        String dorm = profile['dorm'] ?? '';
+        String gender = profile['gender'] ?? '';
+        String phone = profile['phone'] ?? '';
+        String file = profile['image'] ?? '';
         // String? _image = await uploadImagetoStorage('/profileImage', file);
-        await _firestore.collection("Profile").doc(_user.uid ?? '').set({
+        await _firestore.collection("Profile").doc(_user.uid).set({
           'name': name,
           'lname': lname,
           'room': room,
@@ -69,28 +61,20 @@ class ProfileService {
     return resp;
   }
 
-  Future<String> updateProfile({
-    required String name,
-    required String room,
-    required String stdid,
-    required String lname,
-    required String dorm,
-    required String gender,
-    required String phone,
-    required String file,
-  }) async {
+  Future<String> updateProfile(Map<String, dynamic> profile) async {
     String resp = "some Error";
     try {
       print("Attempting to save data...");
-      if (name.isNotEmpty &&
-          room.isNotEmpty &&
-          file.isNotEmpty &&
-          lname.isNotEmpty &&
-          dorm.isNotEmpty &&
-          stdid.isNotEmpty &&
-          gender.isNotEmpty &&
-          phone.isNotEmpty) {
-        await _firestore.collection("Profile").doc(_user.uid ?? '').update({
+      if (profile != {}) {
+        String name = profile['name'] ?? '';
+        String lname = profile['lname'] ?? '';
+        String room = profile['room'] ?? '';
+        String stdid = profile['stdId'] ?? '';
+        String dorm = profile['dorm'] ?? '';
+        String gender = profile['gender'] ?? '';
+        String phone = profile['phone'] ?? '';
+        String file = profile['image'] ?? '';
+        await _firestore.collection("Profile").doc(_user.uid).update({
           'name': name,
           'lname': lname,
           'room': room,

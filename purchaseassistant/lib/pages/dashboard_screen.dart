@@ -38,13 +38,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
         centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_outlined),
-            color: Colors.amber[800],
-          ),
-        ],
+        
       ),
       body: ShowPost(),
     );

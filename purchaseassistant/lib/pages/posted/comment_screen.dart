@@ -17,7 +17,7 @@ class CommentScreen extends StatefulWidget {
 class _CommentScreenState extends State<CommentScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseAuth _auth = FirebaseAuth.instance;
-  List<String> popupItems = ["เข้าสู่ช่องฃแชท", "ตอบกลับ", "รายงาน"];
+  List<String> popupItems = ["เข้าสู่ช่องแชท", "ตอบกลับ", "รายงาน"];
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -45,10 +45,7 @@ class _CommentScreenState extends State<CommentScreen> {
             String commentid = commentData['postId'] ?? '';
             String userId = commentData['userid'] ?? '';
             String date = FormatDate(commentData['date']);
-            print("comment: ${commentid}");
-            print("userId: ${userId}");
-            print("commentUser: ${commentUser}");
-            print("posatid: ${widget.postId}");
+
             if (commentid == widget.postId) {
               return Container(
                 child: SingleChildScrollView(

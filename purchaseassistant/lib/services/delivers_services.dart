@@ -25,7 +25,7 @@ class ServiceDeliver {
     }
   }
 
-  Future<void> saveDeliver(
+  Future<void> saveDeliverPosts(
       {required String uid,
       required String title,
       required Uint8List file}) async {

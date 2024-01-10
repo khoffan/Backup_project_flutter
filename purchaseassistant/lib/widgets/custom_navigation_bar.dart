@@ -110,7 +110,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                                     ? Colors.green
                                     : Colors.grey),
                             Text(
-                              'Home',
+                              'หน้าหลัก',
                               style: TextStyle(
                                   color: _selectedIndex == 0
                                       ? Colors.green
@@ -131,7 +131,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                                     ? Colors.green
                                     : Colors.grey),
                             Text(
-                              'Chat',
+                              'แชต',
                               style: TextStyle(
                                   color: _selectedIndex == 1
                                       ? Colors.green
@@ -178,7 +178,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                                     ? Colors.green
                                     : Colors.grey),
                             Text(
-                              'Setting',
+                              'ตั้งค่า',
                               style: TextStyle(
                                   color: _selectedIndex == 3
                                       ? Colors.green
