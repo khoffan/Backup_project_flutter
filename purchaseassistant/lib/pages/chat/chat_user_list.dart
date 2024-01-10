@@ -41,7 +41,7 @@ class _ListUserchatState extends State<ListUserchat> {
 
   Widget _buildShowUser() {
     return StreamBuilder(
-      stream: _firestore.collection('userProfile').snapshots(),
+      stream: _firestore.collection('Profile').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(

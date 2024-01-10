@@ -40,7 +40,8 @@ class _DelivererScreenState extends State<DelivererScreen> {
       String title = _txtControllerBody.text;
 
       if (amount > 50.00) {
-        ServiceDeliver().saveDeliver(title: title, file: _image!, uid: uid);
+        ServiceDeliver()
+            .saveDeliverPosts(title: title, file: _image!, uid: uid);
         _txtControllerBody.clear();
         Navigator.pop(context);
         print(amount);

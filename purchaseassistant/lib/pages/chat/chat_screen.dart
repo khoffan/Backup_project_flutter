@@ -28,30 +28,58 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController _messageController = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
+  late StreamSubscription<bool> _stremSub;
   String uid = "";
-  String otherid = "";
+  String? otherid;
+  String anotherid = "";
+  bool isRiderStatus = true;
   Timestamp? _lastMessageTimestamp;
   FocusNode _focusNode = FocusNode();
-  bool isShowIcon = true;
+  bool isShowIcon = false;
 
   void sendMessge() async {
     if (_messageController.text.isNotEmpty) {
       print(otherid);
-      await ChatServices().sendMessge(otherid, _messageController.text);
+      await ChatServices().sendMessge(otherid!, _messageController.text);
       _messageController.clear();
     }
   }
 
-  void closeChatState() async {
+  void closeChatState(String id) async {
     try {
-      String id = await APIMatiching().getRiderid(otherid);
-      print("is id: ${id} and uid is: ${uid}");
-      if (uid.trim() != id.trim()) {
-        APIMatiching().updateStatusRider(otherid);
+      anotherid = await APIMatiching().getRiderid(id);
+      print("is id: ${anotherid} and otherid is: ${id}");
+      if (uid.trim() == anotherid.trim()) {
+        APIMatiching().updateRiderData(id);
+        APIMatiching().updateStatusChatCustomer(id);
         Navigator.pop(context);
       }
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  void checkStatusrider() async {
+    try {
+      _stremSub = APIMatiching().getRiderStatus(uid).listen(
+        (bool isStatus) {
+          setState(() {
+            isRiderStatus = isStatus;
+          });
+          print(isRiderStatus);
+          if (isRiderStatus == false) {
+            Navigator.pop(context);
+          }
+        },
+        onError: (dynamic e) {
+          print(e.toString());
+        },
+        onDone: () {
+          print("Strem is clise");
+        },
+      );
+    } catch (e) {
+      print(e.toString());
     }
   }
 
@@ -66,11 +94,15 @@ class _ChatScreenState extends State<ChatScreen> {
         isShowIcon = !_focusNode.hasFocus;
       });
     });
+    if (uid != anotherid) {
+      checkStatusrider();
+    }
   }
 
   @override
   void dispose() {
     _focusNode.dispose();
+    _stremSub.cancel();
     super.dispose();
   }
 
@@ -83,7 +115,14 @@ class _ChatScreenState extends State<ChatScreen> {
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
         backgroundColor: themeBg,
-        leading: null,
+        leading: IconButton(
+            onPressed: () {
+              closeChatState(otherid!);
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            )),
         actions: [
           IconButton(
               onPressed: () {
@@ -115,7 +154,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageList() {
     return StreamBuilder(
-      stream: ChatServices().getMessage(uid, otherid),
+      stream: ChatServices().getMessage(uid, otherid!),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
