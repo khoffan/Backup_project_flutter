@@ -110,19 +110,20 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "รอการจับคู่...",
-                    style: TextStyle(
-                        fontSize: 14, color: Colors.black, textBaseline: null),
-                  ),
-                ]),
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "รอการจับคู่...",
+                  style: TextStyle(
+                      fontSize: 14, color: Colors.black, textBaseline: null),
+                ),
+              ],
+            ),
           )
         : ChatScreen(reciveuid: reciveuid, name: name);
   }

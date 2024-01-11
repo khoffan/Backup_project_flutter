@@ -256,7 +256,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  hintText: "Enter message",
+                  hintText: "ส่งข้อความ...",
                   suffixIcon: IconButton(
                     icon: Icon(Icons.send), // You can choose any icon you like.
                     onPressed: () {
