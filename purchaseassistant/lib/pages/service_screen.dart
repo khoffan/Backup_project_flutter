@@ -147,7 +147,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(Duration(seconds: 1), () {
       getAmount(context, uid);
     });
   }
