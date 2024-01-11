@@ -110,7 +110,7 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                             borderRadius:
                                 BorderRadius.circular(20), // <-- Radius
                           ),
-                          backgroundColor: Colors.red,
+                          backgroundColor: Colors.green,
                           padding: const EdgeInsetsDirectional.symmetric(
                             horizontal: 40,
                             vertical: 8,
@@ -172,7 +172,7 @@ class _CustomFormRegisterState extends State<CustomFormRegister> {
                   child: Text(
                     "Login",
                     style: TextStyle(
-                      color: themeError,
+                      color: Colors.green,
                     ),
                   ),
                 )
