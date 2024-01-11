@@ -293,7 +293,7 @@ Future ShowCommentBottm(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          hintText: "Comment",
+                          hintText: "แสดงความคิดเห็น",
                         ),
                         controller: _commentController,
                         validator: (value) {
