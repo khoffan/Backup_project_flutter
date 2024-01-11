@@ -434,7 +434,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
         stream: firestore
             .collection("Matchings")
             .where("location", isEqualTo: locaterider)
-            .orderBy("date")
+            .orderBy("date", descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -459,9 +459,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     return StreamBuilder(
       stream: firestore
           .collection("Matchings")
-          .where("cus_status", isEqualTo: true)
-          .where("rider_status", isEqualTo: false)
-          .orderBy("date")
+          .orderBy("date", descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
