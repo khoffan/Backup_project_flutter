@@ -5,10 +5,10 @@ import 'package:purchaseassistant/pages/chat/chat_screen.dart';
 import 'package:purchaseassistant/utils/formatDate.dart';
 
 class CommentScreen extends StatefulWidget {
-  CommentScreen({super.key, required this.postId, required this.uid});
+  CommentScreen({super.key, this.postId, this.uid});
 
-  String postId = "";
-  String uid = "";
+  String? postId;
+  String? uid;
 
   @override
   State<CommentScreen> createState() => _CommentScreenState();
@@ -18,10 +18,22 @@ class _CommentScreenState extends State<CommentScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseAuth _auth = FirebaseAuth.instance;
   List<String> popupItems = ["เข้าสู่ช่องแชท", "ตอบกลับ", "รายงาน"];
+  String postId = "";
+  @override
+  void initState() {
+    super.initState();
+    postId = widget.postId!;
+    print("postID: ${postId}");
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: _firestore.collection('Comments').snapshots(),
+      stream: _firestore
+          .collection('Comments')
+          .where("postId", isEqualTo: postId)
+          .orderBy("date")
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -33,7 +45,12 @@ class _CommentScreenState extends State<CommentScreen> {
             child: CircularProgressIndicator(),
           );
         }
-
+        if (!snapshot.hasData) {
+          return Container(
+            alignment: Alignment.center,
+            child: Text("No Data"),
+          );
+        }
         final commentDocs = snapshot.data!.docs;
         return ListView.builder(
           itemCount: commentDocs.length,
@@ -46,62 +63,59 @@ class _CommentScreenState extends State<CommentScreen> {
             String userId = commentData['userid'] ?? '';
             String date = FormatDate(commentData['date']);
 
-            if (commentid == widget.postId) {
-              return Container(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        width: 350, // Increase the width if necessary
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 20),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.red),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      ListTile(
-                                        title: Text(commentUser),
-                                        subtitle: Text(commentText),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                _buildMediaBottom(context, userId, commentUser),
-                              ],
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Text("${date}"),
-                                Text("ถูกใจ"),
-                                Text("ตอบกลับ"),
-                              ],
-                            )
-                          ],
-                        ),
+            return Container(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      width: 350, // Increase the width if necessary
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.red),
                       ),
-                    ],
-                  ),
+                      child: Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    ListTile(
+                                      title: Text(commentUser),
+                                      subtitle: Text(commentText),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              _buildMediaBottom(context, userId, commentUser),
+                            ],
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text("${date}"),
+                              Text("ถูกใจ"),
+                              Text("ตอบกลับ"),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            }
-            return Container();
+              ),
+            );
           },
         );
       },
@@ -132,18 +146,6 @@ class _CommentScreenState extends State<CommentScreen> {
   void _handleMenuItemTap(String selectedItem, String uid, String name) {
     // Implement your logic for handling the selected item here
     if (selectedItem == "เข้าสู่ช่องฃแชท") {
-      if (uid != _auth.currentUser!.uid) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatScreen(reciveuid: uid, name: name),
-          ),
-        );
-      } else {
-        Dialog(
-          child: Text("user is connnecting"),
-        );
-      }
     } else if (selectedItem == "ตอบกลับ") {
       // Handle the "ตอบกลับ" action
     } else if (selectedItem == "รายงาน") {

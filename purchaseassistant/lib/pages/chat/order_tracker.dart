@@ -21,6 +21,8 @@ class OrderTrackers extends StatefulWidget {
 }
 
 class _OrderTrackersState extends State<OrderTrackers> {
+  bool isFalse = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,15 +61,15 @@ class _OrderTrackersState extends State<OrderTrackers> {
                     title: "Order Placed",
                     date: "Sat, 8 Apr '22",
                     tracker_details: [
-                      // TrackerDetails contains detailed information about a specific event in the order tracking process.
-                      TrackerDetails(
-                        title: "Your order was placed on Zenzzen",
-                        datetime: "Sat, 8 Apr '22 - 17:17",
-                      ),
-                      TrackerDetails(
-                        title: "Your order was placed on Zenzzen",
-                        datetime: "Sat, 8 Apr '22 - 17:42",
-                      ),
+                      isFalse
+                          ? TrackerDetails(
+                              title: "Your order was placed on Zenzzen1",
+                              datetime: "Sat, 8 Apr '22 - 17:17",
+                            )
+                          : TrackerDetails(
+                              title: "Your order was placed on Zenzzen2",
+                              datetime: "Sat, 8 Apr '22 - 17:42",
+                            ),
                       TrackerDetails(
                         title: "Zenzzen Arranged A Callback Request",
                         datetime: "Sat, 8 Apr '22 - 17:42",

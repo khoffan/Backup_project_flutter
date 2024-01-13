@@ -120,7 +120,7 @@ class _ShowPostState extends State<ShowPost> {
 
                       // print(imageProfilelink);
 
-                      print("userId: ${userid}");
+                      print("docid: ${docid}");
                       // print("DocId: ${docid}");
                       final Timestamp timestamp = Timestamp.now();
                       final datenow = timestamp.toDate();
@@ -214,11 +214,8 @@ class _ShowPostState extends State<ShowPost> {
                                           children: [
                                             TextButton(
                                               onPressed: () {
-                                                ShowCommentBottm(
-                                                    context,
-                                                    saveComment,
-                                                    userid,
-                                                    uid ?? '');
+                                                ShowCommentBottm(context,
+                                                    saveComment, docid, uid);
                                               },
                                               child: Text('ความคิดเห็น'),
                                             ),
@@ -250,7 +247,6 @@ class _ShowPostState extends State<ShowPost> {
 
 Future ShowCommentBottm(
     context, Function saveComment, String postId, String uid) {
-  print("PostId: ${postId}");
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -315,65 +311,6 @@ Future ShowCommentBottm(
     },
   );
 }
-
-// Future ShowCommentBottm(context, Function saveChat, String name) {
-//     return showModalBottomSheet(
-//       context: context,
-//       builder: (context) {
-//         return Scaffold(
-//           body: Container(
-//             child: Form(
-//               key: _formKey,
-//               child: Column(
-//                 children: [
-//                   Expanded(
-//                     flex: 4,
-//                     child: ChatScreen(
-//                       reciveuid: _userid,
-//                       name: name,
-//                       docid: _docid,
-//                     ),
-//                   ),
-//                   Row(
-//                     children: [
-//                       Container(
-//                         alignment: Alignment.center,
-//                         width: MediaQuery.of(context).size.width - 50,
-//                         padding: const EdgeInsets.symmetric(
-//                             vertical: 10, horizontal: 10),
-//                         child: TextFormField(
-//                           decoration: InputDecoration(
-//                             border: OutlineInputBorder(),
-//                           ),
-//                           validator: (value) {
-//                             if (value!.isEmpty && value == '') {
-//                               return "กรุณาใส่ข้อมูล";
-//                             }
-//                             return null;
-//                           },
-//                           controller: _messageController,
-//                         ),
-//                       ),
-//                       IconButton(
-//                         onPressed: () {
-//                           if (_formKey.currentState!.validate()) {
-//                             saveChat(_userid, _docid);
-//                           }
-//                         },
-//                         icon: Icon(
-//                           Icons.send_outlined,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         );
-//       },
-//     );
-//   }
 
 StreamBuilder<DocumentSnapshot<Map<String, dynamic>>> _showDiaslogProfile(
   BuildContext context,

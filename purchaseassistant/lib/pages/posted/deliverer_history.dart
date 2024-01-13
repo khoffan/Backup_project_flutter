@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:purchaseassistant/Provider/deliverDataProvider.dart';
 import 'package:purchaseassistant/models/matchmodel.dart';
 import 'package:purchaseassistant/pages/chat/chat_screen.dart';
+import 'package:purchaseassistant/pages/posted/comment_screen.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
@@ -286,11 +287,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Row(
-                                  children: [
-                                    Text("${title}"),
-                                  ],
-                                ),
+                                Text("${title}"),
                                 SizedBox(
                                   height: 10,
                                 ),
@@ -315,8 +312,14 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                                   ],
                                 ),
                                 ButtonBar(
-                                  alignment: MainAxisAlignment.end,
+                                  alignment: MainAxisAlignment.spaceAround,
                                   children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        ShowCommentBottm(context, docid, uid);
+                                      },
+                                      child: Text('รายการความคิดเห็น'),
+                                    ),
                                     TextButton(
                                       onPressed: () {
                                         Navigator.push(
@@ -335,7 +338,10 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                                       onPressed: () {
                                         removePosted(userId, docid);
                                       },
-                                      child: Text('ลบ'),
+                                      child: Text(
+                                        'ลบ',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -358,7 +364,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "ไม่รายการที่ได้โพสไว้",
+                    "ไม่มีรายการที่ได้โพสไว้",
                     style: TextStyle(fontSize: 20),
                   ),
                   Text(
@@ -381,6 +387,37 @@ class _DeliverHistoryState extends State<DeliverHistory> {
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
       ),
+    );
+  }
+
+  Future ShowCommentBottm(context, String postId, String uid) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: Form(
+            child: Scaffold(
+              appBar: AppBar(
+                leading: null,
+                backgroundColor: Colors.white,
+              ),
+              body: Column(
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: CommentScreen(
+                      postId: postId,
+                      uid: uid,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
