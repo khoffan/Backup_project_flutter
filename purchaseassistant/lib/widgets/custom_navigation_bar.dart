@@ -71,7 +71,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
           child: _widgetOptions.elementAt(_selectedIndex),
         ),
         floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
+          child: Text(
+            "บริการ",
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: Colors.green,
           onPressed: () {
             // if (amout < 20.00) {

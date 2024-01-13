@@ -50,6 +50,8 @@ class _OrderTrackersState extends State<OrderTrackers> {
               child: OrderTrackerZen(
                 text_primary_color: Colors.amber,
                 success_color: Colors.cyan,
+                isShrinked: false,
+                screen_background_color: themeBg,
                 // Provide an array of TrackerData objects to display the order tracking information.
                 tracker_data: [
                   // TrackerData represents a single step in the order tracking process.
@@ -61,6 +63,10 @@ class _OrderTrackersState extends State<OrderTrackers> {
                       TrackerDetails(
                         title: "Your order was placed on Zenzzen",
                         datetime: "Sat, 8 Apr '22 - 17:17",
+                      ),
+                      TrackerDetails(
+                        title: "Your order was placed on Zenzzen",
+                        datetime: "Sat, 8 Apr '22 - 17:42",
                       ),
                       TrackerDetails(
                         title: "Zenzzen Arranged A Callback Request",

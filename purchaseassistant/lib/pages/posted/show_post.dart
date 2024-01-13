@@ -143,7 +143,8 @@ class _ShowPostState extends State<ShowPost> {
                                     data["imageLink"] ?? "";
                                 return Card(
                                   child: Container(
-                                    margin: const EdgeInsets.all(15.0),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15),
                                     child: Column(
                                       children: [
                                         Container(
@@ -191,33 +192,23 @@ class _ShowPostState extends State<ShowPost> {
                                             ],
                                           ),
                                         ),
-                                        Row(
-                                          children: [
-                                            Text("${title}"),
-                                          ],
-                                        ),
+                                        Text("${title}"),
                                         SizedBox(
-                                          height: 10,
+                                          height: 15,
                                         ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: imageLink != null
-                                                  ? Image(
-                                                      image: NetworkImage(
-                                                        imageLink,
-                                                      ),
-                                                      width: 40.0,
-                                                    )
-                                                  : Image(
-                                                      image: NetworkImage(
-                                                        "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                                      ),
-                                                      width: 40.0,
-                                                    ),
-                                            ),
-                                          ],
-                                        ),
+                                        imageLink != ""
+                                            ? Image(
+                                                image: NetworkImage(
+                                                  imageLink,
+                                                ),
+                                                width: 400,
+                                              )
+                                            : Image(
+                                                image: NetworkImage(
+                                                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                                ),
+                                                width: 40.0,
+                                              ),
                                         ButtonBar(
                                           alignment: MainAxisAlignment.end,
                                           children: [

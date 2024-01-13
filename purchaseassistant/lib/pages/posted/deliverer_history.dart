@@ -136,6 +136,34 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             },
           ),
           actions: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                    maximumSize: Size(100, 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide.none, // <-- Radius
+                    ),
+                    minimumSize: Size(30, 2),
+                    backgroundColor: Colors.white38),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DelivererScreen(),
+                    ),
+                  );
+                },
+                child: Text(
+                  "เพิ่มโพสต์",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
             IconButton(
               onPressed: () {
                 Navigator.push(
@@ -147,20 +175,6 @@ class _DeliverHistoryState extends State<DeliverHistory> {
               },
               icon: Icon(
                 Icons.settings,
-                color: Colors.black,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => DelivererScreen(),
-                  ),
-                );
-              },
-              icon: Icon(
-                Icons.add,
                 color: Colors.black,
               ),
             ),
@@ -362,7 +376,10 @@ class _DeliverHistoryState extends State<DeliverHistory> {
         onPressed: () {
           showMediaCustoerSide(context, FirebaseFirestore.instance);
         },
-        child: Icon(Icons.add),
+        child: Text(
+          "จับคู่",
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

@@ -123,20 +123,35 @@ class _ChatScreenState extends State<ChatScreen> {
               Icons.arrow_back,
               color: Colors.black,
             )),
-        actions: [
-          IconButton(
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                  maximumSize: Size(100, 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide.none, // <-- Radius
+                  ),
+                  minimumSize: Size(30, 2),
+                  backgroundColor: Colors.white38),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => OrderTrackers(),
+                    builder: (context) => OrderTrackers(),
                   ),
                 );
               },
-              icon: Icon(
-                Icons.add,
-                color: Colors.black,
-              ))
+              child: Text(
+                "คำสั่งซื้อ",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
         ],
       ),
       body: Container(
