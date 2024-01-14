@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:purchaseassistant/services/user_provider.dart';
 // import 'package:flutter/material.dart';
 
 final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -46,6 +47,7 @@ class ProfileService {
           'gender': gender,
           'phone': phone,
           'imageLink': file,
+          'statususer': "",
           'active': "0",
           'role': "customer"
         });
@@ -83,6 +85,7 @@ class ProfileService {
           'gender': gender,
           'phone': phone,
           'imageLink': file,
+          'statususer': "",
         });
         print("Data saved successfully!");
         resp = "Success";
@@ -150,30 +153,24 @@ class ProfileService {
       throw e.toString();
     }
   }
+
+  Future<void> updateStatusUser(String uid) async {
+    String userStatus = "";
+    try {
+      if (uid != "") {
+        bool? loginStatus = await UserLogin.getLogin();
+        if (loginStatus == true) {
+          userStatus = "online";
+        } else {
+          userStatus = "offline";
+        }
+        await _firestore
+            .collection("Profile")
+            .doc(uid)
+            .update({"statususer": userStatus});
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 }
-
-// Future<int> getTotalAmount(String uid) async {
-//   try {
-//     QuerySnapshot snapshot = await _firestore.collection('Profile').get();
-
-//     final docsProfile = snapshot.docs;
-//     for (QueryDocumentSnapshot docProfile in docsProfile) {
-//       CollectionReference subCol =
-//           docProfile.reference.collection('transaction');
-//       QuerySnapshot subsnapshot = await subCol.get();
-//       subsnapshot.docs.forEach((DocumentSnapshot subDoc) {
-//         print(subDoc.data());
-//       });
-//     DocumentSnapshot snapshot =
-//         await _firestore.collection('Profile').doc(uid).get();
-//     CollectionReference subCol = snapshot.reference.collection('transaction');
-//     QuerySnapshot colTransaction = await subCol.get();
-//     for (QueryDocumentSnapshot document in colTransaction.docs) {
-//       print(document["totalAmount"]);
-//     }
-
-//     return 0;
-//   } catch (e) {
-//     throw e.toString();
-//   }
-// }

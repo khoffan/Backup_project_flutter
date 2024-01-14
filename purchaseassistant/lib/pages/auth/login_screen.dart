@@ -30,10 +30,18 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    _updateConnection();
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       setState(() {
         _connectivity = result;
       });
+    });
+  }
+
+  void _updateConnection() async {
+    ConnectivityResult result = await Connectivity().checkConnectivity();
+    setState(() {
+      _connectivity = result;
     });
   }
 
@@ -173,8 +181,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                               FirebaseAuth
                                                   .instance.currentUser!.uid,
                                               "customer");
+
                                           UserLogin.setLogin(true);
                                           sts = await UserLogin.getLogin();
+                                          ProfileService().updateStatusUser(
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                          );
                                           ServiceDeliver().updateUser(
                                               FirebaseAuth
                                                   .instance.currentUser!.uid,

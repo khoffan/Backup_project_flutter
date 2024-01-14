@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/services/auth_service.dart';
+import 'package:purchaseassistant/services/matching_services.dart';
+import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import '../../routes/routes.dart';
 import '../../services/delivers_services.dart';
@@ -51,10 +53,13 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
     sts = await UserLogin.getLogin();
     if (uid != "") {
       await ServiceDeliver().updateUser(uid, sts);
+      await ProfileService().updateStatusUser(uid);
+      await APIMatiching().updateISonline(uid);
     }
     print(sts);
   }
 
+  @override
   void initState() {
     super.initState();
     uid = auth.currentUser!.uid;

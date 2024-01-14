@@ -488,6 +488,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
         stream: firestore
             .collection("Matchings")
             .where("location", isEqualTo: locaterider)
+            .where("cusIsonline", isEqualTo: "online")
             .orderBy("date", descending: true)
             .snapshots(),
         builder: (context, snapshot) {
@@ -513,6 +514,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     return StreamBuilder(
       stream: firestore
           .collection("Matchings")
+          .where("cusIsonline", isEqualTo: "online")
           .orderBy("date", descending: true)
           .snapshots(),
       builder: (context, snapshot) {
