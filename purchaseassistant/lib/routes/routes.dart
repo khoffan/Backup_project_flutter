@@ -21,6 +21,6 @@ class AppRoute {
         widget_navigation: (context) => const BottomNavigation(),
         service: (context) => const ServiceScreen(),
         wallet: (context) => const WalletScreenApp(),
-        test: (context) => const TestPage(),
+        // test: (context) => const TestPage(),
       };
 }

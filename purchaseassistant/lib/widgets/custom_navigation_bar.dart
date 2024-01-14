@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purchaseassistant/pages/auth/login_screen.dart';
+import 'package:purchaseassistant/pages/testPage.dart';
 import 'package:purchaseassistant/routes/routes.dart';
 import '../pages/chat/chat_user_list.dart';
 import '../pages/dashboard_screen.dart';
@@ -58,7 +59,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       _widgetOptions = <Widget>[
         DashboardScreen(),
         ListUserchat(),
-        QrscannerScreen(),
+        PullToRefreshApp(),
         ProfileScreenApp(myNavigate: _NavigateTohome),
       ];
     }
