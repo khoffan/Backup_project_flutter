@@ -21,7 +21,8 @@ class OrderTrackers extends StatefulWidget {
 }
 
 class _OrderTrackersState extends State<OrderTrackers> {
-  bool isFalse = false;
+  int checkState = 5;
+  List<int> showState = [1, 2, 3, 4, 5];
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +41,25 @@ class _OrderTrackersState extends State<OrderTrackers> {
               Icons.arrow_back,
               color: Colors.black,
             )),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: OutlinedButton(
+              onPressed: () {},
+              child: Text(
+                'อัพเดทสถานะ',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
+              ),
+              style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.circular(20)),
+                  backgroundColor: Colors.white38),
+            ),
+          )
+        ],
       ),
       body: Center(
         child: Column(
@@ -50,65 +70,69 @@ class _OrderTrackersState extends State<OrderTrackers> {
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               // OrderTrackerZen is the main widget of the package which displays the order tracking information.
               child: OrderTrackerZen(
-                text_primary_color: Colors.amber,
+                text_primary_color: Colors.black,
                 success_color: Colors.cyan,
                 isShrinked: false,
                 screen_background_color: themeBg,
                 // Provide an array of TrackerData objects to display the order tracking information.
                 tracker_data: [
                   // TrackerData represents a single step in the order tracking process.
+
                   TrackerData(
-                    title: "Order Placed",
+                    title: "รอลูกค้าชำระเงินค่าธรรมเนียม",
                     date: "Sat, 8 Apr '22",
                     tracker_details: [
-                      isFalse
+                      showState[0] <= checkState
                           ? TrackerDetails(
-                              title: "Your order was placed on Zenzzen1",
+                              title: "ลูกค้าชำระค่าธรรมสำเร็จ",
                               datetime: "Sat, 8 Apr '22 - 17:17",
                             )
-                          : TrackerDetails(
-                              title: "Your order was placed on Zenzzen2",
-                              datetime: "Sat, 8 Apr '22 - 17:42",
-                            ),
-                      TrackerDetails(
-                        title: "Zenzzen Arranged A Callback Request",
-                        datetime: "Sat, 8 Apr '22 - 17:42",
-                      ),
+                          : TrackerDetails(title: '', datetime: '')
                     ],
                   ),
                   // yet another TrackerData object
-                  TrackerData(
-                    title: "Order Shipped",
-                    date: "Sat, 8 Apr '22",
-                    tracker_details: [
-                      TrackerDetails(
-                        title: "Your order was shipped with MailDeli",
-                        datetime: "Sat, 8 Apr '22 - 17:50",
-                      ),
-                    ],
-                  ),
-                  // And yet another TrackerData object
-                  TrackerData(
-                    title: "Order Delivered",
-                    date: "Sat,8 Apr '22",
-                    tracker_details: [
-                      TrackerDetails(
-                        title: "You received your order, by MailDeli",
-                        datetime: "Sat, 8 Apr '22 - 17:51",
-                      ),
-                    ],
-                  ),
-
-                  TrackerData(
-                    title: "Anathor order",
-                    date: "now",
-                    tracker_details: [
-                      TrackerDetails(
-                        title: "new order",
-                        datetime: "next day",
-                      ),
-                    ],
-                  ),
+                  showState[1] <= checkState
+                      ? TrackerData(
+                          title: "กำลังดำเนินการตามข้อตกลง",
+                          date: "Sat, 8 Apr '22",
+                          tracker_details: [
+                            showState[2] <= checkState
+                                ? TrackerDetails(
+                                    title: "ดำนเนินสำเร็จ",
+                                    datetime: "Sat, 8 Apr '22 - 17:50",
+                                  )
+                                : TrackerDetails(title: '', datetime: ''),
+                          ],
+                        )
+                      : TrackerData(title: '', date: '', tracker_details: [
+                          // TrackerDetails(title: '', datetime: '')
+                        ]),
+                  showState[3] <= checkState
+                      ? // And yet another TrackerData object
+                      TrackerData(
+                          title: "กำลังจัดส่ง",
+                          date: "Sat,8 Apr '22",
+                          tracker_details: [
+                            TrackerDetails(
+                              title: "กรุณาเตรียมเงินชำระค่าสินค้าให้พร้อม",
+                              datetime: "Sat, 8 Apr '22 - 17:51",
+                            ),
+                          ],
+                        )
+                      : TrackerData(title: '', date: '', tracker_details: [
+                          // TrackerDetails(title: '', datetime: '')
+                        ]),
+                  showState[4] <= checkState
+                      ? TrackerData(
+                          title: "จัดส่งสำเร็จ",
+                          date: "now",
+                          tracker_details: [
+                            TrackerDetails(title: '', datetime: '')
+                          ],
+                        )
+                      : TrackerData(title: '', date: '', tracker_details: [
+                          // TrackerDetails(title: '', datetime: '')
+                        ]),
                 ],
               ),
             ),
