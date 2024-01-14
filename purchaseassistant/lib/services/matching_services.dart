@@ -61,12 +61,20 @@ class APIMatiching {
   // sett data in firestore
   Future<void> setCustomerData(Map<String, dynamic> data) async {
     try {
+      String userStatus = "";
       if (data != {}) {
         String cusid = data['id'] ?? "";
         String cusname = data['name'] ?? "";
         String locate = data['location'] ?? "";
         String datetime = data["date"] ?? "";
         if ((cusid, cusname, locate, datetime) != "") {
+          DocumentSnapshot snapshot =
+              await _firestore.collection("Profile").doc(cusid).get();
+          if (snapshot.exists) {
+            final data = snapshot.data() as Map<String, dynamic>;
+            userStatus = data['statususer'] ?? "";
+          }
+
           await _firestore.collection("Matchings").doc(cusid).set({
             "cusid": cusid,
             "cusname": cusname,
@@ -78,6 +86,7 @@ class APIMatiching {
             "rider_status": false,
             "dateRider": "null",
             "status": "InActive",
+            "cusIsonline": userStatus
           });
         }
         print("set data success");
@@ -89,12 +98,19 @@ class APIMatiching {
 
   Future<void> updateCustomerData(Map<String, dynamic> data) async {
     try {
+      String userStatus = "";
       if (data != {}) {
         String cusid = data['id'] ?? "";
         String cusname = data['name'] ?? "";
         String locate = data['location'] ?? "";
         String datetime = data["date"] ?? "";
         if ((cusid, cusname, locate, datetime) != "") {
+          DocumentSnapshot snapshot =
+              await _firestore.collection("Profile").doc(cusid).get();
+          if (snapshot.exists) {
+            final data = snapshot.data() as Map<String, dynamic>;
+            userStatus = data['statususer'] ?? "";
+          }
           await _firestore.collection("Matchings").doc(cusid).update({
             "cusid": cusid,
             "cusname": cusname,
@@ -116,6 +132,27 @@ class APIMatiching {
       if (uid != "") {
         await _firestore.collection("Matchings").doc(uid).update({
           "cus_status": false,
+        });
+      } else {
+        return;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> updateISonline(String uid) async {
+    try {
+      if (uid != "") {
+        String userStatus = "";
+        DocumentSnapshot snapshot =
+            await _firestore.collection("Profile").doc(uid).get();
+        if (snapshot.exists) {
+          final data = snapshot.data() as Map<String, dynamic>;
+          userStatus = data['statususer'] ?? "";
+        }
+        await _firestore.collection("Matchings").doc(uid).update({
+          "cusIsonline": userStatus,
         });
       } else {
         return;

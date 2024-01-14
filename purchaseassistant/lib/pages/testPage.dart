@@ -1,32 +1,64 @@
 import 'package:flutter/material.dart';
 
-class TestPage extends StatefulWidget {
-  const TestPage({super.key});
-
-  @override
-  State<TestPage> createState() => _TestPageState();
+void main() {
+  runApp(const PullToRefreshApp());
 }
 
-class _TestPageState extends State<TestPage> {
+class PullToRefreshApp extends StatelessWidget {
+  const PullToRefreshApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Pull to Refresh Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<String> items = List.generate(20, (index) => 'Item ${index + 1}');
+  GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+
+  Future<void> refreshData() async {
+    // Simulating an API request or data refresh
+    await Future.delayed(const Duration(seconds: 2));
+
+    setState(() {
+      // Update the list with new data
+      items = List.generate(20, (index) => 'New Item ${index + 1}');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CircularProgressIndicator(),
-          const SizedBox(
-            height: 15,
-          ),
-          const Text("ระบบกำลังจับคู่หาผู้ขับให้กับคุณ"),
-          TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('ยกเลิก'))
-        ],
-      )),
+      appBar: AppBar(
+        title: const Text('Pull to Refresh'),
+      ),
+      body: RefreshIndicator(
+        key: refreshIndicatorKey,
+        onRefresh: refreshData,
+        child: ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(items[index]),
+            );
+          },
+        ),
+      ),
     );
   }
 }
