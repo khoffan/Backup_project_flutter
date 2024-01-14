@@ -81,6 +81,14 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
     }
   }
 
+  void updateStatusCustomer(String uid) async {
+    try {
+      await APIMatiching().updateStatusCustomer(uid);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   @override
   void initState() {
     setState(() {
@@ -99,6 +107,7 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   @override
   void dispose() {
     super.dispose();
+    updateStatusCustomer(uid);
     streamData.cancel();
   }
 

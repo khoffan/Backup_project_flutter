@@ -184,7 +184,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                           UserLogin.setLogin(true);
                                           sts = await UserLogin.getLogin();
-                                          ProfileService().updateStatusUser(
+                                          await ProfileService()
+                                              .updateStatusUser(
                                             FirebaseAuth
                                                 .instance.currentUser!.uid,
                                           );

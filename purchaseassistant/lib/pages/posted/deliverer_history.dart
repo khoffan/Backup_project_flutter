@@ -61,7 +61,15 @@ class _DeliverHistoryState extends State<DeliverHistory> {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
           child: Column(
-            children: [Expanded(child: customerStream)],
+            children: [
+              Expanded(
+                child: customerStream.key != null
+                    ? customerStream
+                    : Center(
+                        child: Text("ไม่มีรายการลูกค้าที่รอการจับคู่"),
+                      ),
+              )
+            ],
           ),
         );
       },
@@ -489,6 +497,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             .collection("Matchings")
             .where("location", isEqualTo: locaterider)
             .where("cusIsonline", isEqualTo: "online")
+            .where("cus_status", isEqualTo: true)
             .orderBy("date", descending: true)
             .snapshots(),
         builder: (context, snapshot) {
@@ -503,11 +512,19 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             );
           }
           final customerDocs = snapshot.data!.docs;
-          return ListView(
-              children: customerDocs.map((customerDoc) {
-            final customerdata = customerDoc.data() as Map<String, dynamic>;
-            return buildContent(customerdata, customerDoc.id);
-          }).toList());
+          if (snapshot.hasData) {
+            return ListView(
+                children: customerDocs.map((customerDoc) {
+              final customerdata = customerDoc.data() as Map<String, dynamic>;
+              return buildContent(customerdata, customerDoc.id);
+            }).toList());
+          }
+          return Center(
+            child: Text(
+              "ไม่มีรายชการของลูกค้า",
+              style: TextStyle(fontSize: 25),
+            ),
+          );
         },
       );
     }
@@ -515,6 +532,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
       stream: firestore
           .collection("Matchings")
           .where("cusIsonline", isEqualTo: "online")
+          .where("cus_status", isEqualTo: true)
           .orderBy("date", descending: true)
           .snapshots(),
       builder: (context, snapshot) {
@@ -529,11 +547,19 @@ class _DeliverHistoryState extends State<DeliverHistory> {
           );
         }
         final customerDocs = snapshot.data!.docs;
-        return ListView(
-            children: customerDocs.map((customerDoc) {
-          final customerdata = customerDoc.data() as Map<String, dynamic>;
-          return buildContent(customerdata, customerDoc.id);
-        }).toList());
+        if (snapshot.hasData) {
+          return ListView(
+              children: customerDocs.map((customerDoc) {
+            final customerdata = customerDoc.data() as Map<String, dynamic>;
+            return buildContent(customerdata, customerDoc.id);
+          }).toList());
+        }
+        return Center(
+          child: Text(
+            "ไม่มีรายชการของลูกค้า",
+            style: TextStyle(fontSize: 25),
+          ),
+        );
       },
     );
   }
