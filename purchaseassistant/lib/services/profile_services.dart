@@ -28,6 +28,7 @@ class ProfileService {
     String resp = "some Error";
     try {
       print("Attempting to save data...");
+      bool? userIsonline = await UserLogin.getLogin();
       if (profile != {}) {
         String name = profile['name'] ?? '';
         String lname = profile['lname'] ?? '';
@@ -38,19 +39,36 @@ class ProfileService {
         String phone = profile['phone'] ?? '';
         String file = profile['image'] ?? '';
         // String? _image = await uploadImagetoStorage('/profileImage', file);
-        await _firestore.collection("Profile").doc(_user.uid).set({
-          'name': name,
-          'lname': lname,
-          'room': room,
-          'stdid': stdid,
-          'dorm': dorm,
-          'gender': gender,
-          'phone': phone,
-          'imageLink': file,
-          'statususer': "",
-          'active': "0",
-          'role': "customer"
-        });
+        if (userIsonline == true) {
+          await _firestore.collection("Profile").doc(_user.uid).set({
+            'name': name,
+            'lname': lname,
+            'room': room,
+            'stdid': stdid,
+            'dorm': dorm,
+            'gender': gender,
+            'phone': phone,
+            'imageLink': file,
+            'statususer': "online",
+            'active': "0",
+            'role': "customer"
+          });
+        } else {
+          await _firestore.collection("Profile").doc(_user.uid).set({
+            'name': name,
+            'lname': lname,
+            'room': room,
+            'stdid': stdid,
+            'dorm': dorm,
+            'gender': gender,
+            'phone': phone,
+            'imageLink': file,
+            'statususer': "offline",
+            'active': "0",
+            'role': "customer"
+          });
+        }
+
         print("Data saved successfully!");
         resp = "Success";
       } else {

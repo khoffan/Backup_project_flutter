@@ -79,7 +79,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
             "id": uid,
             'name': name,
             "location": locate,
-            "date": FormatDate(datenow),
+            "date": FormatDate.date(datenow),
           };
 
           await APIMatiching().setCustomerData(userData);

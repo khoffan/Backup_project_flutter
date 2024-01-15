@@ -78,7 +78,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
 
   void riderConfirme(String uid, String docId, String cusname) async {
     Timestamp datetime = Timestamp.now();
-    String datenow = FormatDate(datetime);
+    String datenow = FormatDate.date(datetime);
     if (uid != "") {
       DocumentSnapshot snapshot =
           await _firestore.collection("Profile").doc(uid).get();
@@ -247,9 +247,8 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                           String title = deliverUser['title'] ?? '';
                           String imageLink = deliverUser['imageurl'] ?? '';
                           // print("DocId: ${docid}");
-                          final Timestamp timestamp = Timestamp.now();
-                          final datenow = timestamp.toDate();
-                          final date = DateFormat('d-MMM-yyyy').format(datenow);
+                          Timestamp timestamp = deliverUser["date"];
+                          String date = FormatDate.getdaytime(timestamp);
                           return Card(
                             child: Column(
                               children: [

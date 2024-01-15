@@ -9,11 +9,11 @@ import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../services/profile_services.dart';
 
-class EditProfile extends StatefulWidget {
-  const EditProfile({super.key});
+class AddProfiles extends StatefulWidget {
+  const AddProfiles({super.key});
 
   @override
-  State<EditProfile> createState() => _EditProfileState();
+  State<AddProfiles> createState() => _AddProfilesState();
 }
 
 TextEditingController nameController = TextEditingController();
@@ -30,7 +30,7 @@ List<String> list = <String>['ชาย', 'หญิง'];
 
 String dropdownValue = list.first; // Default value for dropdown
 
-class _EditProfileState extends State<EditProfile> {
+class _AddProfilesState extends State<AddProfiles> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final _formKey = GlobalKey<FormState>();
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -72,13 +72,13 @@ class _EditProfileState extends State<EditProfile> {
     if (!profile!.checkIsEmpty()) {
       await ProfileService().saveProfile(profile.toMap());
       await ServiceDeliver().setData(uid);
+      Navigator.pop(context);
       nameController.clear();
       roomController.clear();
       stdidController.clear();
       dormController.clear();
       lastnameController.clear();
       phoneController.clear();
-      Navigator.pop(context);
     }
   }
 

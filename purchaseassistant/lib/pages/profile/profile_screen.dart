@@ -161,7 +161,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                   if (data == '') {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => EditProfile(),
+                                        builder: (context) => AddProfiles(),
                                       ),
                                     );
                                   } else {
@@ -363,7 +363,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                   ),
                 );
               } else {
-                return EditProfile();
+                return AddProfiles();
               }
             }
           } else {
@@ -380,7 +380,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                 ),
               );
             } else {
-              return EditProfile();
+              return AddProfiles();
             }
           }
         });

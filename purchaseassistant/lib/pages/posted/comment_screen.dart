@@ -61,7 +61,7 @@ class _CommentScreenState extends State<CommentScreen> {
             String commentUser = commentData['name'] ?? '';
             String commentid = commentData['postId'] ?? '';
             String userId = commentData['userid'] ?? '';
-            String date = FormatDate(commentData['date']);
+            String date = FormatDate.date(commentData["date"]);
 
             return Container(
               child: SingleChildScrollView(

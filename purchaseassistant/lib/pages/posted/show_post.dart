@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:purchaseassistant/services/comment_services.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/profile_services.dart';
+import '../../utils/formatDate.dart';
 import 'comment_screen.dart';
 
 class ShowPost extends StatefulWidget {
@@ -122,9 +123,8 @@ class _ShowPostState extends State<ShowPost> {
 
                       print("docid: ${docid}");
                       // print("DocId: ${docid}");
-                      final Timestamp timestamp = Timestamp.now();
-                      final datenow = timestamp.toDate();
-                      final date = DateFormat('d-MMM-yyyy').format(datenow);
+                      Timestamp timestamp = deliverUser["date"];
+                      String date = FormatDate.getdaytime(timestamp);
                       return StreamBuilder(
                           stream: _firestore
                               .collection("Profile")
