@@ -16,6 +16,7 @@ import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import 'package:purchaseassistant/utils/formatDate.dart';
 
+import '../../models/stremCheckingData.dart';
 import '../../utils/update_post.dart';
 import '../customer_loading.dart';
 import '../profile/profile_screen.dart';
@@ -52,7 +53,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
   }
 
   void showMediaCustoerSide(BuildContext context, FirebaseFirestore store) {
-    final Widget customerStream =
+    final StremChecingData customerStream =
         showCustomerStream(context, store, riderLocate);
 
     showModalBottomSheet(
@@ -63,10 +64,10 @@ class _DeliverHistoryState extends State<DeliverHistory> {
           child: Column(
             children: [
               Expanded(
-                child: customerStream.key != null
-                    ? customerStream
+                child: customerStream.hasdata != false
+                    ? customerStream.widget
                     : Center(
-                        child: Text("ไม่มีรายการลูกค้าที่รอการจับคู่"),
+                        child: Text("nodata"),
                       ),
               )
             ],
@@ -488,78 +489,91 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     );
   }
 
-  Widget showCustomerStream(
+  StremChecingData showCustomerStream(
       BuildContext context, FirebaseFirestore firestore, String locaterider) {
+    bool hasData = true;
     if (locaterider != "รับทุกงาน") {
-      return StreamBuilder(
-        stream: firestore
-            .collection("Matchings")
-            .where("location", isEqualTo: locaterider)
-            .where("cusIsonline", isEqualTo: "online")
-            .where("cus_status", isEqualTo: true)
-            .orderBy("date", descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text("Error: ${snapshot.error}"),
-            );
-          }
-          if (!snapshot.hasData) {
-            return Center(
-              child: Text("No data in collection"),
-            );
-          }
-          final customerDocs = snapshot.data!.docs;
-          if (snapshot.hasData) {
-            return ListView(
-                children: customerDocs.map((customerDoc) {
-              final customerdata = customerDoc.data() as Map<String, dynamic>;
-              return buildContent(customerdata, customerDoc.id);
-            }).toList());
-          }
-          return Center(
-            child: Text(
-              "ไม่มีรายชการของลูกค้า",
-              style: TextStyle(fontSize: 25),
-            ),
-          );
-        },
-      );
-    }
-    return StreamBuilder(
-      stream: firestore
-          .collection("Matchings")
-          .where("cusIsonline", isEqualTo: "online")
-          .where("cus_status", isEqualTo: true)
-          .orderBy("date", descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text("Error: ${snapshot.error}"),
-          );
-        }
-        if (!snapshot.hasData) {
-          return Center(
-            child: Text("No data in collection"),
-          );
-        }
-        final customerDocs = snapshot.data!.docs;
-        if (snapshot.hasData) {
-          return ListView(
-              children: customerDocs.map((customerDoc) {
-            final customerdata = customerDoc.data() as Map<String, dynamic>;
-            return buildContent(customerdata, customerDoc.id);
-          }).toList());
-        }
-        return Center(
-          child: Text(
-            "ไม่มีรายชการของลูกค้า",
-            style: TextStyle(fontSize: 25),
+      return StremChecingData(
+          widget: StreamBuilder(
+            stream: firestore
+                .collection("Matchings")
+                .where("location", isEqualTo: locaterider)
+                .where("cusIsonline", isEqualTo: "online")
+                .where("cus_status", isEqualTo: true)
+                .orderBy("date", descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text("Error: ${snapshot.error}"),
+                );
+              }
+              if (!snapshot.hasData) {
+                hasData = false;
+                return Center(
+                  child: Text("No data in collection"),
+                );
+              }
+              final customerDocs = snapshot.data!.docs;
+              if (snapshot.hasData && customerDocs.isNotEmpty) {
+                return ListView(
+                    children: customerDocs.map((customerDoc) {
+                  final customerdata =
+                      customerDoc.data() as Map<String, dynamic>;
+                  return buildContent(customerdata, customerDoc.id);
+                }).toList());
+              } else {
+                return Center(
+                  child: Text(
+                    !hasData
+                        ? "ไม่มีรายชการของลูกค้า"
+                        : "ไม่มีรายชการของลูกค้า",
+                    style: TextStyle(fontSize: 25),
+                  ),
+                );
+              }
+            },
           ),
-        );
-      },
-    );
+          hasdata: hasData);
+    }
+    return StremChecingData(
+        widget: StreamBuilder(
+          stream: firestore
+              .collection("Matchings")
+              .where("cusIsonline", isEqualTo: "online")
+              .where("cus_status", isEqualTo: true)
+              .orderBy("date", descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text("Error: ${snapshot.error}"),
+              );
+            }
+            if (!snapshot.hasData) {
+              hasData = false;
+              return Center(
+                child: Text("No data in collection"),
+              );
+            }
+            final customerDocs = snapshot.data!.docs;
+
+            if (snapshot.hasData && customerDocs.isNotEmpty) {
+              return ListView(
+                  children: customerDocs.map((customerDoc) {
+                final customerdata = customerDoc.data() as Map<String, dynamic>;
+                return buildContent(customerdata, customerDoc.id);
+              }).toList());
+            } else {
+              return Center(
+                child: Text(
+                  !hasData ? "ไม่มีรายชการของลูกค้า" : "ไม่มีรายชการของลูกค้า",
+                  style: TextStyle(fontSize: 25),
+                ),
+              );
+            }
+          },
+        ),
+        hasdata: hasData);
   }
 }
