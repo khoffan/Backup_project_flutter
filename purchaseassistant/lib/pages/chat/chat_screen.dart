@@ -8,6 +8,7 @@ import 'package:purchaseassistant/routes/routes.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
+import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import '../../utils/ChatBouble.dart';
 
@@ -35,13 +36,57 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isRiderStatus = true;
   Timestamp? _lastMessageTimestamp;
   FocusNode _focusNode = FocusNode();
+  String chatroomid = "";
   bool isShowIcon = false;
 
   void sendMessge() async {
     if (_messageController.text.isNotEmpty) {
-      print(otherid);
-      await ChatServices().sendMessge(otherid!, _messageController.text);
+      String roomid =
+          await ChatServices().sendMessge(otherid!, _messageController.text);
+      setState(() {
+        chatroomid = roomid;
+      });
+      setChatuserData(chatroomid);
       _messageController.clear();
+    }
+  }
+
+  void setChatuserData(String chatroomid) async {
+    List<String> id = chatroomid.split("_");
+
+    bool isChecking = await APIMatiching().checkCusidandRiderid(uid, otherid!);
+    print(isChecking);
+
+    Map<String, dynamic> riderdata = {};
+    Map<String, dynamic> cusdata = {};
+    if (isChecking) {
+      final cusprofileData = await ProfileService().getDataProfile(uid);
+      final String name = cusprofileData["name"];
+      final String lname = cusprofileData["lname"];
+      final String phone = cusprofileData["phone"];
+
+      cusdata = {
+        "cusid": uid,
+        "cusname": name,
+        "cussurname": lname,
+        "cusphone": phone,
+        "date": Timestamp.now()
+      };
+
+      final riderprofileData = await ProfileService().getDataProfile(otherid!);
+      final String ridername = riderprofileData["name"];
+      final String ridersurname = riderprofileData["lname"];
+      final String riderphone = riderprofileData["phone"];
+
+      riderdata = {
+        "riderid": otherid,
+        "ridername": ridername,
+        "ridersurname": ridersurname,
+        "riderphone": riderphone,
+        "date": Timestamp.now()
+      };
+
+      await ChatServices().setChatroomData(chatroomid, cusdata, riderdata);
     }
   }
 
@@ -189,7 +234,7 @@ class _ChatScreenState extends State<ChatScreen> {
             FocusScope.of(context).unfocus();
           },
           child: ListView(
-            children: snapshot.data!.docs
+            children: chatDocs
                 .map(
                   (document) => _bulidMessageItem(document),
                 )

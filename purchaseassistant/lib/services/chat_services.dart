@@ -7,7 +7,7 @@ class ChatServices extends ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> sendMessge(String recivesid, String message) async {
+  Future<String> sendMessge(String recivesid, String message) async {
     try {
       final String currentid = _auth.currentUser?.uid ?? '';
       DocumentSnapshot<Map<String, dynamic>> snapshot =
@@ -30,24 +30,32 @@ class ChatServices extends ChangeNotifier {
       ids.sort();
       String chat_roomid = ids.join("_");
 
-      await _firestore
+      DocumentReference messageDocRef = await _firestore
           .collection('chat_rooms')
           .doc(chat_roomid)
           .collection('messages')
           .add(newMessage!.toMap());
-      await _firestore.collection('chat_rooms').doc(chat_roomid).set({
-        'senderid': currentid,
-        'recivesid': recivesid,
-      });
+      String chatroomDocid = messageDocRef.parent?.parent?.id ?? "";
+
+      return chatroomDocid;
     } catch (e) {
       throw e.toString();
     }
   }
 
-  
+  Future<void> setChatroomData(String chatrommid, Map<String, dynamic> cusdata,
+      Map<String, dynamic> riderdata) async {
+    try {
+      await _firestore
+          .collection('chat_rooms')
+          .doc(chatrommid)
+          .set({"senderData": cusdata, "reciveData": riderdata});
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
   Stream<QuerySnapshot> getMessage(String userid, String otherid) {
-
     List<String> ids = [userid, otherid];
     ids.sort();
     String chat_room_id = ids.join("_");

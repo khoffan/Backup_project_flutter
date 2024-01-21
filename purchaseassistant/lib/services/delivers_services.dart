@@ -31,7 +31,7 @@ class ServiceDeliver {
       required Uint8List file}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-          await ProfileService().getDataProfile();
+          await ProfileService().getDataProfile(uid);
 
       if (getProfilesnapshot.exists) {
         Map<String, dynamic> data =
@@ -72,7 +72,7 @@ class ServiceDeliver {
       required Uint8List file}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-          await ProfileService().getDataProfile();
+          await ProfileService().getDataProfile(uid);
 
       if (getProfilesnapshot.exists) {
         Map<String, dynamic> data =

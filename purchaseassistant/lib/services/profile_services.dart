@@ -117,10 +117,11 @@ class ProfileService {
     return resp;
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getDataProfile() async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> getDataProfile(
+      String uid) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot =
-          await _firestore.collection('Profile').doc(_user.uid ?? '').get();
+          await _firestore.collection('Profile').doc(uid).get();
       return snapshot;
     } catch (e) {
       throw e.toString();

@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -16,7 +15,7 @@ class ServiceComment {
     try {
       // Get user profile data
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-          await ProfileService().getDataProfile();
+          await ProfileService().getDataProfile(uid);
 
       // Get user status
 
@@ -33,7 +32,6 @@ class ServiceComment {
 
         // Update user status
         // final contentDeliver = await _firestore.collection('deliverPost').doc(uid).collection('deliverContent').get();
-
 
         // Add comment to user's comments subcollection
         final deliverRef = _firestore.collection('Comments');
