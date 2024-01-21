@@ -184,12 +184,17 @@ class _ChatScreenState extends State<ChatScreen> {
 
         final chatDocs = snapshot.data!.docs;
 
-        return ListView(
-          children: snapshot.data!.docs
-              .map(
-                (document) => _bulidMessageItem(document),
-              )
-              .toList(),
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: ListView(
+            children: snapshot.data!.docs
+                .map(
+                  (document) => _bulidMessageItem(document),
+                )
+                .toList(),
+          ),
         );
       },
     );
@@ -237,7 +242,19 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             if (data['message'] != null &&
                 data['message'].toString().isNotEmpty)
-              ChatBouble(message: data['message'])
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: (data['senderId'] == _auth.currentUser!.uid)
+                      ? Colors.blue
+                      : Colors.grey,
+                ),
+                child: Text(
+                  data['message'],
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              )
           ],
         ),
       ),
@@ -277,6 +294,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () {
                       sendMessge();
                       _messageController.clear();
+                      // FocusScope.of(context).unfocus();
                     },
                   ),
                   prefixIcon: isShowIcon

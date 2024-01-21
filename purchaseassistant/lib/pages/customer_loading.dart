@@ -29,22 +29,45 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
   bool? isLoading;
   late StreamSubscription<Map<String, dynamic>> streamData;
 
-  _showAlert(String uid) {
-    if (mounted) {
+  // _showAlert(String uid) {
+  //   if (mounted) {
+  //     QuickAlert.show(
+  //       context: context,
+  //       type: QuickAlertType.confirm,
+  //       title: "จับคู่สำเร็จ",
+  //       text: "คุณยอมรับการจับคู่หรือไม่",
+  //       confirmBtnText: 'ตกลง',
+  //       cancelBtnText: "ยกเลิก",
+  //       onConfirmBtnTap: () {
+  //         setState(() {
+  //           isLoading = true;
+  //         });
+  //         APIMatiching().updateStatusChatCustomer(uid);
+  //         APIMatiching().updateStatusCustomer(uid);
+  //         Navigator.pop(context);
+  //       },
+  //       confirmBtnColor: Colors.green,
+  //       onCancelBtnTap: () {
+  //         APIMatiching().updateStatusCustomer(uid);
+  //         Navigator.pop(context);
+  //       },
+  //     );
+  //   }
+  // }
+
+  _showAlertDelay() {
+    if (!mounted) {
       QuickAlert.show(
         context: context,
         type: QuickAlertType.confirm,
-        title: "จับคู่สำเร็จ",
-        text: "คุณยอมรับการจับคู่หรือไม่",
+        title: "ไม่พบผู้ให็บริการ",
+        text: "ไม่พบผู้บรืการ คูณต้องการที่จะจับคู่ใหม่หรือไม่",
         confirmBtnText: 'ตกลง',
         cancelBtnText: "ยกเลิก",
         onConfirmBtnTap: () {
           setState(() {
-            isLoading = true;
+            isLoading = false;
           });
-          APIMatiching().updateStatusChatCustomer(uid);
-          APIMatiching().updateStatusCustomer(uid);
-          Navigator.pop(context);
         },
         confirmBtnColor: Colors.green,
         onCancelBtnTap: () {
@@ -63,7 +86,17 @@ class _CustomerLoadingScreenState extends State<LoadingCustomerScreen> {
             if (snapshotData["rider_status"] == true && isLoading == false) {
               name = snapshotData["ridername"];
               reciveuid = snapshotData["riderid"];
-              _showAlert(uid);
+              if ((name, reciveuid) != "") {
+                setState(() {
+                  isLoading = true;
+                });
+
+                APIMatiching().updateStatusChatCustomer(uid);
+                APIMatiching().updateStatusCustomer(uid);
+              }
+              Future.delayed(Duration(seconds: 30), () {
+                _showAlertDelay();
+              });
             }
           },
           onError: (dynamic error) {

@@ -34,8 +34,8 @@ class ServiceScreen extends StatefulWidget {
 }
 
 class _ServiceScreenState extends State<ServiceScreen> {
-  late FirebaseAuth _auth = FirebaseAuth.instance;
-  late FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
   String locateData = "";
   String cusid = "";
@@ -55,53 +55,69 @@ class _ServiceScreenState extends State<ServiceScreen> {
   // 'โลตัส สาขา ม.อ.',
   // 'สถานีขนส่ง หาดใหญ่',
   // 'เซนทรัลเฟตติวัลหาดใหญ่'
-  String getLocationData(String title) {
+  void setLocationData(String title) {
     if (title != "") {
-      return title;
+      setState(() {
+        locateData = title;
+      });
     }
-    return "";
   }
 
-  void sendData2api(String locate) async {
+  String getLocateData() {
+    return locateData;
+  }
+
+  Future<Map<String, dynamic>> getProfileData(String uid) async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection("Profile").doc(uid).get();
+      if (snapshot.exists) {
+        return snapshot.data() as Map<String, dynamic>;
+      } else {
+        // Handle the case when the document doesn't exist
+        print('Error: Document does not exist for uid: $uid');
+      }
+    } catch (e) {
+      // Handle errors
+      print('Error: $e');
+    }
+    return {};
+  }
+
+  void sendData2api(String uid) async {
     String name = "";
     Timestamp datenow = Timestamp.now();
+    Map<String, dynamic> profileData = {};
+    String locate = "";
     // Check if uid is not empty or null
-    if (uid != "" && uid.trim().isNotEmpty && locate != "") {
-      try {
-        DocumentSnapshot snapshot =
-            await _firestore.collection("Profile").doc(uid).get();
 
-        if (snapshot.exists) {
-          final datasnap = snapshot.data()! as Map<String, dynamic>;
-          name = datasnap["name"] ?? '';
-
-          Map<String, dynamic> userData = <String, dynamic>{
-            "id": uid,
-            'name': name,
-            "location": locate,
-            "date": FormatDate.date(datenow),
-          };
-
-          await APIMatiching().setCustomerData(userData);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => LoadingCustomerScreen(
-                riderid: uid,
-              ),
-            ),
-          );
-          // DeliverHistory(cusid: cusid, riderid: riderid,);
-        } else {
-          // Handle the case when the document doesn't exist
-          print('Error: Document does not exist for uid: $uid');
-        }
-      } catch (e) {
-        print("Error connect: ${e}");
+    try {
+      if (uid != "") {
+        profileData = await getProfileData(uid);
       }
-    } else {
-      // Handle the case when uid is empty or null
-      print('Error: uid is empty or null');
+      if (profileData.isNotEmpty) {
+        name = profileData['name'];
+      }
+      locate = getLocateData();
+      Map<String, dynamic> userData = <String, dynamic>{
+        "id": uid,
+        'name': name,
+        "location": locate,
+        "date": FormatDate.date(datenow),
+      };
+
+      await APIMatiching().setCustomerData(userData);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LoadingCustomerScreen(
+            riderid: uid,
+          ),
+        ),
+      );
+      // DeliverHistory(cusid: cusid, riderid: riderid,);
+    } catch (e) {
+      print("Error connect: ${e}");
     }
   }
 
@@ -121,7 +137,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
         subscription = ServiceWallet().getTotalAmount(uid).listen(
           (double totalAmount) {
             if (totalAmount == 0.00) {
-              return alertNOtAmout(context);
+              Future.delayed(Duration(seconds: 1), () {
+                alertNOtAmout(context);
+              });
             }
             setState(() {
               amount = totalAmount;
@@ -147,9 +165,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
-    Future.delayed(Duration(seconds: 1), () {
-      getAmount(context, uid);
-    });
+    getAmount(context, uid);
   }
 
   @override
@@ -262,7 +278,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 valueThird != true) &&
                             amount > 10.00) {
                           print(uid);
-                          sendData2api(locateData);
+                          sendData2api(uid);
                         } else {
                           String msgErr = "";
                           if (amount < 50.00) {
@@ -286,7 +302,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           String title = "หอพัก - ภายในหมาวิทยาลัย";
                           ServiceDeliver().updateStatus(false, uid, title);
                           // ServiceDeliver().setWorking(uid, false);
-                          locateData = getLocationData(title);
+                          setLocationData(title);
                         }
                         if (valueSecond == true &&
                             valueThird == false &&
@@ -294,7 +310,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           String title = "หอพัก - โลตัสหน้า ม.อ.";
                           ServiceDeliver().updateStatus(false, uid, title);
                           // ServiceDeliver().setWorking(uid, false);
-                          locateData = getLocationData(title);
+                          setLocationData(title);
                         }
                         // getRiderlist();
                       },
@@ -370,21 +386,21 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                 ServiceDeliver().updateStatus(true, uid, title);
                                 ServiceDeliver().updateWorking(uid, true);
                                 ProfileService().updateRole(uid, "rider");
-                                locateData = getLocationData(title);
+                                setLocationData(title);
                               }
                               if (valueSecond == true && valueThird == false) {
                                 String title = "หอพัก - โลตัสหน้า ม.อ.";
                                 ServiceDeliver().updateStatus(true, uid, title);
                                 ServiceDeliver().updateWorking(uid, true);
                                 ProfileService().updateRole(uid, "rider");
-                                locateData = getLocationData(title);
+                                setLocationData(title);
                               }
                               if (valueThird == true) {
                                 String title = "รับทุกงาน";
                                 ServiceDeliver().updateStatus(true, uid, title);
                                 ServiceDeliver().updateWorking(uid, true);
                                 ProfileService().updateRole(uid, "rider");
-                                locateData = getLocationData(title);
+                                setLocationData(title);
                               }
                               // ServiceDeliver().setStatus(true, uid, "");
                             },
