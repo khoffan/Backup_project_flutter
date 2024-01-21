@@ -21,8 +21,15 @@ class OrderTrackers extends StatefulWidget {
 }
 
 class _OrderTrackersState extends State<OrderTrackers> {
-  int checkState = 5;
+  late int checkState;
   List<int> showState = [1, 2, 3, 4, 5];
+
+  @override
+  void initState() {
+    checkState = 0;
+    print(checkState);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +52,12 @@ class _OrderTrackersState extends State<OrderTrackers> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  checkState += 1;
+                  print(checkState);
+                });
+              },
               child: Text(
                 'อัพเดทสถานะ',
                 style: TextStyle(
