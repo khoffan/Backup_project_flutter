@@ -5,7 +5,7 @@ import 'package:order_tracker_zen/order_tracker_zen.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
 class OrderTrackers extends StatefulWidget {
-  OrderTrackers({Key? key,  this.otherid}) : super(key: key);
+  OrderTrackers({Key? key, this.otherid}) : super(key: key);
 
   String? otherid;
   @override
@@ -21,6 +21,7 @@ class _OrderTrackersState extends State<OrderTrackers> {
   List<int> showState = [1, 2, 3, 4, 5];
   int trackState = 0;
   Timestamp timeState = Timestamp.now();
+  Color c1 = Colors.red;
   @override
   void initState() {
     checkState = 0;
@@ -101,7 +102,7 @@ class _OrderTrackersState extends State<OrderTrackers> {
                                     title: "ลูกค้าชำระค่าธรรมสำเร็จ",
                                     datetime: "Sat, 8 Apr '22 - 17:17",
                                   )
-                                : TrackerDetails(title: '', datetime: '')
+                                : TrackerDetails(title: '', datetime: ''),
                           ],
                         ),
                         // yet another TrackerData object

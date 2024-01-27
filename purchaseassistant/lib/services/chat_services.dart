@@ -64,6 +64,7 @@ class ChatServices extends ChangeNotifier {
               data["reciveData"]["riderid"] == recivedid) {
             return data.id;
           }
+          return data.id;
         }
       }
       return "";
@@ -85,10 +86,23 @@ class ChatServices extends ChangeNotifier {
         .snapshots();
   }
 
-  Future<void> setTrackingState(String ) async {
-    DocumentReference chatRoomRef = _firestore.collection('chat_rooms').doc();
-    final trackingSate = chatRoomRef
-        .collection('Tracking')
-        .add({"trackState": 0, "timeStamp": Timestamp.now(), "active": 0});
+  Future<void> setTrackingState(String roomId) async {
+    DocumentReference chatRoomRef =
+        _firestore.collection('chat_rooms').doc(roomId);
+    CollectionReference tracingRef = chatRoomRef.collection("tracking");
+    QuerySnapshot snapshot = await _firestore
+        .collection("chat_rooms")
+        .doc(roomId)
+        .collection("tracking")
+        .get();
+    final data = snapshot.docs.first;
+    if (snapshot.docs.isEmpty) {
+      chatRoomRef
+          .collection("tracking")
+          .add({"trackState": 0, "timeStamp": DateTime.now(), "active": 1});
+    }
+    print(snapshot.docs.isEmpty);
+    final docid = data.id;
+    final update = tracingRef.doc(docid).update({});
   }
 }

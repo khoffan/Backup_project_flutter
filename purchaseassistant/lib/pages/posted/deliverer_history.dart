@@ -372,11 +372,11 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "ไม่มีรายการที่ได้โพสไว้",
+                    "ไม่มีรายการที่ได้โพสต์ไว้",
                     style: TextStyle(fontSize: 20),
                   ),
                   Text(
-                    "สามารถกดเพิ่มโพศที่ปุ่มด้านซ้ายล่าง",
+                    "สามารถกดเพิ่มโพสต์ที่ปุ่มด้านซ้ายล่าง",
                     style: TextStyle(fontSize: 18),
                   )
                 ],
@@ -525,9 +525,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
               } else {
                 return Center(
                   child: Text(
-                    !hasData
-                        ? "ไม่มีรายชการของลูกค้า"
-                        : "ไม่มีรายชการของลูกค้า",
+                    !hasData ? "ไม่มีรายการของลูกค้า" : "ไม่มีรายการของลูกค้า",
                     style: TextStyle(fontSize: 25),
                   ),
                 );
@@ -567,7 +565,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             } else {
               return Center(
                 child: Text(
-                  !hasData ? "ไม่มีรายชการของลูกค้า" : "ไม่มีรายชการของลูกค้า",
+                  !hasData ? "ไม่มีรายการของลูกค้า" : "ไม่มีรายการของลูกค้า",
                   style: TextStyle(fontSize: 25),
                 ),
               );
