@@ -244,7 +244,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                           String userId = deliverDoc.id;
 
                           String name = deliverUser['name'] ?? '';
-                          String lname = deliverUser['lname'] ?? '';
+
                           String title = deliverUser['title'] ?? '';
                           String imageLink = deliverUser['imageurl'] ?? '';
                           // print("DocId: ${docid}");
@@ -274,7 +274,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                                           width: 20,
                                         ),
                                         SizedBox(
-                                          child: Text("${name} ${lname}"),
+                                          child: Text("${name}"),
                                         ),
                                       ],
                                     ),

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/services/wallet_service.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
 import '../../services/delivers_services.dart';
@@ -24,6 +25,11 @@ class _DelivererScreenState extends State<DelivererScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = '';
   Uint8List? _image;
+  double dischange = 0.00;
+  bool isCheckedAday = false;
+  bool isChecked3day = false;
+  bool isChecked5day = false;
+  bool isChecked7day = false;
   void selecImage() async {
     Uint8List img = await pickerImage(ImageSource.gallery);
     setState(() {
@@ -50,6 +56,19 @@ class _DelivererScreenState extends State<DelivererScreen> {
         print(amount);
       }
       print('success');
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  List<double> getExchange(double dischange, double totalAmount) {
+    return [dischange, totalAmount];
+  }
+
+  void exchangePost() async {
+    try {
+      List<double> result = getExchange(dischange, amount);
+      print(result);
     } catch (e) {
       throw e.toString();
     }
@@ -135,6 +154,86 @@ class _DelivererScreenState extends State<DelivererScreen> {
             ),
           ),
           Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.00),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _checkedBox(
+                  title: '1 วัน',
+                  ckecked: isCheckedAday,
+                  onChange: (value) {
+                    setState(() => isCheckedAday = value!);
+                    if (!isCheckedAday) {
+                      double disChange = 10.00;
+                      amount += disChange;
+                      print("incress amount: $amount");
+                      getExchange(disChange, amount);
+                    } else {
+                      double disChange = 10.00;
+                      amount -= disChange;
+                      print("decress amount: $amount");
+                      getExchange(disChange, amount);
+                    }
+                  },
+                ),
+                _checkedBox(
+                  title: '3 วัน',
+                  ckecked: isChecked3day,
+                  onChange: (value) {
+                    setState(() => isChecked3day = value!);
+                    if (!isChecked3day) {
+                      double disChange = 15.00;
+                      amount += disChange;
+                      print("incress amount: $amount");
+                      getExchange(disChange, amount);
+                    } else {
+                      double disChange = 15.00;
+                      amount -= disChange;
+                      print("decress amount: $amount");
+                      getExchange(disChange, amount);
+                    }
+                  },
+                ),
+                _checkedBox(
+                  title: '5 วัน',
+                  ckecked: isChecked5day,
+                  onChange: (value) {
+                    setState(() => isChecked5day = value!);
+                    if (!isChecked5day) {
+                      double disChange = 20.00;
+                      amount += disChange;
+                      print("incress amount: $amount");
+                      getExchange(disChange, amount);
+                    } else {
+                      double disChange = 20.00;
+                      amount -= disChange;
+                      print("decress amount: $amount");
+                      getExchange(disChange, amount);
+                    }
+                  },
+                ),
+                _checkedBox(
+                  title: '7 วัน',
+                  ckecked: isChecked7day,
+                  onChange: (value) {
+                    setState(() => isChecked7day = value!);
+                    if (!isChecked7day) {
+                      double disChange = 25.00;
+                      amount += disChange;
+                      print("incress amount: $amount");
+                      getExchange(disChange, amount);
+                    } else {
+                      double disChange = 25.00;
+                      amount -= disChange;
+                      print("decress amount: $amount");
+                      getExchange(disChange, amount);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 8),
             child: TextButton(
               style: TextButton.styleFrom(
@@ -142,7 +241,8 @@ class _DelivererScreenState extends State<DelivererScreen> {
                   foregroundColor: Colors.white,
                   backgroundColor: themeBg),
               onPressed: () => {
-                if (_formKey.currentState!.validate()) {saveData()}
+                if (_formKey.currentState!.validate())
+                  {saveData(), exchangePost()}
               },
               child: Text(
                 'อัปโหลด',
@@ -152,6 +252,21 @@ class _DelivererScreenState extends State<DelivererScreen> {
           )
         ],
       ),
+    );
+  }
+
+  Widget _checkedBox(
+      {required String title,
+      required bool ckecked,
+      required ValueChanged<bool?> onChange}) {
+    return Row(
+      children: [
+        Checkbox(value: ckecked, onChanged: onChange),
+        Text(
+          '${title}',
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
+      ],
     );
   }
 }
