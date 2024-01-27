@@ -47,9 +47,8 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void setChatuserData(String currid, String revicedid) async {
-    bool isChecking =
-        await APIMatiching().checkCusidandRiderid(currid, revicedid);
+  void setChatuserData() async {
+    bool isChecking = await APIMatiching().checkCusidandRiderid(uid, otherid!);
     Map<String, dynamic> riderdata = {};
     Map<String, dynamic> cusdata = {};
     if (isChecking) {
@@ -79,8 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
         "date": Timestamp.now()
       };
 
-      await ChatServices()
-          .setChatroomData(currid, revicedid, cusdata, riderdata);
+      await ChatServices().setChatroomData(uid, otherid!, cusdata, riderdata);
     }
   }
 
@@ -150,7 +148,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (uid != anotherid) {
       checkStatusrider();
     }
-    setChatuserData(uid, otherid!);
+    setChatuserData();
     if (mounted) {
       getChatroomid(uid, otherid!);
     }

@@ -115,7 +115,7 @@ class _ShowPostState extends State<ShowPost> {
                       String userid = deliverDoc.id;
                       String docid = deliverUserDoc.id;
                       String name = deliverUser['name'] ?? '';
-                      String lname = deliverUser['lname'] ?? '';
+
                       String title = deliverUser['title'] ?? '';
                       String imageLink = deliverUser['imageurl'] ?? '';
 
@@ -175,8 +175,7 @@ class _ShowPostState extends State<ShowPost> {
                                                   Container(
                                                     margin: EdgeInsets.only(
                                                         left: 20.0, right: 30),
-                                                    child: Text(
-                                                        "${name} ${lname}"),
+                                                    child: Text("${name}"),
                                                   ),
                                                   Text("${date}"),
                                                 ],
@@ -345,7 +344,7 @@ Widget _buildProfileDialog(
           image,
           scale: 0.8,
         ),
-        maxRadius: 40,
+        maxRadius: 80.00,
       ),
       content: SingleChildScrollView(
         child: ListBody(

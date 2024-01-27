@@ -46,4 +46,22 @@ class ServiceWallet {
       throw e.toString();
     }
   }
+
+  Future<void> setExchangeAmount(
+      String uid, double dischange, double totalAmount) async {
+    try {
+      await _firestore
+          .collection("Profile")
+          .doc(uid)
+          .collection("transaction")
+          .add({
+        'totalAmount': totalAmount - dischange,
+        'amount': dischange,
+        'option': 'exchange',
+        'timeStamp': DateTime.timestamp()
+      });
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 }
