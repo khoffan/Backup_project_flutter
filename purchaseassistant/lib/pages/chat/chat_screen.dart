@@ -121,15 +121,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void getChatroomid(String currid, String revicedid) async {
     try {
-      bool isChecking =
-          await APIMatiching().checkCusidandRiderid(currid, revicedid);
-      if (isChecking) {
-        String docid = await ChatServices().getChatRoomid(currid, revicedid);
-        setState(() {
-          chatroomid = docid;
-        });
-        print(chatroomid);
-      }
+      String docid = await ChatServices().getChatRoomid(currid, revicedid);
+      setState(() {
+        chatroomid = docid;
+      });
+      print(chatroomid);
     } catch (e) {
       throw e.toString();
     }
@@ -194,9 +190,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OrderTrackers(),
+                    builder: (context) => OrderTrackers(otherid: otherid),
                   ),
                 );
+                print(chatroomid);
+                ChatServices().setTrackingState(chatroomid);
               },
               child: Text(
                 "คำสั่งซื้อ",
