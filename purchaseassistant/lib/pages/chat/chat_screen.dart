@@ -139,7 +139,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OrderTrackers(),
+                    builder: (context) => OrderTrackers(otherid: otherid),
                   ),
                 );
               },

@@ -44,10 +44,7 @@ class ChatServices extends ChangeNotifier {
     }
   }
 
-  
-
   Stream<QuerySnapshot> getMessage(String userid, String otherid) {
-
     List<String> ids = [userid, otherid];
     ids.sort();
     String chat_room_id = ids.join("_");
@@ -58,5 +55,12 @@ class ChatServices extends ChangeNotifier {
         .collection('messages')
         .orderBy('timestamp', descending: false)
         .snapshots();
+  }
+
+  Future<void> setTrackingState(String ) async {
+    DocumentReference chatRoomRef = _firestore.collection('chat_rooms').doc();
+    final trackingSate = chatRoomRef
+        .collection('Tracking')
+        .add({"trackState": 0, "timeStamp": Timestamp.now(), "active": 0});
   }
 }
