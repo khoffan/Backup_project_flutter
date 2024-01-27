@@ -29,7 +29,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController _messageController = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
-  late StreamSubscription<bool> _stremSub;
+  late StreamSubscription<bool>? _stremSub;
   String uid = "";
   String? otherid;
   String anotherid = "";
@@ -41,22 +41,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void sendMessge() async {
     if (_messageController.text.isNotEmpty) {
-      String roomid =
-          await ChatServices().sendMessge(otherid!, _messageController.text);
-      setState(() {
-        chatroomid = roomid;
-      });
-      setChatuserData(chatroomid);
+      await ChatServices().sendMessge(otherid!, _messageController.text);
+
       _messageController.clear();
     }
   }
 
-  void setChatuserData(String chatroomid) async {
-    List<String> id = chatroomid.split("_");
-
-    bool isChecking = await APIMatiching().checkCusidandRiderid(uid, otherid!);
-    print(isChecking);
-
+  void setChatuserData(String currid, String revicedid) async {
+    bool isChecking =
+        await APIMatiching().checkCusidandRiderid(currid, revicedid);
     Map<String, dynamic> riderdata = {};
     Map<String, dynamic> cusdata = {};
     if (isChecking) {
@@ -86,14 +79,14 @@ class _ChatScreenState extends State<ChatScreen> {
         "date": Timestamp.now()
       };
 
-      await ChatServices().setChatroomData(chatroomid, cusdata, riderdata);
+      await ChatServices()
+          .setChatroomData(currid, revicedid, cusdata, riderdata);
     }
   }
 
   void closeChatState(String id) async {
     try {
       anotherid = await APIMatiching().getRiderid(id);
-      print("is id: ${anotherid} and otherid is: ${id}");
       if (uid.trim() == anotherid.trim()) {
         APIMatiching().updateRiderData(id);
         APIMatiching().updateStatusChatCustomer(id);
@@ -128,12 +121,27 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void getChatroomid(String currid, String revicedid) async {
+    try {
+      bool isChecking =
+          await APIMatiching().checkCusidandRiderid(currid, revicedid);
+      if (isChecking) {
+        String docid = await ChatServices().getChatRoomid(currid, revicedid);
+        setState(() {
+          chatroomid = docid;
+        });
+        print(chatroomid);
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
     otherid = widget.reciveuid ?? '';
-    print(otherid);
     _focusNode.addListener(() {
       setState(() {
         isShowIcon = !_focusNode.hasFocus;
@@ -142,12 +150,16 @@ class _ChatScreenState extends State<ChatScreen> {
     if (uid != anotherid) {
       checkStatusrider();
     }
+    setChatuserData(uid, otherid!);
+    if (mounted) {
+      getChatroomid(uid, otherid!);
+    }
   }
 
   @override
   void dispose() {
     _focusNode.dispose();
-    _stremSub.cancel();
+    _stremSub?.cancel();
     super.dispose();
   }
 
