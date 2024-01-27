@@ -14,9 +14,9 @@ class ChatServices extends ChangeNotifier {
           await _firestore.collection('Profile').doc(currentid).get();
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       final Timestamp _time = Timestamp.now();
-      print(recivesid);
+
       Message? newMessage;
-      if (recivesid != '' && currentid != '' && message != '') {
+      if (currentid != '' && message != '') {
         newMessage = Message(
           senderId: currentid,
           recivesid: recivesid,
@@ -25,7 +25,6 @@ class ChatServices extends ChangeNotifier {
           timestamp: _time,
         );
       }
-
       List<String> ids = [currentid, recivesid];
       ids.sort();
       String chat_roomid = ids.join("_");
@@ -35,10 +34,39 @@ class ChatServices extends ChangeNotifier {
           .doc(chat_roomid)
           .collection('messages')
           .add(newMessage!.toMap());
-      await _firestore.collection('chat_rooms').doc(chat_roomid).set({
-        'senderid': currentid,
-        'recivesid': recivesid,
-      });
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> setChatroomData(String currentid, String recivesid,
+      Map<String, dynamic> cusdata, Map<String, dynamic> riderdata) async {
+    try {
+      List<String> ids = [currentid, recivesid];
+      ids.sort();
+      String chat_roomid = ids.join("_");
+      await _firestore
+          .collection('chat_rooms')
+          .doc(chat_roomid)
+          .set({"senderData": cusdata, "reciveData": riderdata});
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<String> getChatRoomid(String currid, String recivedid) async {
+    try {
+      QuerySnapshot snapshot = await _firestore.collection("chat_rooms").get();
+      if (snapshot.docs.isNotEmpty) {
+        final datadoc = snapshot.docs;
+        for (DocumentSnapshot data in datadoc) {
+          if (data["senderData"]["cusid"] == currid &&
+              data["reciveData"]["riderid"] == recivedid) {
+            return data.id;
+          }
+        }
+      }
+      return "";
     } catch (e) {
       throw e.toString();
     }

@@ -235,6 +235,23 @@ class APIMatiching {
     }
   }
 
+  Future<bool> checkCusidandRiderid(String uid, String otherid) async {
+    try {
+      QuerySnapshot snapshot = await _firestore.collection("Matchings").get();
+      if (snapshot.docs.isNotEmpty) {
+        final datadoc = snapshot.docs;
+        for (DocumentSnapshot data in datadoc) {
+          if (data.id == uid && data["riderid"] == otherid) {
+            return true;
+          }
+        }
+      }
+      return false;
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   // del document for user to rider
   Future<void> delCustomertoRider(String uid) async {
     try {

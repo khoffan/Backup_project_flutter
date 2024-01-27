@@ -121,7 +121,6 @@ class _ShowPostState extends State<ShowPost> {
 
                       // print(imageProfilelink);
 
-                      print("docid: ${docid}");
                       // print("DocId: ${docid}");
                       Timestamp timestamp = deliverUser["date"];
                       String date = FormatDate.getdaytime(timestamp);

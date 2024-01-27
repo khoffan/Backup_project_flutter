@@ -8,6 +8,7 @@ import 'package:purchaseassistant/routes/routes.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:intl/intl.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
+import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import '../../utils/ChatBouble.dart';
 
@@ -28,27 +29,64 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController _messageController = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
-  late StreamSubscription<bool> _stremSub;
+  late StreamSubscription<bool>? _stremSub;
   String uid = "";
   String? otherid;
   String anotherid = "";
   bool isRiderStatus = true;
   Timestamp? _lastMessageTimestamp;
   FocusNode _focusNode = FocusNode();
+  String chatroomid = "";
   bool isShowIcon = false;
 
   void sendMessge() async {
     if (_messageController.text.isNotEmpty) {
-      print(otherid);
       await ChatServices().sendMessge(otherid!, _messageController.text);
+
       _messageController.clear();
+    }
+  }
+
+  void setChatuserData(String currid, String revicedid) async {
+    bool isChecking =
+        await APIMatiching().checkCusidandRiderid(currid, revicedid);
+    Map<String, dynamic> riderdata = {};
+    Map<String, dynamic> cusdata = {};
+    if (isChecking) {
+      final cusprofileData = await ProfileService().getDataProfile(uid);
+      final String name = cusprofileData["name"];
+      final String lname = cusprofileData["lname"];
+      final String phone = cusprofileData["phone"];
+
+      cusdata = {
+        "cusid": uid,
+        "cusname": name,
+        "cussurname": lname,
+        "cusphone": phone,
+        "date": Timestamp.now()
+      };
+
+      final riderprofileData = await ProfileService().getDataProfile(otherid!);
+      final String ridername = riderprofileData["name"];
+      final String ridersurname = riderprofileData["lname"];
+      final String riderphone = riderprofileData["phone"];
+
+      riderdata = {
+        "riderid": otherid,
+        "ridername": ridername,
+        "ridersurname": ridersurname,
+        "riderphone": riderphone,
+        "date": Timestamp.now()
+      };
+
+      await ChatServices()
+          .setChatroomData(currid, revicedid, cusdata, riderdata);
     }
   }
 
   void closeChatState(String id) async {
     try {
       anotherid = await APIMatiching().getRiderid(id);
-      print("is id: ${anotherid} and otherid is: ${id}");
       if (uid.trim() == anotherid.trim()) {
         APIMatiching().updateRiderData(id);
         APIMatiching().updateStatusChatCustomer(id);
@@ -83,12 +121,27 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void getChatroomid(String currid, String revicedid) async {
+    try {
+      bool isChecking =
+          await APIMatiching().checkCusidandRiderid(currid, revicedid);
+      if (isChecking) {
+        String docid = await ChatServices().getChatRoomid(currid, revicedid);
+        setState(() {
+          chatroomid = docid;
+        });
+        print(chatroomid);
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
     otherid = widget.reciveuid ?? '';
-    print(otherid);
     _focusNode.addListener(() {
       setState(() {
         isShowIcon = !_focusNode.hasFocus;
@@ -97,12 +150,16 @@ class _ChatScreenState extends State<ChatScreen> {
     if (uid != anotherid) {
       checkStatusrider();
     }
+    setChatuserData(uid, otherid!);
+    if (mounted) {
+      getChatroomid(uid, otherid!);
+    }
   }
 
   @override
   void dispose() {
     _focusNode.dispose();
-    _stremSub.cancel();
+    _stremSub?.cancel();
     super.dispose();
   }
 
@@ -189,7 +246,7 @@ class _ChatScreenState extends State<ChatScreen> {
             FocusScope.of(context).unfocus();
           },
           child: ListView(
-            children: snapshot.data!.docs
+            children: chatDocs
                 .map(
                   (document) => _bulidMessageItem(document),
                 )

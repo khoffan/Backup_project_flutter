@@ -194,78 +194,79 @@ class _ServiceScreenState extends State<ServiceScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                padding: const EdgeInsets.all(22.0),
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Row(
-                      children: [
-                        Text(
-                          'เลือกขอบเขตสถานที่ใช้บริการ',
-                          style: TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                    CheckboxListTile(
-                      secondary: const Icon(Icons.area_chart),
-                      title: const Text('หอพัก - ภายในหมาวิทยาลัย'),
-                      subtitle: Text('ค่าบริการขั้นต่ำ 10 บาท'),
-                      value: this.valueFirst,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          this.valueFirst = value!;
-                          value
-                              ? (this.valueSecond
-                                  ? valueThird = true
-                                  : print('not all'))
-                              : valueThird = false;
-                        });
-                      },
-                    ),
-                    CheckboxListTile(
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      secondary: const Icon(Icons.alarm),
-                      title: const Text('หอพัก - โลตัสหน้า ม.อ.'),
-                      subtitle: Text('ค่าบริการขั้นต่ำ 15 บาท'),
-                      value: valueSecond,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          valueSecond = value!;
-                          value
-                              ? (valueFirst
-                                  ? valueThird = true
-                                  : print('not all'))
-                              : valueThird = false;
-                        });
-                      },
-                    ),
-                    CheckboxListTile(
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      secondary: const Icon(Icons.alarm),
-                      title: const Text('รับงานทุกพื้นที่'),
-                      subtitle: Text(
-                        '***เฉพาะผู้ส่งสินค้า',
-                        style: TextStyle(color: Colors.red),
+              padding: const EdgeInsets.all(22.0),
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  const Row(
+                    children: [
+                      Text(
+                        'เลือกขอบเขตสถานที่ใช้บริการ',
+                        style: TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.w500),
                       ),
-                      value: this.valueThird,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          this.valueThird = value!;
-                          if (this.valueThird) {
-                            this.valueFirst = value;
-                            this.valueSecond = value;
-                          } else {
-                            this.valueFirst = value;
-                            this.valueSecond = value;
-                          }
-                        });
-                      },
+                    ],
+                  ),
+                  CheckboxListTile(
+                    secondary: const Icon(Icons.area_chart),
+                    title: const Text('หอพัก - ภายในหมาวิทยาลัย'),
+                    subtitle: Text('ค่าบริการขั้นต่ำ 10 บาท'),
+                    value: this.valueFirst,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        this.valueFirst = value!;
+                        value
+                            ? (this.valueSecond
+                                ? valueThird = true
+                                : print('not all'))
+                            : valueThird = false;
+                      });
+                    },
+                  ),
+                  CheckboxListTile(
+                    controlAffinity: ListTileControlAffinity.trailing,
+                    secondary: const Icon(Icons.alarm),
+                    title: const Text('หอพัก - โลตัสหน้า ม.อ.'),
+                    subtitle: Text('ค่าบริการขั้นต่ำ 15 บาท'),
+                    value: valueSecond,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        valueSecond = value!;
+                        value
+                            ? (valueFirst
+                                ? valueThird = true
+                                : print('not all'))
+                            : valueThird = false;
+                      });
+                    },
+                  ),
+                  CheckboxListTile(
+                    controlAffinity: ListTileControlAffinity.trailing,
+                    secondary: const Icon(Icons.alarm),
+                    title: const Text('รับงานทุกพื้นที่'),
+                    subtitle: Text(
+                      '***เฉพาะผู้ส่งสินค้า',
+                      style: TextStyle(color: Colors.red),
                     ),
-                  ],
-                )),
+                    value: this.valueThird,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        this.valueThird = value!;
+                        if (this.valueThird) {
+                          this.valueFirst = value;
+                          this.valueSecond = value;
+                        } else {
+                          this.valueFirst = value;
+                          this.valueSecond = value;
+                        }
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
