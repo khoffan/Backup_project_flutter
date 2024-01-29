@@ -30,6 +30,7 @@ class _ShowPostState extends State<ShowPost> {
   int likeCount = 0;
   bool isLiked = false;
   String uid = "";
+  static const allowedDaysSet = {1, 3, 5, 7};
 
   void saveComment(String docid, String comment, String uid) async {
     try {
@@ -108,126 +109,255 @@ class _ShowPostState extends State<ShowPost> {
                 if (deliverSnapshot.hasData) {
                   return Column(
                     // Use a Column instead of nested ListView.builder
-                    children: deliveruserDocs.map((deliverUserDoc) {
-                      final deliverUser =
-                          deliverUserDoc.data() as Map<String, dynamic>;
+                    children: deliveruserDocs.map(
+                      (deliverUserDoc) {
+                        final deliverUser =
+                            deliverUserDoc.data() as Map<String, dynamic>;
 
-                      String userid = deliverDoc.id;
-                      String docid = deliverUserDoc.id;
-                      String name = deliverUser['name'] ?? '';
+                        String userid = deliverDoc.id;
+                        String docid = deliverUserDoc.id;
+                        String name = deliverUser['name'] ?? '';
 
-                      String title = deliverUser['title'] ?? '';
-                      String imageLink = deliverUser['imageurl'] ?? '';
+                        String title = deliverUser['title'] ?? '';
+                        String imageLink = deliverUser['imageurl'] ?? '';
 
-                      // print(imageProfilelink);
+                        // print(imageProfilelink);
 
-                      // print("DocId: ${docid}");
-                      Timestamp timestamp = deliverUser["date"];
-                      String date = FormatDate.getdaytime(timestamp);
-                      return StreamBuilder(
-                          stream: _firestore
-                              .collection("Profile")
-                              .doc(userid)
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasError) {
-                              return Container();
-                            }
-                            Map<String, dynamic> data = {};
-                            if (snapshot.hasData && snapshot.data!.exists) {
-                              final profileData = snapshot.data!.data();
-                              if (profileData != null) {
-                                data = profileData;
-                                String imagelinkprofile =
-                                    data["imageLink"] ?? "";
-                                return Card(
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 5.0, bottom: 10.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                        // print("DocId: ${docid}");
+                        Timestamp timestamp = deliverUser["date"];
+                        String date = FormatDate.getdaytime(timestamp);
+                        String time = FormatDate.date(timestamp);
+                        String duration = deliverUser['duration'];
+                        String dayDuration = duration.split("วัน")[0];
+                        final parseDate = DateTime.parse(time);
+                        print("day: $time");
+                        print("parseday: $parseDate");
+                        print("dayDuration: $dayDuration");
+                        final datediff =
+                            DateTime.now().difference(parseDate).inDays;
+                        print("datediff: $datediff");
+
+                        DateTime datetime = DateTime.now();
+                        if (DateTime.now().difference(parseDate).inDays ==
+                            dayDuration) {
+                          return StreamBuilder(
+                            stream: _firestore
+                                .collection("Profile")
+                                .doc(userid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Container();
+                              }
+                              Map<String, dynamic> data = {};
+                              if (snapshot.hasData && snapshot.data!.exists) {
+                                final profileData = snapshot.data!.data();
+                                if (profileData != null) {
+                                  data = profileData;
+                                  String imagelinkprofile =
+                                      data["imageLink"] ?? "";
+                                  return Card(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                top: 5.0, bottom: 10.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      child: imagelinkprofile !=
+                                                              ""
+                                                          ? CircleAvatar(
+                                                              backgroundImage:
+                                                                  NetworkImage(
+                                                                      imagelinkprofile,
+                                                                      scale:
+                                                                          0.8),
+                                                              maxRadius: 20.0,
+                                                            )
+                                                          : Image(
+                                                              image: NetworkImage(
+                                                                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                                                  scale: 0.8),
+                                                              width: 40.0,
+                                                            ),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: 20.0,
+                                                          right: 30),
+                                                      child: Text("${name}"),
+                                                    ),
+                                                    Text("${date}"),
+                                                  ],
+                                                ),
+                                                IconButton(
+                                                  onPressed: () {
+                                                    _showProfileDialog(
+                                                        context, userid);
+                                                  },
+                                                  icon: Icon(Icons.more_vert),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Text("${title}"),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          imageLink != ""
+                                              ? Image(
+                                                  image: NetworkImage(
+                                                    imageLink,
+                                                  ),
+                                                  width: 400,
+                                                )
+                                              : Image(
+                                                  image: NetworkImage(
+                                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                                  ),
+                                                  width: 40.0,
+                                                ),
+                                          ButtonBar(
+                                            alignment: MainAxisAlignment.end,
                                             children: [
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    child: imagelinkprofile !=
-                                                            ""
-                                                        ? CircleAvatar(
-                                                            backgroundImage:
-                                                                NetworkImage(
-                                                                    imagelinkprofile,
-                                                                    scale: 0.8),
-                                                            maxRadius: 20.0,
-                                                          )
-                                                        : Image(
-                                                            image: NetworkImage(
-                                                                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                                                scale: 0.8),
-                                                            width: 40.0,
-                                                          ),
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: 20.0, right: 30),
-                                                    child: Text("${name}"),
-                                                  ),
-                                                  Text("${date}"),
-                                                ],
-                                              ),
-                                              IconButton(
+                                              TextButton(
                                                 onPressed: () {
-                                                  _showProfileDialog(
-                                                      context, userid);
+                                                  ShowCommentBottm(context,
+                                                      saveComment, docid, uid);
                                                 },
-                                                icon: Icon(Icons.more_vert),
+                                                child: Text('ความคิดเห็น'),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        Text("${title}"),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        imageLink != ""
-                                            ? Image(
-                                                image: NetworkImage(
-                                                  imageLink,
-                                                ),
-                                                width: 400,
-                                              )
-                                            : Image(
-                                                image: NetworkImage(
-                                                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                                ),
-                                                width: 40.0,
-                                              ),
-                                        ButtonBar(
-                                          alignment: MainAxisAlignment.end,
-                                          children: [
-                                            TextButton(
-                                              onPressed: () {
-                                                ShowCommentBottm(context,
-                                                    saveComment, docid, uid);
-                                              },
-                                              child: Text('ความคิดเห็น'),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
                               }
-                            }
-                            return Container();
-                          });
-                    }).toList(),
+                              return Container();
+                            },
+                          );
+                        } else {
+                          return StreamBuilder(
+                            stream: _firestore
+                                .collection("Profile")
+                                .doc(userid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Container();
+                              }
+                              Map<String, dynamic> data = {};
+                              if (snapshot.hasData && snapshot.data!.exists) {
+                                final profileData = snapshot.data!.data();
+                                if (profileData != null) {
+                                  data = profileData;
+                                  String imagelinkprofile =
+                                      data["imageLink"] ?? "";
+                                  return Card(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                top: 5.0, bottom: 10.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      child: imagelinkprofile !=
+                                                              ""
+                                                          ? CircleAvatar(
+                                                              backgroundImage:
+                                                                  NetworkImage(
+                                                                      imagelinkprofile,
+                                                                      scale:
+                                                                          0.8),
+                                                              maxRadius: 20.0,
+                                                            )
+                                                          : Image(
+                                                              image: NetworkImage(
+                                                                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                                                  scale: 0.8),
+                                                              width: 40.0,
+                                                            ),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: 20.0,
+                                                          right: 30),
+                                                      child: Text("${name}"),
+                                                    ),
+                                                    Text("${date}"),
+                                                  ],
+                                                ),
+                                                IconButton(
+                                                  onPressed: () {
+                                                    _showProfileDialog(
+                                                        context, userid);
+                                                  },
+                                                  icon: Icon(Icons.more_vert),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Text("${title}"),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          imageLink != ""
+                                              ? Image(
+                                                  image: NetworkImage(
+                                                    imageLink,
+                                                  ),
+                                                  width: 400,
+                                                )
+                                              : Image(
+                                                  image: NetworkImage(
+                                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                                  ),
+                                                  width: 40.0,
+                                                ),
+                                          ButtonBar(
+                                            alignment: MainAxisAlignment.end,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  ShowCommentBottm(context,
+                                                      saveComment, docid, uid);
+                                                },
+                                                child: Text('ความคิดเห็น'),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                              return Container();
+                            },
+                          );
+                        }
+                      },
+                    ).toList(),
                   );
                 }
                 return Container(

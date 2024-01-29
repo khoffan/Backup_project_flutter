@@ -28,7 +28,8 @@ class ServiceDeliver {
   Future<void> saveDeliverPosts(
       {required String uid,
       required String title,
-      required Uint8List file}) async {
+      required Uint8List file,
+      required String duration}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
           await ProfileService().getDataProfile(uid);
@@ -45,7 +46,7 @@ class ServiceDeliver {
         Timestamp timestamp = Timestamp.now();
 
         String imageurl = await uploadImagetoStorage('deliverImage', file);
-        await _firestore.collection('Posts').doc(uid).set({
+        await _firestore.collection('Posts').doc(uid).update({
           'status': status,
         });
 
@@ -56,7 +57,8 @@ class ServiceDeliver {
           'stdid': stdid,
           'imageurl': imageurl,
           'title': title,
-          'date': timestamp
+          'date': timestamp,
+          'duration': duration
         });
         print('save data success');
       }
