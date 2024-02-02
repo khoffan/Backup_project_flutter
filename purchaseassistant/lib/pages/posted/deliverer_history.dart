@@ -384,6 +384,9 @@ class _DeliverHistoryState extends State<DeliverHistory> {
                                         ),
                                       ],
                                     ),
+                                    SizedBox(
+                                      height: 100,
+                                    ),
                                   ],
                                 ),
                               );

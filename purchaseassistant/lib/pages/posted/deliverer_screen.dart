@@ -66,6 +66,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
   void exchangePost() async {
     try {
       print("dischange: $dischange");
+      await ServiceWallet().setExchangeAmount(uid, dischange, amount);
     } catch (e) {
       throw e.toString();
     }
@@ -80,6 +81,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(
           'สร้างโพสต์รับหิ้ว',
@@ -163,13 +165,6 @@ class _DelivererScreenState extends State<DelivererScreen> {
                       isCheckedAday = value!;
                       double buy = 10.00;
                       dischange = buy;
-                      if (!isCheckedAday) {
-                        amount += buy;
-                        print("incress amount: $amount by dischange $buy");
-                      } else {
-                        amount -= buy;
-                        print("decress amount: $amount by dischange $buy");
-                      }
                     });
                   },
                 ),
@@ -181,13 +176,6 @@ class _DelivererScreenState extends State<DelivererScreen> {
                       isChecked3day = value!;
                       double buy = 15.00;
                       dischange = buy;
-                      if (!isChecked3day) {
-                        amount += buy;
-                        print("incress amount: $amount by dischange $buy");
-                      } else {
-                        amount -= buy;
-                        print("decress amount: $amount by dischange $buy");
-                      }
                     });
                   },
                 ),
@@ -199,13 +187,6 @@ class _DelivererScreenState extends State<DelivererScreen> {
                       isChecked5day = value!;
                       double buy = 20.00;
                       dischange = buy;
-                      if (!isChecked5day) {
-                        amount += buy;
-                        print("incress amount: $amount by dischange $buy");
-                      } else {
-                        amount -= buy;
-                        print("decress amount: $amount by dischange $buy");
-                      }
                     });
                   },
                 ),
@@ -217,13 +198,6 @@ class _DelivererScreenState extends State<DelivererScreen> {
                       isChecked7day = value!;
                       double buy = 25.00;
                       dischange = buy;
-                      if (!isChecked7day) {
-                        amount += buy;
-                        print("incress amount: $amount by dischange $buy");
-                      } else {
-                        amount -= buy;
-                        print("decress amount: $amount by dischange $buy");
-                      }
                     });
                   },
                 ),

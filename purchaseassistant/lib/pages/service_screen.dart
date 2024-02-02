@@ -1,16 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
-import 'package:purchaseassistant/Provider/deliverDataProvider.dart';
-import 'package:purchaseassistant/pages/chat/chat_screen.dart';
-import 'package:purchaseassistant/pages/profile/profile_screen.dart';
-import 'package:purchaseassistant/pages/testPage.dart';
+
 import 'package:purchaseassistant/routes/routes.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
@@ -23,8 +17,6 @@ import '../utils/constants.dart';
 
 import 'customer_loading.dart';
 import 'posted/deliverer_history.dart';
-import 'posted/deliverer_screen.dart';
-import 'profile/wallet.dart';
 
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});
@@ -48,13 +40,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   bool valueFirst = false;
   bool valueSecond = false;
   bool valueThird = false;
-  // 'ศูนย์อาหารโรงช้าง',
-  // 'ภายในเขตหอพักนักศึกษา',
-  // 'ภายในมหาวิทยาลัยสงขลานครินทร์',
-  // 'ตลาดศรีตรัง',
-  // 'โลตัส สาขา ม.อ.',
-  // 'สถานีขนส่ง หาดใหญ่',
-  // 'เซนทรัลเฟตติวัลหาดใหญ่'
+
   void setLocationData(String title) {
     if (title != "") {
       setState(() {
