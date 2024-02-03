@@ -102,18 +102,19 @@ class _ShowPostState extends State<ShowPost> {
                   );
                 }
                 final deliveruserDocs = deliverSnapshot.data!.docs;
+
                 if (deliverSnapshot.hasData && deliveruserDocs.isNotEmpty) {
                   return Column(
                     children: deliveruserDocs.map(
                       (deliverUserDoc) {
-                        final deliverUser =
-                            deliverUserDoc.data() as Map<String, dynamic>;
+                        final Map<String, dynamic> deliverUser =
+                            deliverUserDoc.data();
 
                         String userid = deliverDoc.id;
                         String docid = deliverUserDoc.id;
-                        String name = deliverUser['name'] ?? '';
-                        String title = deliverUser['title'] ?? '';
-                        String imageLink = deliverUser['imageurl'] ?? '';
+                        String name = deliverUser['name'];
+                        String title = deliverUser['title'];
+                        String imageLink = deliverUser['imageurl'];
                         Timestamp timestamp = deliverUser["date"];
                         String date = FormatDate.getdaytime(timestamp);
                         String time = FormatDate.date(timestamp);
