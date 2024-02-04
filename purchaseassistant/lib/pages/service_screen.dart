@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:purchaseassistant/pages/chat/chat_screen.dart';
 
 import 'package:purchaseassistant/routes/routes.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
@@ -35,12 +36,18 @@ class _ServiceScreenState extends State<ServiceScreen> {
   String riderid = "";
   DeliveryData deliData = DeliveryData();
   double amount = 0.00;
-  Map<String, dynamic> responseData = {};
-  Map<String, dynamic> responseDatariders = {};
-  late StreamSubscription<double> subscription;
+  String currid = "";
+  String reciveuid = "";
+  String name = "";
+  bool? isLoading;
+  bool? isMatch;
   bool valueFirst = false;
   bool valueSecond = false;
   bool valueThird = false;
+  Map<String, dynamic> responseData = {};
+  Map<String, dynamic> responseDatariders = {};
+  late StreamSubscription<double> subscription;
+  late StreamSubscription<Map<String, dynamic>> streamData;
 
   void setLocationData(String title) {
     if (title != "") {
@@ -94,17 +101,54 @@ class _ServiceScreenState extends State<ServiceScreen> {
       };
 
       await APIMatiching().setCustomerData(userData);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => LoadingCustomerScreen(
-            riderid: uid,
-          ),
-        ),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (_) => LoadingCustomerScreen(
+      //       riderid: uid,
+      //     ),
+      //   ),
+      // );
       // DeliverHistory(cusid: cusid, riderid: riderid,);
     } catch (e) {
       print("Error connect: ${e}");
+    }
+  }
+
+  void connectMatchingResult() {
+    try {
+      if (uid != "") {
+        streamData = APIMatiching().getData(uid).listen(
+          (Map<String, dynamic> snapshotData) {
+            print(snapshotData["rider_status"]);
+            if (snapshotData["rider_status"] == true && isLoading == false) {
+              name = snapshotData["ridername"];
+              reciveuid = snapshotData["riderid"];
+              if ((name, reciveuid) != "") {
+                setState(() {
+                  isLoading = true;
+                  isMatch = false;
+                });
+                APIMatiching().updateStatusChatCustomer(uid);
+                APIMatiching().updateStatusCustomer(uid);
+              }
+              // Future.delayed(Duration(seconds: 30), () {
+              //   _showAlertDelay();
+              // });
+            }
+          },
+          onError: (dynamic error) {
+            print("Error: ${error}");
+          },
+          onDone: () {
+            print("Stream is closed");
+          },
+        );
+      } else {
+        print("Document not updated");
+      }
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
     }
   }
 
@@ -148,11 +192,72 @@ class _ServiceScreenState extends State<ServiceScreen> {
     }
   }
 
+  void _overlayPopup() {
+    OverlayEntry entry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+            bottom: MediaQuery.of(context).size.height / 8,
+            left: MediaQuery.of(context).size.width / 3,
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                color: Colors.black12,
+              ),
+              child: Row(
+                children: [
+                  CircularProgressIndicator(
+                    strokeWidth: 4,
+                    color: Colors.amber,
+                    backgroundColor: Colors.white,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        'กำลังจับคู่',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ));
+      },
+    );
+    Overlay.of(context).insert(entry);
+
+    if (isLoading == true) {
+      entry.remove();
+    }
+    Future.delayed(Duration(seconds: 5), () {
+      entry.remove();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    setState(() {
+      isLoading = false;
+      isMatch = false;
+    });
     uid = _auth.currentUser!.uid;
     getAmount(context, uid);
+    connectMatchingResult();
+    print("isLoading: $isLoading");
+    print("isMatch: $isMatch");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    streamData.cancel();
+    subscription.cancel();
   }
 
   @override
@@ -161,25 +266,26 @@ class _ServiceScreenState extends State<ServiceScreen> {
   }
 
   Widget showScreen(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: themeBg,
-          title: const Text(
-            "เลือกบริการ",
-            style: TextStyle(color: Colors.black, fontSize: 18),
-          ),
-          leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              )),
-        ),
-        body: _ShowContent()
-        // ],
-        );
+    return isLoading != true
+        ? Scaffold(
+            appBar: AppBar(
+              backgroundColor: themeBg,
+              title: const Text(
+                "เลือกบริการ",
+                style: TextStyle(color: Colors.black, fontSize: 18),
+              ),
+              leading: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                  )),
+            ),
+            body: _ShowContent(),
+          )
+        : ChatScreen(reciveuid: reciveuid, name: name);
   }
 
   Widget _ShowContent() {
@@ -269,48 +375,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     if (((valueFirst == true || valueSecond == true) &&
                             valueThird != true) &&
                         amount > 10.00) {
-                      OverlayEntry entry = OverlayEntry(
-                        builder: (context) {
-                          return Positioned(
-                              bottom: MediaQuery.of(context).size.height / 8,
-                              left: MediaQuery.of(context).size.width / 3,
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  color: Colors.black12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    CircularProgressIndicator(
-                                      strokeWidth: 4,
-                                      color: Colors.amber,
-                                      backgroundColor: Colors.white,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: Text(
-                                          'กำลังจับคู่',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ));
-                        },
-                      );
-                      Overlay.of(context).insert(entry);
-
-                      Future.delayed(Duration(seconds: 5), () {
-                        entry.remove();
-                      });
                       sendData2api(uid);
+                      _overlayPopup();
                     } else {
                       String msgErr = "";
                       if (amount < 50.00) {
