@@ -169,6 +169,7 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: IconButton(
             onPressed: () {
               closeChatState(otherid!);
+              Navigator.pop(context);
             },
             icon: const Icon(
               Icons.arrow_back,

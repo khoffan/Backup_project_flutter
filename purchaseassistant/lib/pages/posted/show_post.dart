@@ -29,6 +29,7 @@ class _ShowPostState extends State<ShowPost> {
   int likeCount = 0;
   bool isLiked = false;
   String uid = "";
+  bool showPost = true;
 
   void saveComment(String docid, String comment, String uid) async {
     try {
@@ -66,7 +67,7 @@ class _ShowPostState extends State<ShowPost> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder(
       stream: ServiceDeliver().streamPosts(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -75,12 +76,19 @@ class _ShowPostState extends State<ShowPost> {
           );
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
+          return Container(child: CircularProgressIndicator());
+        }
+        final deliverDocs = snapshot.data!.docs;
+        if (deliverDocs.isEmpty) {
+          return Container(
+            child: Text("No data in collection"),
           );
         }
-
-        final deliverDocs = snapshot.data!.docs;
+        if (!snapshot.hasData) {
+          return Container(
+            child: Text("No data in collection"),
+          );
+        }
         return ListView.builder(
           itemCount: deliverDocs.length,
           itemBuilder: (context, index) {
@@ -97,12 +105,12 @@ class _ShowPostState extends State<ShowPost> {
                 }
                 if (deliverSnapshot.connectionState ==
                     ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return Container();
                 }
                 final deliveruserDocs = deliverSnapshot.data!.docs;
-
+                if (deliveruserDocs.isEmpty) {
+                  return Container();
+                }
                 if (deliverSnapshot.hasData && deliveruserDocs.isNotEmpty) {
                   return Column(
                     children: deliveruserDocs.map(
@@ -124,8 +132,7 @@ class _ShowPostState extends State<ShowPost> {
                         final datediff =
                             DateTime.now().difference(parseDate).inDays;
                         if (DateTime.now().difference(parseDate).inDays <=
-                                int.parse(dayDuration) &&
-                            int.parse(datediff.toString()) <= 7) {
+                            int.parse(dayDuration)) {
                           return StreamBuilder(
                             stream: _firestore
                                 .collection("Profile")
@@ -136,6 +143,7 @@ class _ShowPostState extends State<ShowPost> {
                                 return Container();
                               }
                               Map<String, dynamic> data = {};
+
                               if (snapshot.hasData && snapshot.data!.exists) {
                                 final profileData = snapshot.data!.data();
                                 if (profileData != null) {
@@ -372,4 +380,15 @@ Widget _buildProfileDialog(
     );
   }
   return Container();
+}
+
+class NoDataWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Center(
+        child: Text("No data"),
+      ),
+    );
+  }
 }

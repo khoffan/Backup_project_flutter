@@ -119,7 +119,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
     try {
       if (uid != "") {
         streamData = APIMatiching().getData(uid).listen(
-          (Map<String, dynamic> snapshotData) {
+          (Map<String, dynamic> snapshotData) async {
             print(snapshotData["rider_status"]);
             if (snapshotData["rider_status"] == true && isLoading == false) {
               name = snapshotData["ridername"];
@@ -135,6 +135,14 @@ class _ServiceScreenState extends State<ServiceScreen> {
               // Future.delayed(Duration(seconds: 30), () {
               //   _showAlertDelay();
               // });
+            } else if (snapshotData["rider_status"] == false &&
+                isLoading == false) {
+              setState(() {
+                setState(() {
+                  isLoading = false;
+                  isMatch = true;
+                });
+              });
             }
           },
           onError: (dynamic error) {
@@ -244,13 +252,11 @@ class _ServiceScreenState extends State<ServiceScreen> {
     super.initState();
     setState(() {
       isLoading = false;
-      isMatch = false;
+      isMatch = true;
     });
     uid = _auth.currentUser!.uid;
     getAmount(context, uid);
     connectMatchingResult();
-    print("isLoading: $isLoading");
-    print("isMatch: $isMatch");
   }
 
   @override
@@ -266,7 +272,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   }
 
   Widget showScreen(BuildContext context) {
-    return isLoading != true
+    return isMatch == true
         ? Scaffold(
             appBar: AppBar(
               backgroundColor: themeBg,

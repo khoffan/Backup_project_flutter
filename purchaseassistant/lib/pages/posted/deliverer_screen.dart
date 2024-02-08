@@ -81,7 +81,6 @@ class _DelivererScreenState extends State<DelivererScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(
           'สร้างโพสต์รับหิ้ว',
