@@ -90,7 +90,7 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
           Map<String, dynamic> data = {};
           if (snapshot.hasData && snapshot.data!.exists) {
             final snapData = snapshot.data!.data() as Map<String, dynamic>;
-            if (data != null) {
+            if (data != {}) {
               data = snapData;
               name = data["name"] ?? '';
               lname = data["lname"] ?? '';

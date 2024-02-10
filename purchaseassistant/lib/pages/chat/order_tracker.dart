@@ -1,13 +1,16 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:order_tracker_zen/order_tracker_zen.dart';
+import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
 class OrderTrackers extends StatefulWidget {
-  OrderTrackers({Key? key, this.otherid}) : super(key: key);
+  OrderTrackers({Key? key, this.chatroomid}) : super(key: key);
 
-  String? otherid;
+  String? chatroomid;
   @override
   State<OrderTrackers> createState() => _OrderTrackersState();
 }
@@ -17,25 +20,47 @@ class _OrderTrackersState extends State<OrderTrackers> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   String uid = "";
   String currid = "";
+  String chatroomid = "";
   late int checkState;
   List<int> showState = [1, 2, 3, 4, 5];
   int trackState = 0;
   Timestamp timeState = Timestamp.now();
   Color c1 = Colors.red;
+
   @override
   void initState() {
     checkState = 0;
     uid = _auth.currentUser!.uid;
-    currid = widget.otherid ?? "";
-    print(checkState);
+    chatroomid = widget.chatroomid ?? '';
+    ChatServices().setTrackingState(chatroomid);
+    print("chatroomid: $chatroomid");
+    print(uid);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Object>(
-        stream: null,
+    return StreamBuilder(
+        stream: ChatServices().getTrackingState(chatroomid),
         builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text("No Data"),
+            );
+          }
+
+          final checkStatedata = snapshot.data!.data() as Map<String, dynamic>;
+
+          if (checkStatedata != null) {
+            int data = checkStatedata['trackState'];
+            print("checkState: $data");
+          }
+
           return Scaffold(
             appBar: AppBar(
               title: const Text(
@@ -57,9 +82,10 @@ class _OrderTrackersState extends State<OrderTrackers> {
                   child: OutlinedButton(
                     onPressed: () {
                       setState(() {
-                        checkState += 1;
-                        print(checkState);
+                        trackState += 1;
                       });
+                      ChatServices()
+                          .updateTRackingState(chatroomid, trackState);
                     },
                     child: Text(
                       'อัพเดทสถานะ',

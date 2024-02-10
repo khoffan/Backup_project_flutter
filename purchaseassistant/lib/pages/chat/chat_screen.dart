@@ -191,7 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OrderTrackers(otherid: otherid),
+                    builder: (context) => OrderTrackers(chatroomid: chatroomid),
                   ),
                 );
                 print(chatroomid);

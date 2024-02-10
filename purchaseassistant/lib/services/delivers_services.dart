@@ -81,9 +81,6 @@ class ServiceDeliver {
             getProfilesnapshot.data() as Map<String, dynamic>;
 
         bool? status = await getStatus(uid);
-        String name = data['name'] ?? '';
-        String lname = data['lname'] ?? '';
-        String stdid = data['stdid'] ?? '';
 
         Timestamp timestamp = Timestamp.now();
 

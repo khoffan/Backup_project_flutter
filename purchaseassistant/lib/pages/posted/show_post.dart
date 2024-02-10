@@ -105,7 +105,9 @@ class _ShowPostState extends State<ShowPost> {
                 }
                 if (deliverSnapshot.connectionState ==
                     ConnectionState.waiting) {
-                  return Container();
+                  return Container(
+                    child: CircularProgressIndicator(),
+                  );
                 }
                 final deliveruserDocs = deliverSnapshot.data!.docs;
                 if (deliveruserDocs.isEmpty) {
@@ -129,8 +131,8 @@ class _ShowPostState extends State<ShowPost> {
                         String duration = deliverUser['duration'];
                         String dayDuration = duration.split("วัน")[0];
                         final parseDate = DateTime.parse(time);
-                        final datediff =
-                            DateTime.now().difference(parseDate).inDays;
+                        // final datediff =
+                        //     DateTime.now().difference(parseDate).inDays;
                         if (DateTime.now().difference(parseDate).inDays <=
                             int.parse(dayDuration)) {
                           return StreamBuilder(
