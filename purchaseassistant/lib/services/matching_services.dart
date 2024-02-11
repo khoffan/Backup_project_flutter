@@ -218,8 +218,7 @@ class APIMatiching {
     StreamSubscription<DocumentSnapshot>? subscription;
 
     try {
-      DocumentReference docRef =
-          await _firestore.collection("Matchings").doc(currid);
+      DocumentReference docRef = _firestore.collection("Matchings").doc(currid);
 
       subscription = docRef.snapshots().listen(
         (DocumentSnapshot quryData) {

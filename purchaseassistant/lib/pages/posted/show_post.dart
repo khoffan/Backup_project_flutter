@@ -29,7 +29,7 @@ class _ShowPostState extends State<ShowPost> {
   int likeCount = 0;
   bool isLiked = false;
   String uid = "";
-  bool showPost = true;
+  bool showPost = false;
 
   void saveComment(String docid, String comment, String uid) async {
     try {
@@ -76,7 +76,7 @@ class _ShowPostState extends State<ShowPost> {
           );
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
         final deliverDocs = snapshot.data!.docs;
         if (deliverDocs.isEmpty) {
@@ -89,173 +89,183 @@ class _ShowPostState extends State<ShowPost> {
             child: Text("No data in collection"),
           );
         }
-        return ListView.builder(
-          itemCount: deliverDocs.length,
-          itemBuilder: (context, index) {
-            final deliverDoc = deliverDocs[index];
-            final deliverUserCollection =
-                deliverDoc.reference.collection('Contents');
-            return StreamBuilder(
-              stream: deliverUserCollection.snapshots(),
-              builder: (context, deliverSnapshot) {
-                if (deliverSnapshot.hasError) {
-                  return Center(
-                    child: Text(deliverSnapshot.error.toString()),
-                  );
-                }
-                if (deliverSnapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return Container(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                final deliveruserDocs = deliverSnapshot.data!.docs;
-                if (deliveruserDocs.isEmpty) {
-                  return Container();
-                }
-                if (deliverSnapshot.hasData && deliveruserDocs.isNotEmpty) {
-                  return Column(
-                    children: deliveruserDocs.map(
-                      (deliverUserDoc) {
-                        final Map<String, dynamic> deliverUser =
-                            deliverUserDoc.data();
-
-                        String userid = deliverDoc.id;
-                        String docid = deliverUserDoc.id;
-                        String name = deliverUser['name'];
-                        String title = deliverUser['title'];
-                        String imageLink = deliverUser['imageurl'];
-                        Timestamp timestamp = deliverUser["date"];
-                        String date = FormatDate.getdaytime(timestamp);
-                        String time = FormatDate.date(timestamp);
-                        String duration = deliverUser['duration'];
-                        String dayDuration = duration.split("วัน")[0];
-                        final parseDate = DateTime.parse(time);
-                        // final datediff =
-                        //     DateTime.now().difference(parseDate).inDays;
-                        if (DateTime.now().difference(parseDate).inDays <=
-                            int.parse(dayDuration)) {
-                          return StreamBuilder(
-                            stream: _firestore
-                                .collection("Profile")
-                                .doc(userid)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasError) {
-                                return Container();
-                              }
-                              Map<String, dynamic> data = {};
-
-                              if (snapshot.hasData && snapshot.data!.exists) {
-                                final profileData = snapshot.data!.data();
-                                if (profileData != null) {
-                                  data = profileData;
-                                  String imagelinkprofile =
-                                      data["imageLink"] ?? "";
-                                  return Card(
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                top: 5.0, bottom: 10.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Container(
-                                                      child: imagelinkprofile !=
-                                                              ""
-                                                          ? CircleAvatar(
-                                                              backgroundImage:
-                                                                  NetworkImage(
-                                                                      imagelinkprofile,
-                                                                      scale:
-                                                                          0.8),
-                                                              maxRadius: 20.0,
-                                                            )
-                                                          : Image(
-                                                              image: NetworkImage(
-                                                                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                                                  scale: 0.8),
-                                                              width: 40.0,
-                                                            ),
-                                                    ),
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 20.0,
-                                                          right: 30),
-                                                      child: Text("${name}"),
-                                                    ),
-                                                    Text("${date}"),
-                                                  ],
-                                                ),
-                                                IconButton(
-                                                  onPressed: () {
-                                                    _showProfileDialog(
-                                                        context, userid);
-                                                  },
-                                                  icon: Icon(Icons.more_vert),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Text("${title}"),
-                                          SizedBox(
-                                            height: 15,
-                                          ),
-                                          imageLink != ""
-                                              ? Image(
-                                                  image: NetworkImage(
-                                                    imageLink,
-                                                  ),
-                                                  width: 400,
-                                                )
-                                              : Image(
-                                                  image: NetworkImage(
-                                                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                                                  ),
-                                                  width: 40.0,
-                                                ),
-                                          ButtonBar(
-                                            alignment: MainAxisAlignment.end,
-                                            children: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  ShowCommentBottm(context,
-                                                      saveComment, docid, uid);
-                                                },
-                                                child: Text('ความคิดเห็น'),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }
-                              }
-                              return Container();
-                            },
-                          );
-                        }
-                        return Container();
-                      },
-                    ).toList(),
-                  );
-                }
-                return Container();
-              },
-            );
-          },
+        return ListView(
+          children: deliverDocs.map((doc) => _showContentPosted(doc)).toList(),
         );
       },
     );
+  }
+
+  Widget _showContentPosted(DocumentSnapshot document) {
+    CollectionReference coleectionRef =
+        document.reference.collection("Contents");
+
+    return StreamBuilder(
+      stream: coleectionRef.snapshots(),
+      builder: (context, deliverSnapshot) {
+        if (deliverSnapshot.hasError) {
+          return Center(
+            child: Text(deliverSnapshot.error.toString()),
+          );
+        }
+        if (deliverSnapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        final deliveruserDocs = deliverSnapshot.data!.docs;
+        // final docLamght = deliveruserDocs.length;
+        if (deliverSnapshot.hasData && deliveruserDocs.isNotEmpty) {
+          return Column(
+            children: deliveruserDocs.map(
+              (deliverUserDoc) {
+                final Map<String, dynamic> deliverUser =
+                    deliverUserDoc.data() as Map<String, dynamic>;
+
+                String userid = document.id;
+                String docid = deliverUserDoc.id;
+                print(userid);
+                String name = deliverUser['name'];
+                String title = deliverUser['title'];
+                String imageLink = deliverUser['imageurl'];
+                Timestamp timestamp = deliverUser["date"];
+                String date = FormatDate.getdaytime(timestamp);
+                String time = FormatDate.date(timestamp);
+                String duration = deliverUser['duration'];
+                String dayDuration = duration.split("วัน")[0];
+                final parseDate = DateTime.parse(time);
+                print("dayDuration: ${dayDuration}");
+                final datediff = DateTime.now().difference(parseDate).inDays;
+                print("datediff: ${datediff + 1}");
+                if (DateTime.now().difference(parseDate).inDays <=
+                    int.parse(dayDuration)) {
+                  return _showProfileDetail(
+                    userid: userid,
+                    name: name,
+                    imageLink: imageLink,
+                    title: title,
+                    date: date,
+                    docid: docid,
+                  );
+                }
+
+                return Container();
+              },
+            ).toList(),
+          );
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget _showProfileDetail({
+    required String userid,
+    required String name,
+    required String imageLink,
+    required String title,
+    required String date,
+    required String docid,
+  }) {
+    return StreamBuilder(
+        stream: _firestore.collection("Profile").doc(userid).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Container();
+          }
+          Map<String, dynamic> data = {};
+
+          if (snapshot.hasData && snapshot.data!.exists) {
+            final profileData = snapshot.data!.data();
+            if (profileData != null) {
+              data = profileData;
+              String imagelinkprofile = data["imageLink"] ?? "";
+              return Card(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  child: imagelinkprofile != ""
+                                      ? CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                              imagelinkprofile,
+                                              scale: 0.8),
+                                          maxRadius: 20.0,
+                                        )
+                                      : Image(
+                                          image: NetworkImage(
+                                              "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                                              scale: 0.8),
+                                          width: 40.0,
+                                        ),
+                                ),
+                                Container(
+                                  margin:
+                                      EdgeInsets.only(left: 20.0, right: 30),
+                                  child: Text("${name}"),
+                                ),
+                                Text("${date}"),
+                              ],
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                _showProfileDialog(context, userid);
+                              },
+                              icon: Icon(Icons.more_vert),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text("${title}"),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      imageLink != ""
+                          ? Image(
+                              image: NetworkImage(
+                                imageLink,
+                              ),
+                              width: 400,
+                            )
+                          : Image(
+                              image: NetworkImage(
+                                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                              ),
+                              width: 40.0,
+                            ),
+                      ButtonBar(
+                        alignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              ShowCommentBottm(
+                                  context, saveComment, docid, uid);
+                            },
+                            child: Text('ความคิดเห็น'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+          return Container(
+            child: Text(
+              "ไม่มีรายการในวันนี้",
+              style: TextStyle(color: Colors.red),
+            ),
+          );
+        });
   }
 }
 

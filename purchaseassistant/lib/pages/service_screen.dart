@@ -252,10 +252,10 @@ class _ServiceScreenState extends State<ServiceScreen> {
     super.initState();
     setState(() {
       isLoading = false;
-      isMatch = true;
     });
     uid = _auth.currentUser!.uid;
     getAmount(context, uid);
+
     connectMatchingResult();
   }
 
@@ -272,7 +272,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   }
 
   Widget showScreen(BuildContext context) {
-    return isMatch == true
+    return isLoading != true
         ? Scaffold(
             appBar: AppBar(
               backgroundColor: themeBg,

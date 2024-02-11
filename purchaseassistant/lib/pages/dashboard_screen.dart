@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/pages/posted/show_post.dart';
+
 import 'package:purchaseassistant/utils/constants.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -11,13 +12,16 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   bool isSearch = false;
+  bool isDuration = true;
 
   @override
   void initState() {
+    super.initState();
     setState(() {
       isSearch = false;
     });
-    super.initState();
+
+    // print(isDuration);
   }
 
   @override
@@ -71,9 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           SizedBox(
             height: 10,
           ),
-          Expanded(
-            child: ShowPost(),
-          ),
+          Expanded(child: ShowPost())
         ],
       ),
     );
