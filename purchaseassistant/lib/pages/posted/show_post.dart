@@ -29,7 +29,7 @@ class _ShowPostState extends State<ShowPost> {
   int likeCount = 0;
   bool isLiked = false;
   String uid = "";
-  bool showPost = false;
+  bool? showPost;
 
   void saveComment(String docid, String comment, String uid) async {
     try {
@@ -61,8 +61,12 @@ class _ShowPostState extends State<ShowPost> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      showPost = true;
+    });
     uid = _auth.currentUser?.uid ?? '';
     someFunction(uid);
+    // isShowPost(isShowpost);
   }
 
   @override
@@ -70,91 +74,115 @@ class _ShowPostState extends State<ShowPost> {
     return StreamBuilder(
       stream: ServiceDeliver().streamPosts(),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
         if (snapshot.hasError) {
           return Center(
             child: Text(snapshot.error.toString()),
           );
         }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
-        final deliverDocs = snapshot.data!.docs;
-        if (deliverDocs.isEmpty) {
-          return Container(
-            child: Text("No data in collection"),
-          );
-        }
-        if (!snapshot.hasData) {
-          return Container(
-            child: Text("No data in collection"),
-          );
-        }
-        return ListView(
-          children: deliverDocs.map((doc) => _showContentPosted(doc)).toList(),
-        );
+        print("snapshot.data! :${snapshot.data!}");
+        return fetchData(snapshot.data!);
       },
     );
   }
 
-  Widget _showContentPosted(DocumentSnapshot document) {
-    CollectionReference coleectionRef =
-        document.reference.collection("Contents");
+  Widget fetchData(QuerySnapshot? snapshot) {
+    if (snapshot == null || snapshot.docs.isEmpty) {
+      return Container(
+        child: Text("No data in collection"),
+      );
+    }
 
-    return StreamBuilder(
-      stream: coleectionRef.snapshots(),
-      builder: (context, deliverSnapshot) {
-        if (deliverSnapshot.hasError) {
+    bool isShowpost = false; // Initialize isShowpost
+
+    // Create a list to store the widgets for each document
+    List<Widget> widgets = [];
+
+    // Use Future to fetch data outside FutureBuilder
+    Future<List<Widget>> fetchDataFuture() async {
+      for (DocumentSnapshot deliverDoc in snapshot.docs) {
+        if (deliverDoc == null || !deliverDoc.exists) {
+          continue; // Skip null or non-existing documents
+        }
+
+        String userid = deliverDoc.id;
+
+        // Use await to get the result of StreamBuilder
+        final contentSnapshot =
+            await deliverDoc.reference.collection("Contents").get();
+
+        if (contentSnapshot.docs.isNotEmpty) {
+          // Process each document in the collection
+          for (DocumentSnapshot contentDoc in contentSnapshot.docs) {
+            if (contentDoc == null || !contentDoc.exists) {
+              // Handle the case where a document is missing in the collection
+              print("Document missing in collection for deliverDoc: $userid");
+              // You may want to continue processing or take other actions
+              continue;
+            }
+
+            final Map<String, dynamic> deliverUser =
+                contentDoc.data() as Map<String, dynamic>;
+
+            String docid = contentDoc.id;
+            String name = deliverUser['name'];
+            String title = deliverUser['title'];
+            String imageLink = deliverUser['imageurl'];
+            Timestamp timestamp = deliverUser["date"];
+            String date = FormatDate.getdaytime(timestamp);
+            String time = FormatDate.date(deliverUser["date"]);
+            String duration = deliverUser['duration'];
+            String dayDuration = duration.split("วัน")[0];
+            final parseDate = DateTime.parse(time);
+
+            if (DateTime.now().difference(parseDate).inDays <=
+                int.parse(dayDuration)) {
+              // Add the widget to the list instead of returning it
+              widgets.add(_showProfileDetail(
+                userid: userid,
+                name: name,
+                imageLink: imageLink,
+                title: title,
+                date: date,
+                docid: docid,
+              ));
+            }
+          }
+        } else {
+          // Continue the loop if the collection is empty
+          print("No Collection for deliverDoc: $userid");
+        }
+      }
+
+      return widgets; // Return the list of widgets
+    }
+
+    return FutureBuilder(
+      // Use the Future returned by fetchDataFuture
+      future: fetchDataFuture(),
+      builder: (context, AsyncSnapshot<List<Widget>> snapshot) {
+        // Check if snapshot has data and is not null
+        if (snapshot == null || !snapshot.hasData) {
           return Center(
-            child: Text(deliverSnapshot.error.toString()),
+            child: Text("data is null"),
           );
         }
-        if (deliverSnapshot.connectionState == ConnectionState.waiting) {
+
+        // Filter out null values before returning the combined widgets
+        List<Widget> filteredWidgets =
+            snapshot.data?.whereType<Widget>().toList() ?? [];
+        if (filteredWidgets.isEmpty) {
+          // If no matching documents are found in the collection
           return Center(
-            child: CircularProgressIndicator(),
+            child: Text("No data"),
           );
         }
-        final deliveruserDocs = deliverSnapshot.data!.docs;
-        // final docLamght = deliveruserDocs.length;
-        if (deliverSnapshot.hasData && deliveruserDocs.isNotEmpty) {
-          return Column(
-            children: deliveruserDocs.map(
-              (deliverUserDoc) {
-                final Map<String, dynamic> deliverUser =
-                    deliverUserDoc.data() as Map<String, dynamic>;
 
-                String userid = document.id;
-                String docid = deliverUserDoc.id;
-                print(userid);
-                String name = deliverUser['name'];
-                String title = deliverUser['title'];
-                String imageLink = deliverUser['imageurl'];
-                Timestamp timestamp = deliverUser["date"];
-                String date = FormatDate.getdaytime(timestamp);
-                String time = FormatDate.date(timestamp);
-                String duration = deliverUser['duration'];
-                String dayDuration = duration.split("วัน")[0];
-                final parseDate = DateTime.parse(time);
-                print("dayDuration: ${dayDuration}");
-                final datediff = DateTime.now().difference(parseDate).inDays;
-                print("datediff: ${datediff + 1}");
-                if (DateTime.now().difference(parseDate).inDays <=
-                    int.parse(dayDuration)) {
-                  return _showProfileDetail(
-                    userid: userid,
-                    name: name,
-                    imageLink: imageLink,
-                    title: title,
-                    date: date,
-                    docid: docid,
-                  );
-                }
-
-                return Container();
-              },
-            ).toList(),
-          );
-        }
-        return Container();
+        // Return the combined widgets for all documents
+        return ListView(children: filteredWidgets);
       },
     );
   }
