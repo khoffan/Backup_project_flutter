@@ -41,7 +41,7 @@ class _ListUserchatState extends State<ListUserchat> {
 
   Widget _buildShowUser() {
     return StreamBuilder(
-      stream: _firestore.collection('Profile').snapshots(),
+      stream: _firestore.collection('chat_rooms').where("revice").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -62,91 +62,45 @@ class _ListUserchatState extends State<ListUserchat> {
 
   Widget _listUser(DocumentSnapshot docs) {
     Map<String, dynamic> data = docs.data() as Map<String, dynamic>;
-
-    return StreamBuilder(
-      stream: _firestore
-          .collection('chat_rooms')
-          .where('recivesid', isEqualTo: docs.id)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text("${snapshot.error}"),
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        final chatroomid = snapshot.data!.docs;
-
-        // Ensure data exists before accessing its properties
-        if (data.containsKey('imageLink') && data.containsKey('name')) {
-          return Card(
-            child: InkWell(
-              child: SizedBox(
-                width: 100,
-                height: 60,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 64,
-                      backgroundImage: NetworkImage(data["imageLink"]),
-                    ),
-                    Text(data['name']),
-                  ],
-                ),
+    String revicedId = data["reciveData"]["riderid"];
+    String senderid = data["senderData"]["cusid"];
+    String senderName = data["senderData"]["cusname"];
+    print("recivedid : $revicedId");
+    print("userid : $uid");
+    if (uid.trim() == revicedId.trim() && uid.trim() != senderid.trim()) {
+      return Card(
+        child: ListTile(
+          title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
+          subtitle: Text("ผู้รับ${data["reciveData"]["ridername"]}"),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    ChatScreen(reciveuid: senderid, name: senderName),
               ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        ChatScreen(reciveuid: docs.id, name: data['name']),
-                  ),
-                );
-              },
-            ),
-          );
-        } else {
-          // Handle the case where the data is missing or incomplete
-          return Container();
-        }
-      },
-    );
-  }
-
-  Widget _getUserChat() {
-    return StreamBuilder(
-      stream: _firestore.collection('chat_rooms').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        final chatDocs = snapshot.data!.docs;
-        if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: chatDocs.length,
-            itemBuilder: (context, index) {
-              final chatDoc = chatDocs[index];
-              print(chatDoc);
-            },
-          );
-        }
-        return Container();
-      },
-    );
-  }
-
-  Widget _ChatUserlist(DocumentSnapshot documents) {
-    Map<String, dynamic> data = documents.data() as Map<String, dynamic>;
-    print(documents.id);
+            );
+          },
+        ),
+      );
+    }
+    if (uid.trim() == senderid.trim()) {
+      return Card(
+        child: ListTile(
+          title: Text("ผู้รับ${data["reciveData"]["ridername"]}"),
+          subtitle: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    ChatScreen(reciveuid: revicedId, name: senderName),
+              ),
+            );
+          },
+        ),
+      );
+    }
     return Container();
   }
 }

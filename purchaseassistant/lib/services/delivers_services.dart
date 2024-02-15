@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/services/user_provider.dart';
+import 'package:purchaseassistant/utils/formatDate.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -28,7 +30,8 @@ class ServiceDeliver {
   Future<void> saveDeliverPosts(
       {required String uid,
       required String title,
-      required Uint8List file}) async {
+      required Uint8List file,
+      required String duration}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
           await ProfileService().getDataProfile(uid);
@@ -45,7 +48,7 @@ class ServiceDeliver {
         Timestamp timestamp = Timestamp.now();
 
         String imageurl = await uploadImagetoStorage('deliverImage', file);
-        await _firestore.collection('Posts').doc(uid).set({
+        await _firestore.collection('Posts').doc(uid).update({
           'status': status,
         });
 
@@ -56,7 +59,8 @@ class ServiceDeliver {
           'stdid': stdid,
           'imageurl': imageurl,
           'title': title,
-          'date': timestamp
+          'date': timestamp,
+          'duration': duration
         });
         print('save data success');
       }
@@ -79,9 +83,6 @@ class ServiceDeliver {
             getProfilesnapshot.data() as Map<String, dynamic>;
 
         bool? status = await getStatus(uid);
-        String name = data['name'] ?? '';
-        String lname = data['lname'] ?? '';
-        String stdid = data['stdid'] ?? '';
 
         Timestamp timestamp = Timestamp.now();
 
@@ -257,6 +258,63 @@ class ServiceDeliver {
       throw e.toString();
     }
     return null;
+  }
+
+  // Stream<bool> get durationStream => checkDurationController.stream;
+
+  Stream<bool> checkDurationDiff() async* {
+    StreamController<bool> checkDurationController = StreamController<bool>();
+    bool isDuration = true;
+    String docsnull = "null";
+    try {
+      CollectionReference postref = _firestore.collection("Posts");
+      QuerySnapshot postDocs = await postref.get();
+      for (QueryDocumentSnapshot postDocs in postDocs.docs) {
+        String postDocid = postDocs.id;
+        // print(postDocid);
+        CollectionReference contentRef =
+            postref.doc(postDocid).collection("Contents");
+
+        contentRef.snapshots().listen(
+          (QuerySnapshot contentDocs) {
+            for (QueryDocumentSnapshot contentDoc in contentDocs.docs) {
+              if (contentDocs.docs.isEmpty) {
+                checkDurationController.add(true);
+              } else {
+                Map<String, dynamic> data =
+                    contentDoc.data() as Map<String, dynamic>;
+                Timestamp date = data["date"];
+                String day = FormatDate.date(date);
+                final parseDate = DateTime.parse(day);
+                String duration = data['duration'] ?? "0วัน";
+                String dayDuration = duration.split("วัน")[0];
+
+                final datediff = DateTime.now().difference(parseDate).inDays;
+                if (DateTime.now().difference(parseDate).inDays <=
+                        int.parse(dayDuration) &&
+                    datediff <= 7) {
+                  isDuration = false;
+                  checkDurationController.add(isDuration);
+                  // return false;
+                }
+                checkDurationController.add(isDuration);
+              }
+
+              // return true;
+            }
+          },
+          onError: (dynamic error) {
+            checkDurationController.addError(error);
+          },
+          onDone: () {
+            print("get data success");
+          },
+        );
+        yield* checkDurationController.stream;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
   }
 
   Future<void> delateDeliver(String uid) async {

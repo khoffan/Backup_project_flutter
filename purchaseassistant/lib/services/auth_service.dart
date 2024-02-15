@@ -5,7 +5,6 @@ import 'package:purchaseassistant/services/delivers_services.dart';
 import 'package:purchaseassistant/services/profile_services.dart';
 
 import '../pages/auth/login_screen.dart';
-import 'user_provider.dart';
 
 class AuthServices {
   Future<UserCredential> SigninwithEmailandPassword(

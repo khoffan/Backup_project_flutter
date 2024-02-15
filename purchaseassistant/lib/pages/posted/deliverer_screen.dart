@@ -41,19 +41,21 @@ class _DelivererScreenState extends State<DelivererScreen> {
     print("ok");
   }
 
-  void saveData() async {
+  void saveData(String duration) async {
     try {
       String title = _txtControllerBody.text;
 
       if (amount > 50.00) {
-        ServiceDeliver()
-            .saveDeliverPosts(title: title, file: _image!, uid: uid);
+        ServiceDeliver().saveDeliverPosts(
+          title: title,
+          file: _image!,
+          uid: uid,
+          duration: duration,
+        );
         _txtControllerBody.clear();
         Navigator.pop(context);
-        print(amount);
       } else {
         Fluttertoast.showToast(msg: "กรุณาเติมเงิน");
-        print(amount);
       }
       print('success');
     } catch (e) {
@@ -61,14 +63,10 @@ class _DelivererScreenState extends State<DelivererScreen> {
     }
   }
 
-  List<double> getExchange(double dischange, double totalAmount) {
-    return [dischange, totalAmount];
-  }
-
   void exchangePost() async {
     try {
-      List<double> result = getExchange(dischange, amount);
-      print(result);
+      print("dischange: $dischange");
+      await ServiceWallet().setExchangeAmount(uid, dischange, amount);
     } catch (e) {
       throw e.toString();
     }
@@ -162,72 +160,44 @@ class _DelivererScreenState extends State<DelivererScreen> {
                   title: '1 วัน',
                   ckecked: isCheckedAday,
                   onChange: (value) {
-                    setState(() => isCheckedAday = value!);
-                    if (!isCheckedAday) {
-                      double disChange = 10.00;
-                      amount += disChange;
-                      print("incress amount: $amount");
-                      getExchange(disChange, amount);
-                    } else {
-                      double disChange = 10.00;
-                      amount -= disChange;
-                      print("decress amount: $amount");
-                      getExchange(disChange, amount);
-                    }
+                    setState(() {
+                      isCheckedAday = value!;
+                      double buy = 10.00;
+                      dischange = buy;
+                    });
                   },
                 ),
                 _checkedBox(
                   title: '3 วัน',
                   ckecked: isChecked3day,
                   onChange: (value) {
-                    setState(() => isChecked3day = value!);
-                    if (!isChecked3day) {
-                      double disChange = 15.00;
-                      amount += disChange;
-                      print("incress amount: $amount");
-                      getExchange(disChange, amount);
-                    } else {
-                      double disChange = 15.00;
-                      amount -= disChange;
-                      print("decress amount: $amount");
-                      getExchange(disChange, amount);
-                    }
+                    setState(() {
+                      isChecked3day = value!;
+                      double buy = 15.00;
+                      dischange = buy;
+                    });
                   },
                 ),
                 _checkedBox(
                   title: '5 วัน',
                   ckecked: isChecked5day,
                   onChange: (value) {
-                    setState(() => isChecked5day = value!);
-                    if (!isChecked5day) {
-                      double disChange = 20.00;
-                      amount += disChange;
-                      print("incress amount: $amount");
-                      getExchange(disChange, amount);
-                    } else {
-                      double disChange = 20.00;
-                      amount -= disChange;
-                      print("decress amount: $amount");
-                      getExchange(disChange, amount);
-                    }
+                    setState(() {
+                      isChecked5day = value!;
+                      double buy = 20.00;
+                      dischange = buy;
+                    });
                   },
                 ),
                 _checkedBox(
                   title: '7 วัน',
                   ckecked: isChecked7day,
                   onChange: (value) {
-                    setState(() => isChecked7day = value!);
-                    if (!isChecked7day) {
-                      double disChange = 25.00;
-                      amount += disChange;
-                      print("incress amount: $amount");
-                      getExchange(disChange, amount);
-                    } else {
-                      double disChange = 25.00;
-                      amount -= disChange;
-                      print("decress amount: $amount");
-                      getExchange(disChange, amount);
-                    }
+                    setState(() {
+                      isChecked7day = value!;
+                      double buy = 25.00;
+                      dischange = buy;
+                    });
                   },
                 ),
               ],
@@ -240,9 +210,16 @@ class _DelivererScreenState extends State<DelivererScreen> {
                   textStyle: const TextStyle(fontSize: 20),
                   foregroundColor: Colors.white,
                   backgroundColor: themeBg),
-              onPressed: () => {
-                if (_formKey.currentState!.validate())
-                  {saveData(), exchangePost()}
+              onPressed: () {
+                String dayDuration = "";
+                if (_formKey.currentState!.validate()) if (isCheckedAday)
+                  dayDuration = "1วัน";
+                if (isChecked3day) dayDuration = "3วัน";
+                if (isChecked5day) dayDuration = "5วัน";
+                if (isChecked7day) dayDuration = "7วัน";
+                saveData(dayDuration);
+
+                exchangePost();
               },
               child: Text(
                 'อัปโหลด',
@@ -263,7 +240,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
       children: [
         Checkbox(value: ckecked, onChanged: onChange),
         Text(
-          '${title}',
+          '$title',
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
       ],

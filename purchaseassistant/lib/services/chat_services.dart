@@ -64,7 +64,10 @@ class ChatServices extends ChangeNotifier {
               data["reciveData"]["riderid"] == recivedid) {
             return data.id;
           }
-          return data.id;
+          if (data["senderData"]["cusid"] == recivedid &&
+              data["reciveData"]["riderid"] == currid) {
+            return data.id;
+          }
         }
       }
       return "";
@@ -87,22 +90,38 @@ class ChatServices extends ChangeNotifier {
   }
 
   Future<void> setTrackingState(String roomId) async {
-    DocumentReference chatRoomRef =
-        _firestore.collection('chat_rooms').doc(roomId);
-    CollectionReference tracingRef = chatRoomRef.collection("tracking");
-    QuerySnapshot snapshot = await _firestore
-        .collection("chat_rooms")
-        .doc(roomId)
-        .collection("tracking")
-        .get();
-    final data = snapshot.docs.first;
-    if (snapshot.docs.isEmpty) {
-      chatRoomRef
-          .collection("tracking")
-          .add({"trackState": 0, "timeStamp": DateTime.now(), "active": 1});
+    try {
+      DocumentReference chatRoomRef =
+          _firestore.collection('chat_rooms').doc(roomId);
+      CollectionReference tracingRef = chatRoomRef.collection("tracking");
+
+      tracingRef
+          .doc(roomId)
+          .set({"trackState": 0, "timeStamp": DateTime.now(), "active": 1});
+    } catch (e) {
+      throw e.toString();
     }
-    print(snapshot.docs.isEmpty);
-    final docid = data.id;
-    final update = tracingRef.doc(docid).update({});
+  }
+
+  Future<void> updateTRackingState(String chatroomid, int state) async {
+    try {
+      DocumentReference chatRoomRef =
+          _firestore.collection('chat_rooms').doc(chatroomid);
+      CollectionReference tracingRef = chatRoomRef.collection("tracking");
+
+      tracingRef.doc(chatroomid).update(
+          {"trackState": state, "timeStamp": DateTime.now(), "active": 1});
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Stream<DocumentSnapshot> getTrackingState(String roomid) {
+    return _firestore
+        .collection('chat_rooms')
+        .doc(roomid)
+        .collection("tracking")
+        .doc(roomid)
+        .snapshots();
   }
 }

@@ -169,6 +169,7 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: IconButton(
             onPressed: () {
               closeChatState(otherid!);
+              Navigator.pop(context);
             },
             icon: const Icon(
               Icons.arrow_back,
@@ -190,7 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OrderTrackers(otherid: otherid),
+                    builder: (context) => OrderTrackers(chatroomid: chatroomid),
                   ),
                 );
                 print(chatroomid);
