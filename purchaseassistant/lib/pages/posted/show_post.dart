@@ -23,13 +23,18 @@ FirebaseAuth _auth = FirebaseAuth.instance;
 TextEditingController _commentController = TextEditingController();
 String imageProfileLink = "";
 
-class _ShowPostState extends State<ShowPost> {
+class _ShowPostState extends State<ShowPost>
+    with AutomaticKeepAliveClientMixin {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  GlobalKey<_ShowPostState> key = GlobalKey<_ShowPostState>();
   int likeCount = 0;
   bool isLiked = false;
+  bool isDataFetched = false;
   String uid = "";
   bool? showPost;
+  List<Widget> widgets = [];
 
   void saveComment(String docid, String comment, String uid) async {
     try {
@@ -70,57 +75,62 @@ class _ShowPostState extends State<ShowPost> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: ServiceDeliver().streamPosts(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+  bool get wantKeepAlive => true;
 
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(snapshot.error.toString()),
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
+      key: key,
+      body: StreamBuilder(
+        stream: ServiceDeliver().streamPosts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
+          if (!isDataFetched && widgets.isEmpty) {
+            // Call fetchData function only if data is not fetched
+            fetchData(snapshot.data!);
+            isDataFetched = true; // Set the flag to true once data is fetched
+          }
+          return KeyedSubtree(
+            key: key,
+            child: buildWidgetList(),
           );
-        }
-        print("snapshot.data! :${snapshot.data!}");
-        return fetchData(snapshot.data!);
-      },
+        },
+      ),
     );
   }
 
-  Widget fetchData(QuerySnapshot? snapshot) {
-    if (snapshot == null || snapshot.docs.isEmpty) {
-      return Container(
-        child: Text("No data in collection"),
-      );
-    }
+  Future<void> fetchData(QuerySnapshot snapshot) async {
+    // if (snapshot == null || snapshot.docs.isEmpty) {
+    //   setState(() {
+    //     widgets = []; // Reset the list if there's no data
+    //   });
+    //   return;
+    // }
 
-    bool isShowpost = false; // Initialize isShowpost
+    List<Widget> updatedWidgets = [];
 
-    // Create a list to store the widgets for each document
-    List<Widget> widgets = [];
+    // Use Future.forEach to iterate over the documents asynchronously
+    await Future.forEach(snapshot.docs, (DocumentSnapshot deliverDoc) async {
+      String userid = deliverDoc.id;
 
-    // Use Future to fetch data outside FutureBuilder
-    Future<List<Widget>> fetchDataFuture() async {
-      for (DocumentSnapshot deliverDoc in snapshot.docs) {
-        if (deliverDoc == null || !deliverDoc.exists) {
-          continue; // Skip null or non-existing documents
-        }
-
-        String userid = deliverDoc.id;
-
-        // Use await to get the result of StreamBuilder
-        final contentSnapshot =
-            await deliverDoc.reference.collection("Contents").get();
+      // Check if the "Contents" collection exists
+      final contentCollection = deliverDoc.reference.collection("Contents");
+      if (contentCollection != null) {
+        final contentSnapshot = await contentCollection.get();
 
         if (contentSnapshot.docs.isNotEmpty) {
-          // Process each document in the collection
+          // Process each document in the "Contents" collection
           for (DocumentSnapshot contentDoc in contentSnapshot.docs) {
             if (contentDoc == null || !contentDoc.exists) {
-              // Handle the case where a document is missing in the collection
-              print("Document missing in collection for deliverDoc: $userid");
-              // You may want to continue processing or take other actions
               continue;
             }
 
@@ -140,8 +150,7 @@ class _ShowPostState extends State<ShowPost> {
 
             if (DateTime.now().difference(parseDate).inDays <=
                 int.parse(dayDuration)) {
-              // Add the widget to the list instead of returning it
-              widgets.add(_showProfileDetail(
+              updatedWidgets.add(_showProfileDetail(
                 userid: userid,
                 name: name,
                 imageLink: imageLink,
@@ -149,43 +158,142 @@ class _ShowPostState extends State<ShowPost> {
                 date: date,
                 docid: docid,
               ));
+              if (isDataFetched == true) {
+                break;
+              }
             }
           }
-        } else {
-          // Continue the loop if the collection is empty
-          print("No Collection for deliverDoc: $userid");
         }
+      } else {
+        print("No Contents collection for deliverDoc: $userid");
       }
+    });
 
-      return widgets; // Return the list of widgets
+    // Update the state with the new list of widgets
+    setState(() {
+      widgets = updatedWidgets;
+    });
+
+    PageStorage.of(context)
+        .writeState(context, widgets, identifier: 'showpost_widget_key');
+  }
+
+  Widget buildWidgetList() {
+    List<Widget>? savedWidgets = PageStorage.of(context)
+        .readState(context, identifier: 'showpost_widget_key');
+
+    // Use savedWidgets or fallback to the original widgets list
+    List<Widget> displayWidgets = savedWidgets ?? widgets;
+    if (widgets.isEmpty) {
+      return Center(
+        child: Text("No data"),
+      );
     }
 
-    return FutureBuilder(
-      // Use the Future returned by fetchDataFuture
-      future: fetchDataFuture(),
-      builder: (context, AsyncSnapshot<List<Widget>> snapshot) {
-        // Check if snapshot has data and is not null
-        if (snapshot == null || !snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        // Filter out null values before returning the combined widgets
-        List<Widget> filteredWidgets =
-            snapshot.data?.whereType<Widget>().toList() ?? [];
-        if (filteredWidgets.isEmpty) {
-          // If no matching documents are found in the collection
-          return Center(
-            child: Text("No data"),
-          );
-        }
-
-        // Return the combined widgets for all documents
-        return ListView(children: filteredWidgets);
-      },
+    return ListView(
+      children: widgets,
     );
   }
+  // Widget fetchData(QuerySnapshot? snapshot) {
+  //   if (snapshot == null || snapshot.docs.isEmpty) {
+  //     setState(() {
+  //       print('first state');
+  //     });
+  //     return Container(
+  //       child: Text("No data in collection"),
+  //     );
+  //   }
+
+  //   bool isShowpost = false; // Initialize isShowpost
+
+  //   // Create a list to store the widgets for each document
+  //   List<Widget> widgets = [];
+
+  //   // Use Future to fetch data outside FutureBuilder
+  //   Future<List<Widget>> fetchDataFuture() async {
+  //     for (DocumentSnapshot deliverDoc in snapshot.docs) {
+  //       if (deliverDoc == null || !deliverDoc.exists) {
+  //         continue; // Skip null or non-existing documents
+  //       }
+
+  //       String userid = deliverDoc.id;
+
+  //       // Use await to get the result of StreamBuilder
+  //       final contentSnapshot =
+  //           await deliverDoc.reference.collection("Contents").get();
+
+  //       if (contentSnapshot.docs.isNotEmpty) {
+  //         // Process each document in the collection
+  //         for (DocumentSnapshot contentDoc in contentSnapshot.docs) {
+  //           if (contentDoc == null || !contentDoc.exists) {
+  //             // Handle the case where a document is missing in the collection
+  //             print("Document missing in collection for deliverDoc: $userid");
+  //             // You may want to continue processing or take other actions
+  //             continue;
+  //           }
+
+  //           final Map<String, dynamic> deliverUser =
+  //               contentDoc.data() as Map<String, dynamic>;
+
+  //           String docid = contentDoc.id;
+  //           String name = deliverUser['name'];
+  //           String title = deliverUser['title'];
+  //           String imageLink = deliverUser['imageurl'];
+  //           Timestamp timestamp = deliverUser["date"];
+  //           String date = FormatDate.getdaytime(timestamp);
+  //           String time = FormatDate.date(deliverUser["date"]);
+  //           String duration = deliverUser['duration'];
+  //           String dayDuration = duration.split("วัน")[0];
+  //           final parseDate = DateTime.parse(time);
+
+  //           if (DateTime.now().difference(parseDate).inDays <=
+  //               int.parse(dayDuration)) {
+  //             // Add the widget to the list instead of returning it
+  //             widgets.add(_showProfileDetail(
+  //               userid: userid,
+  //               name: name,
+  //               imageLink: imageLink,
+  //               title: title,
+  //               date: date,
+  //               docid: docid,
+  //             ));
+  //           }
+  //         }
+  //       } else {
+  //         // Continue the loop if the collection is empty
+  //         print("No Collection for deliverDoc: $userid");
+  //       }
+  //     }
+
+  //     return widgets; // Return the list of widgets
+  //   }
+
+  //   return FutureBuilder(
+  //     // Use the Future returned by fetchDataFuture
+  //     future: fetchDataFuture(),
+  //     builder: (context, AsyncSnapshot<List<Widget>> snapshot) {
+  //       // Check if snapshot has data and is not null
+  //       if (snapshot == null || !snapshot.hasData) {
+  //         return Center(
+  //           child: CircularProgressIndicator(),
+  //         );
+  //       }
+
+  //       // Filter out null values before returning the combined widgets
+  //       List<Widget> filteredWidgets =
+  //           snapshot.data?.whereType<Widget>().toList() ?? [];
+  //       if (filteredWidgets.isEmpty) {
+  //         // If no matching documents are found in the collection
+  //         return Center(
+  //           child: Text("No data"),
+  //         );
+  //       }
+
+  //       // Return the combined widgets for all documents
+  //       return ListView(children: filteredWidgets);
+  //     },
+  //   );
+  // }
 
   Widget _showProfileDetail({
     required String userid,

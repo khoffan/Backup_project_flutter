@@ -23,7 +23,8 @@ class _OrderTrackersState extends State<OrderTrackers> {
   String cusid = "";
   String chatroomid = "";
   bool isCustomer = false;
-  bool isRider = false;
+  bool isEnable = false;
+  bool isParted = false;
   late int checkState;
   List<int> showState = [1, 2, 3, 4, 5];
   int trackState = 0;
@@ -48,17 +49,15 @@ class _OrderTrackersState extends State<OrderTrackers> {
     if (uid == customerid) {
       setState(() {
         isCustomer = true;
-        isRider = false;
       });
       print("isCustomer: $isCustomer");
-      print("isRider: $isRider");
     } else {
-      setState(() {
-        isRider = true;
-        isCustomer = false;
-      });
-      print("isCustomer: $isCustomer");
-      print("isRider: $isRider");
+      // setState(() {
+      //   isEnable = true;
+      //   isCustomer = false;
+      // });
+      // print("isCustomer: $isCustomer");
+      // print("isRider: $isEnable");
     }
   }
 
@@ -97,31 +96,13 @@ class _OrderTrackersState extends State<OrderTrackers> {
           ),
         ),
         actions: [
-          isCustomer == true
-              ? Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: Text("เพิ่มสถานะ  "),
-                    style: ElevatedButton.styleFrom(
-                      onPrimary: Colors.green[800],
-                      backgroundColor: Colors.green[200],
-                    ),
-                  ),
-                )
-              : Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ElevatedButton(
-                    onPressed: null,
-                    child: Text("เพิ่มสถานะ  "),
-                    style: ElevatedButton.styleFrom(
-                      onPrimary: Colors.green[800],
-                      backgroundColor: Colors.green[200],
-                    ),
-                  ),
-                ),
+          buildButton(context, isCustomer, () {
+            setState(() {
+              isParted = !isParted;
+              isCustomer = false;
+            });
+            print("isCustomer: $isCustomer");
+          }),
         ],
       ),
       body: Padding(
@@ -137,19 +118,19 @@ class _OrderTrackersState extends State<OrderTrackers> {
             MyTimelineTile(
               isFirst: true,
               isLast: false,
-              isPart: true,
-              eventCard: Text("order data"),
+              isPart: isParted,
+              eventCard: Text("จ่ายเงินสำเร็จ"),
             ),
             MyTimelineTile(
               isFirst: false,
               isLast: false,
-              isPart: true,
+              isPart: isParted,
               eventCard: Text("order data 2"),
             ),
             MyTimelineTile(
               isFirst: false,
               isLast: true,
-              isPart: false,
+              isPart: isParted,
               eventCard: Text("order data 3"),
             ),
           ],
@@ -157,4 +138,19 @@ class _OrderTrackersState extends State<OrderTrackers> {
       ),
     );
   }
+}
+
+Widget buildButton(
+    BuildContext context, bool isEnable, VoidCallback onpressed) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+    child: ElevatedButton(
+      onPressed: isEnable ? onpressed : null,
+      child: Text("เพิ่มสถานะ  "),
+      style: ElevatedButton.styleFrom(
+        onPrimary: Colors.green[800],
+        backgroundColor: Colors.green[200],
+      ),
+    ),
+  );
 }

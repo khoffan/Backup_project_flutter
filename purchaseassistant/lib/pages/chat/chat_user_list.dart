@@ -41,7 +41,7 @@ class _ListUserchatState extends State<ListUserchat> {
 
   Widget _buildShowUser() {
     return StreamBuilder(
-      stream: _firestore.collection('chat_rooms').where("revice").snapshots(),
+      stream: _firestore.collection('chat_rooms').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -65,13 +65,13 @@ class _ListUserchatState extends State<ListUserchat> {
     String revicedId = data["reciveData"]["riderid"];
     String senderid = data["senderData"]["cusid"];
     String senderName = data["senderData"]["cusname"];
-    print("recivedid : $revicedId");
-    print("userid : $uid");
+
     if (uid.trim() == revicedId.trim() && uid.trim() != senderid.trim()) {
       return Card(
         child: ListTile(
           title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
           subtitle: Text("ผู้รับ${data["reciveData"]["ridername"]}"),
+          trailing: Text("${data[""]}"),
           onTap: () {
             Navigator.push(
               context,
