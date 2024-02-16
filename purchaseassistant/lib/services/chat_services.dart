@@ -45,10 +45,8 @@ class ChatServices extends ChangeNotifier {
       List<String> ids = [currentid, recivesid];
       ids.sort();
       String chat_roomid = ids.join("_");
-      await _firestore
-          .collection('chat_rooms')
-          .doc(chat_roomid)
-          .set({"senderData": cusdata, "reciveData": riderdata});
+      await _firestore.collection('chat_rooms').doc(chat_roomid).set(
+          {"senderData": cusdata, "reciveData": riderdata, "location": ""});
     } catch (e) {
       throw e.toString();
     }

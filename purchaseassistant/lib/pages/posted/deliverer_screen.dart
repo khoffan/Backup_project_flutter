@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,22 +27,26 @@ class _DelivererScreenState extends State<DelivererScreen> {
   double amount = 0.00;
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = '';
-  Uint8List? _image;
+
   double dischange = 0.00;
   bool isCheckedAday = false;
   bool isChecked3day = false;
   bool isChecked5day = false;
   bool isChecked7day = false;
 
-  void selecImage() async {
-    Uint8List img = await pickerImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
-    if (img == '') {
-      print("no ok");
+  String? _image;
+  void selectImage() async {
+    final picker = ImagePicker();
+    final pickImageURL = await picker.pickImage(source: ImageSource.gallery);
+    if (pickImageURL != null) {
+      final img = File(pickImageURL.path);
+
+      final imgurl =
+          await ServiceDeliver().uploadImagetoStorage('deliverImage', img);
+      setState(() {
+        _image = imgurl;
+      });
     }
-    print("ok");
   }
 
   void saveData(String duration) async {
@@ -51,7 +56,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
       if (amount > 50.00) {
         ServiceDeliver().saveDeliverPosts(
           title: title,
-          file: _image!,
+          imageurl: _image!,
           uid: uid,
           duration: duration,
         );
@@ -146,12 +151,12 @@ class _DelivererScreenState extends State<DelivererScreen> {
                         color: Colors.black38,
                       ),
                       onPressed: () {
-                        selecImage();
+                        selectImage();
                       },
                     ),
                   ),
                   decoration: BoxDecoration(
-                      image: DecorationImage(image: MemoryImage(_image!))))
+                      image: DecorationImage(image: NetworkImage(_image!))))
               : Container(
                   width: MediaQuery.of(context).size.width,
                   height: 200,
@@ -163,7 +168,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
                         color: Colors.black38,
                       ),
                       onPressed: () {
-                        selecImage();
+                        selectImage();
                       },
                     ),
                   )),

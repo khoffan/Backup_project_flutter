@@ -14,7 +14,7 @@ class ServiceWallet {
 
       StreamController<double> controller = StreamController<double>();
 
-      subCollection.orderBy("totalAmount", descending: true).snapshots().listen(
+      subCollection.orderBy("timeStamp", descending: true).snapshots().listen(
         (QuerySnapshot subData) {
           if (subData.docs.isNotEmpty) {
             final data = subData.docs.first.data() as Map<String, dynamic>;

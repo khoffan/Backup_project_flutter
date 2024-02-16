@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,11 +14,11 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseStorage _storage = FirebaseStorage.instance;
 
 class ServiceDeliver {
-  Future<String> uploadImagetoStorage(String name, Uint8List file) async {
+  Future<String> uploadImagetoStorage(String name, File file) async {
     try {
       Reference ref =
           _storage.ref().child(name).child(DateTime.now().toString());
-      UploadTask uploadTask = ref.putData(file);
+      UploadTask uploadTask = ref.putFile(file);
       TaskSnapshot snapshot = await uploadTask;
       String downloadURL = await snapshot.ref.getDownloadURL();
       return downloadURL;
@@ -30,7 +31,7 @@ class ServiceDeliver {
   Future<void> saveDeliverPosts(
       {required String uid,
       required String title,
-      required Uint8List file,
+      required String imageurl,
       required String duration}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
@@ -47,22 +48,25 @@ class ServiceDeliver {
 
         Timestamp timestamp = Timestamp.now();
 
-        String imageurl = await uploadImagetoStorage('deliverImage', file);
-        await _firestore.collection('Posts').doc(uid).update({
-          'status': status,
-        });
+        if (imageurl != "") {
+          await _firestore.collection('Posts').doc(uid).update({
+            'status': status,
+          });
 
-        final deliverRef = _firestore.collection('Posts').doc(uid);
-        await deliverRef.collection('Contents').add({
-          'name': name,
-          'lastname': lname,
-          'stdid': stdid,
-          'imageurl': imageurl,
-          'title': title,
-          'date': timestamp,
-          'duration': duration
-        });
-        print('save data success');
+          final deliverRef = _firestore.collection('Posts').doc(uid);
+          await deliverRef.collection('Contents').add({
+            'name': name,
+            'lastname': lname,
+            'stdid': stdid,
+            'imageurl': imageurl,
+            'title': title,
+            'date': timestamp,
+            'duration': duration
+          });
+          print('save data success');
+        } else {
+          print("imageurl is null");
+        }
       }
     } catch (e) {
       throw e.toString();
@@ -73,31 +77,20 @@ class ServiceDeliver {
       {required String uid,
       required String Docid,
       required String title,
-      required Uint8List file}) async {
+      required String file}) async {
     try {
-      DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
-          await ProfileService().getDataProfile(uid);
+      bool? status = await getStatus(uid);
 
-      if (getProfilesnapshot.exists) {
-        Map<String, dynamic> data =
-            getProfilesnapshot.data() as Map<String, dynamic>;
+      await _firestore.collection('Posts').doc(uid).set({
+        'status': status,
+      });
 
-        bool? status = await getStatus(uid);
-
-        Timestamp timestamp = Timestamp.now();
-
-        String imageurl = await uploadImagetoStorage('deliverImage', file);
-        await _firestore.collection('Posts').doc(uid).set({
-          'status': status,
-        });
-
-        final deliverRef = _firestore.collection('Posts').doc(uid);
-        await deliverRef
-            .collection('Contents')
-            .doc(Docid)
-            .update({'imageurl': imageurl, 'title': title, 'date': timestamp});
-        print('save data success');
-      }
+      final deliverRef = _firestore.collection('Posts').doc(uid);
+      await deliverRef
+          .collection('Contents')
+          .doc(Docid)
+          .update({'imageurl': file, 'title': title});
+      print('save data success');
     } catch (e) {
       throw e.toString();
     }
