@@ -76,6 +76,38 @@ class ChatServices extends ChangeNotifier {
     }
   }
 
+  Future<String> getRiderChatroomid(String chatroomid) async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection("chat_rooms").doc(chatroomid).get();
+      if (snapshot.exists) {
+        final Map<String, dynamic> data =
+            snapshot.data() as Map<String, dynamic>;
+        return data["reciveData"]["riderid"];
+      }
+
+      return "";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<String> getCustomerChatroomid(String chatroomid) async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection("chat_rooms").doc(chatroomid).get();
+      if (snapshot.exists) {
+        final Map<String, dynamic> data =
+            snapshot.data() as Map<String, dynamic>;
+        return data["senderData"]["cusid"];
+      }
+
+      return "";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   Stream<QuerySnapshot> getMessage(String userid, String otherid) {
     List<String> ids = [userid, otherid];
     ids.sort();

@@ -83,12 +83,12 @@ class _ListUserchatState extends State<ListUserchat> {
           },
         ),
       );
-    }
-    if (uid.trim() == senderid.trim()) {
+    } else if (uid.trim() != revicedId.trim() &&
+        uid.trim() == senderid.trim()) {
       return Card(
         child: ListTile(
-          title: Text("ผู้รับ${data["reciveData"]["ridername"]}"),
-          subtitle: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
+          title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
+          subtitle: Text("ผู้รับ${data["reciveData"]["ridername"]}"),
           onTap: () {
             Navigator.push(
               context,
@@ -101,6 +101,7 @@ class _ListUserchatState extends State<ListUserchat> {
         ),
       );
     }
+
     return Container();
   }
 }

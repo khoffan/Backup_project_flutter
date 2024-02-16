@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:order_tracker_zen/order_tracker_zen.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import 'package:purchaseassistant/utils/my_timeline_tile.dart';
@@ -20,23 +19,62 @@ class _OrderTrackersState extends State<OrderTrackers> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   String uid = "";
-  String currid = "";
+  String riderid = "";
+  String cusid = "";
   String chatroomid = "";
+  bool isCustomer = false;
+  bool isRider = false;
   late int checkState;
   List<int> showState = [1, 2, 3, 4, 5];
   int trackState = 0;
   Timestamp timeState = Timestamp.now();
   Color c1 = Colors.red;
 
+  void getrideridfromChatroom(Function checkCustomer) async {
+    String riderid = await ChatServices().getRiderChatroomid(chatroomid);
+    String cusid = await ChatServices().getCustomerChatroomid(chatroomid);
+    print(riderid);
+    print(cusid);
+    setState(() {
+      riderid = riderid;
+      cusid = cusid;
+    });
+    print(riderid);
+    print(cusid);
+    checkCustomer(cusid);
+  }
+
+  void checkCustomer(String customerid) {
+    if (uid == customerid) {
+      setState(() {
+        isCustomer = true;
+        isRider = false;
+      });
+      print("isCustomer: $isCustomer");
+      print("isRider: $isRider");
+    } else {
+      setState(() {
+        isRider = true;
+        isCustomer = false;
+      });
+      print("isCustomer: $isCustomer");
+      print("isRider: $isRider");
+    }
+  }
+
   @override
   void initState() {
+    super.initState();
     checkState = 0;
     uid = _auth.currentUser!.uid;
     chatroomid = widget.chatroomid ?? '';
     ChatServices().setTrackingState(chatroomid);
+    getrideridfromChatroom(checkCustomer);
     print("chatroomid: $chatroomid");
     print(uid);
-    super.initState();
+
+    print(riderid);
+    print(cusid);
   }
 
   @override
@@ -59,17 +97,31 @@ class _OrderTrackersState extends State<OrderTrackers> {
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-            child: ElevatedButton(
-              onPressed: () {},
-              child: Text("เพิ่มสถานะ  "),
-              style: ElevatedButton.styleFrom(
-                onPrimary: Colors.green[800],
-                backgroundColor: Colors.green[200],
-              ),
-            ),
-          ),
+          isCustomer == true
+              ? Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    child: Text("เพิ่มสถานะ  "),
+                    style: ElevatedButton.styleFrom(
+                      onPrimary: Colors.green[800],
+                      backgroundColor: Colors.green[200],
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  child: ElevatedButton(
+                    onPressed: null,
+                    child: Text("เพิ่มสถานะ  "),
+                    style: ElevatedButton.styleFrom(
+                      onPrimary: Colors.green[800],
+                      backgroundColor: Colors.green[200],
+                    ),
+                  ),
+                ),
         ],
       ),
       body: Padding(
