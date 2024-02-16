@@ -167,7 +167,7 @@ class _ShowPostState extends State<ShowPost> {
         // Check if snapshot has data and is not null
         if (snapshot == null || !snapshot.hasData) {
           return Center(
-            child: Text("data is null"),
+            child: CircularProgressIndicator(),
           );
         }
 

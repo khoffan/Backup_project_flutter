@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,7 +22,8 @@ class DelivererScreen extends StatefulWidget {
 class _DelivererScreenState extends State<DelivererScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _txtControllerBody = TextEditingController();
-  double amount = 300.00;
+  late StreamSubscription<double> subscription;
+  double amount = 0.00;
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = '';
   Uint8List? _image;
@@ -30,6 +32,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
   bool isChecked3day = false;
   bool isChecked5day = false;
   bool isChecked7day = false;
+
   void selecImage() async {
     Uint8List img = await pickerImage(ImageSource.gallery);
     setState(() {
@@ -63,6 +66,36 @@ class _DelivererScreenState extends State<DelivererScreen> {
     }
   }
 
+  getAmount(BuildContext context, String uid) {
+    try {
+      if (uid != "") {
+        subscription = ServiceWallet().getTotalAmount(uid).listen(
+          (double totalAmount) {
+            if (totalAmount == 0.00) {
+              // Future.delayed(Duration(seconds: 1), () {
+              //   alertNOtAmout(context);
+              // });
+            }
+            setState(() {
+              amount = totalAmount;
+            });
+            print('Total Amount: $totalAmount');
+          },
+          onError: (dynamic error) {
+            // Handle errors
+            print('Error: $error');
+          },
+          onDone: () {
+            // Handle when the stream is closed
+            print('Stream is closed');
+          },
+        );
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   void exchangePost() async {
     try {
       print("dischange: $dischange");
@@ -76,6 +109,8 @@ class _DelivererScreenState extends State<DelivererScreen> {
   void initState() {
     super.initState();
     uid = _auth.currentUser?.uid ?? '';
+    getAmount(context, uid);
+    print(amount);
   }
 
   @override

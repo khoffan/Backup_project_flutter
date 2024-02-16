@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:order_tracker_zen/order_tracker_zen.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
+import 'package:purchaseassistant/utils/my_timeline_tile.dart';
 
 class OrderTrackers extends StatefulWidget {
   OrderTrackers({Key? key, this.chatroomid}) : super(key: key);
@@ -40,157 +41,68 @@ class _OrderTrackersState extends State<OrderTrackers> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: ChatServices().getTrackingState(chatroomid),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (!snapshot.hasData) {
-            return const Center(
-              child: Text("No Data"),
-            );
-          }
-
-          final checkStatedata = snapshot.data!.data() as Map<String, dynamic>;
-
-          if (checkStatedata != null) {
-            int data = checkStatedata['trackState'];
-            print("checkState: $data");
-          }
-
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text(
-                "ติดตามสถานะคำสั่งซื้อ",
-                style: TextStyle(color: Colors.black, fontSize: 18),
-              ),
-              backgroundColor: themeBg,
-              leading: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                  )),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        trackState += 1;
-                      });
-                      ChatServices()
-                          .updateTRackingState(chatroomid, trackState);
-                    },
-                    child: Text(
-                      'อัพเดทสถานะ',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusDirectional.circular(20)),
-                        backgroundColor: Colors.white38),
-                  ),
-                )
-              ],
-            ),
-            body: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Add padding around the OrderTrackersZen widget for better presentation.
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                    // OrderTrackerZen is the main widget of the package which displays the order tracking information.
-                    child: OrderTrackerZen(
-                      text_primary_color: Colors.black,
-                      success_color: Colors.cyan,
-                      isShrinked: false,
-                      screen_background_color: themeBg,
-                      // Provide an array of TrackerData objects to display the order tracking information.
-                      tracker_data: [
-                        // TrackerData represents a single step in the order tracking process.
-
-                        TrackerData(
-                          title: "รอลูกค้าชำระเงินค่าธรรมเนียม",
-                          date: "Sat, 8 Apr '22",
-                          tracker_details: [
-                            showState[0] <= checkState
-                                ? TrackerDetails(
-                                    title: "ลูกค้าชำระค่าธรรมสำเร็จ",
-                                    datetime: "Sat, 8 Apr '22 - 17:17",
-                                  )
-                                : TrackerDetails(title: '', datetime: ''),
-                          ],
-                        ),
-                        // yet another TrackerData object
-                        showState[1] <= checkState
-                            ? TrackerData(
-                                title: "กำลังดำเนินการตามข้อตกลง",
-                                date: "Sat, 8 Apr '22",
-                                tracker_details: [
-                                  showState[2] <= checkState
-                                      ? TrackerDetails(
-                                          title: "ดำนเนินสำเร็จ",
-                                          datetime: "Sat, 8 Apr '22 - 17:50",
-                                        )
-                                      : TrackerDetails(title: '', datetime: ''),
-                                ],
-                              )
-                            : TrackerData(
-                                title: '',
-                                date: '',
-                                tracker_details: [
-                                    // TrackerDetails(title: '', datetime: '')
-                                  ]),
-                        showState[3] <= checkState
-                            ? // And yet another TrackerData object
-                            TrackerData(
-                                title: "กำลังจัดส่ง",
-                                date: "Sat,8 Apr '22",
-                                tracker_details: [
-                                  TrackerDetails(
-                                    title:
-                                        "กรุณาเตรียมเงินชำระค่าสินค้าให้พร้อม",
-                                    datetime: "Sat, 8 Apr '22 - 17:51",
-                                  ),
-                                ],
-                              )
-                            : TrackerData(
-                                title: '',
-                                date: '',
-                                tracker_details: [
-                                    // TrackerDetails(title: '', datetime: '')
-                                  ]),
-                        showState[4] <= checkState
-                            ? TrackerData(
-                                title: "จัดส่งสำเร็จ",
-                                date: "now",
-                                tracker_details: [
-                                  TrackerDetails(title: '', datetime: '')
-                                ],
-                              )
-                            : TrackerData(
-                                title: '',
-                                date: '',
-                                tracker_details: [
-                                    // TrackerDetails(title: '', datetime: '')
-                                  ]),
-                      ],
-                    ),
-                  ),
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "ติดตามการสั่งซื้อ",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        automaticallyImplyLeading: false,
+        backgroundColor: themeBg,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+            child: ElevatedButton(
+              onPressed: () {},
+              child: Text("เพิ่มสถานะ  "),
+              style: ElevatedButton.styleFrom(
+                onPrimary: Colors.green[800],
+                backgroundColor: Colors.green[200],
               ),
             ),
-          );
-        });
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView(
+          children: [
+            Center(
+              child: Text(
+                "ติดตามการสั่งซื้อ",
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+            MyTimelineTile(
+              isFirst: true,
+              isLast: false,
+              isPart: true,
+              eventCard: Text("order data"),
+            ),
+            MyTimelineTile(
+              isFirst: false,
+              isLast: false,
+              isPart: true,
+              eventCard: Text("order data 2"),
+            ),
+            MyTimelineTile(
+              isFirst: false,
+              isLast: true,
+              isPart: false,
+              eventCard: Text("order data 3"),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
