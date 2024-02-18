@@ -107,7 +107,7 @@ class ServiceDeliver {
         DocumentSnapshot<Map<String, dynamic>> getProfilesnapshot =
             await _firestore.collection('Profile').doc(uid).get();
         bool? loginstatus = await UserLogin.getLogin();
-        String? getWork = await getWorkingsts(uid);
+        // String? getWork = await getWorkingsts(uid);
 
         DocumentSnapshot<Map<String, dynamic>> getLocateioninPost =
             await _firestore.collection("Posts").doc(uid).get();
@@ -252,8 +252,6 @@ class ServiceDeliver {
     }
     return null;
   }
-
-  // Stream<bool> get durationStream => checkDurationController.stream;
 
   Stream<bool> checkDurationDiff() async* {
     StreamController<bool> checkDurationController = StreamController<bool>();

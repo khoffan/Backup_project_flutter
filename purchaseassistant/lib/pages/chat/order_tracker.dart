@@ -22,8 +22,9 @@ class _OrderTrackersState extends State<OrderTrackers> {
   String riderid = "";
   String cusid = "";
   String chatroomid = "";
-  bool isCustomer = false;
+  bool? isCustomer;
   bool isEnable = false;
+  bool? isRider;
   bool isParted = false;
   late int checkState;
   List<int> showState = [1, 2, 3, 4, 5];
@@ -45,20 +46,35 @@ class _OrderTrackersState extends State<OrderTrackers> {
     checkCustomer(cusid);
   }
 
-  void checkCustomer(String customerid) {
+  void checkCustomer(String customerid) async {
     if (uid == customerid) {
       setState(() {
         isCustomer = true;
       });
       print("isCustomer: $isCustomer");
+      print("isRider: $isRider");
     } else {
-      // setState(() {
-      //   isEnable = true;
-      //   isCustomer = false;
-      // });
-      // print("isCustomer: $isCustomer");
-      // print("isRider: $isEnable");
+      setState(() {
+        isRider = true;
+      });
+      print("isCustomer: $isCustomer");
+      print("isRider: $isRider");
+      print("isEnable: $isEnable");
     }
+    await Future.delayed(Duration(seconds: 1));
+    setState(() {
+      // if (isCustomer == true && isRider == false) {
+      //   isEnable = true;
+      // } else {
+      //   isEnable = false;
+      // }
+      // if (isRider == true && isCustomer == true) {
+      //   isEnable = false;
+      //   print("isEnable: $isEnable");
+      // } else {
+      //   isEnable = false;
+      // }
+    });
   }
 
   @override
@@ -96,12 +112,14 @@ class _OrderTrackersState extends State<OrderTrackers> {
           ),
         ),
         actions: [
-          buildButton(context, isCustomer, () {
+          buildButton(context,
+              isEnable == false ? isCustomer ?? false : isRider ?? false, () {
             setState(() {
               isParted = !isParted;
-              isCustomer = false;
+              isEnable = true;
+
+              print("isEnable: $isEnable");
             });
-            print("isCustomer: $isCustomer");
           }),
         ],
       ),
@@ -120,6 +138,18 @@ class _OrderTrackersState extends State<OrderTrackers> {
               isLast: false,
               isPart: isParted,
               eventCard: Text("จ่ายเงินสำเร็จ"),
+            ),
+            MyTimelineTile(
+              isFirst: false,
+              isLast: false,
+              isPart: isParted,
+              eventCard: Text("order data 2"),
+            ),
+            MyTimelineTile(
+              isFirst: false,
+              isLast: false,
+              isPart: isParted,
+              eventCard: Text("order data 2"),
             ),
             MyTimelineTile(
               isFirst: false,

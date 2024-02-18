@@ -143,35 +143,30 @@ class _DelivererScreenState extends State<DelivererScreen> {
               ? Container(
                   width: MediaQuery.of(context).size.width,
                   height: 200,
-                  child: Center(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.image,
-                        size: 50,
-                        color: Colors.black38,
-                      ),
-                      onPressed: () {
-                        selectImage();
-                      },
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(_image!),
                     ),
                   ),
-                  decoration: BoxDecoration(
-                      image: DecorationImage(image: NetworkImage(_image!))))
+                )
               : Container(
                   width: MediaQuery.of(context).size.width,
                   height: 200,
                   child: Center(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.image,
-                        size: 50,
-                        color: Colors.black38,
+                    child: Container(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.image,
+                          size: 50,
+                          color: Colors.black38,
+                        ),
+                        onPressed: () {
+                          selectImage();
+                        },
                       ),
-                      onPressed: () {
-                        selectImage();
-                      },
                     ),
-                  )),
+                  ),
+                ),
           Form(
             key: _formKey,
             child: Padding(

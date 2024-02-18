@@ -7,7 +7,7 @@ class MyTimelineTile extends StatelessWidget {
   final bool isLast;
   final bool isPart;
   final eventCard;
-  const MyTimelineTile(
+  MyTimelineTile(
       {super.key,
       required this.isFirst,
       required this.isLast,
@@ -17,7 +17,7 @@ class MyTimelineTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 150,
+      height: 100,
       child: TimelineTile(
         isFirst: isFirst,
         isLast: isLast,
@@ -25,7 +25,8 @@ class MyTimelineTile extends StatelessWidget {
           color: isPart ? Colors.green : Colors.grey,
           width: 30,
           iconStyle: IconStyle(
-              iconData: Icons.done, color: isPart ? Colors.green : Colors.grey),
+              iconData: Icons.done,
+              color: isPart ? Colors.white : Colors.black),
         ),
         beforeLineStyle: LineStyle(color: isPart ? Colors.green : Colors.grey),
         endChild: EventCards(
