@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,24 +23,30 @@ class DelivererScreen extends StatefulWidget {
 class _DelivererScreenState extends State<DelivererScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _txtControllerBody = TextEditingController();
-  double amount = 300.00;
+  late StreamSubscription<double> subscription;
+  double amount = 0.00;
   FirebaseAuth _auth = FirebaseAuth.instance;
   String uid = '';
-  Uint8List? _image;
+
   double dischange = 0.00;
   bool isCheckedAday = false;
   bool isChecked3day = false;
   bool isChecked5day = false;
   bool isChecked7day = false;
-  void selecImage() async {
-    Uint8List img = await pickerImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
-    if (img == '') {
-      print("no ok");
+
+  String? _image;
+  void selectImage() async {
+    final picker = ImagePicker();
+    final pickImageURL = await picker.pickImage(source: ImageSource.gallery);
+    if (pickImageURL != null) {
+      final img = File(pickImageURL.path);
+
+      final imgurl =
+          await ServiceDeliver().uploadImagetoStorage('deliverImage', img);
+      setState(() {
+        _image = imgurl;
+      });
     }
-    print("ok");
   }
 
   void saveData(String duration) async {
@@ -48,7 +56,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
       if (amount > 50.00) {
         ServiceDeliver().saveDeliverPosts(
           title: title,
-          file: _image!,
+          imageurl: _image!,
           uid: uid,
           duration: duration,
         );
@@ -58,6 +66,36 @@ class _DelivererScreenState extends State<DelivererScreen> {
         Fluttertoast.showToast(msg: "กรุณาเติมเงิน");
       }
       print('success');
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  getAmount(BuildContext context, String uid) {
+    try {
+      if (uid != "") {
+        subscription = ServiceWallet().getTotalAmount(uid).listen(
+          (double totalAmount) {
+            if (totalAmount == 0.00) {
+              // Future.delayed(Duration(seconds: 1), () {
+              //   alertNOtAmout(context);
+              // });
+            }
+            setState(() {
+              amount = totalAmount;
+            });
+            print('Total Amount: $totalAmount');
+          },
+          onError: (dynamic error) {
+            // Handle errors
+            print('Error: $error');
+          },
+          onDone: () {
+            // Handle when the stream is closed
+            print('Stream is closed');
+          },
+        );
+      }
     } catch (e) {
       throw e.toString();
     }
@@ -76,6 +114,8 @@ class _DelivererScreenState extends State<DelivererScreen> {
   void initState() {
     super.initState();
     uid = _auth.currentUser?.uid ?? '';
+    getAmount(context, uid);
+    print(amount);
   }
 
   @override
@@ -103,35 +143,30 @@ class _DelivererScreenState extends State<DelivererScreen> {
               ? Container(
                   width: MediaQuery.of(context).size.width,
                   height: 200,
-                  child: Center(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.image,
-                        size: 50,
-                        color: Colors.black38,
-                      ),
-                      onPressed: () {
-                        selecImage();
-                      },
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(_image!),
                     ),
                   ),
-                  decoration: BoxDecoration(
-                      image: DecorationImage(image: MemoryImage(_image!))))
+                )
               : Container(
                   width: MediaQuery.of(context).size.width,
                   height: 200,
                   child: Center(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.image,
-                        size: 50,
-                        color: Colors.black38,
+                    child: Container(
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.image,
+                          size: 50,
+                          color: Colors.black38,
+                        ),
+                        onPressed: () {
+                          selectImage();
+                        },
                       ),
-                      onPressed: () {
-                        selecImage();
-                      },
                     ),
-                  )),
+                  ),
+                ),
           Form(
             key: _formKey,
             child: Padding(

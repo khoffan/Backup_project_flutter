@@ -41,10 +41,23 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     try {
       await ServiceDeliver().removeDeliverer(uid: uid, docid: docid).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Content updated successfully')));
+          SnackBar(
+            content: Text(
+              'ลบ Posted สำเร็จแล้ว',
+              style: TextStyle(fontSize: 16, color: Colors.black),
+            ),
+            backgroundColor: Colors.green,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+          ),
+        );
       }).catchError((error) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error updating content')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('ไม่สามารถลบ Posted ได้',
+                style: TextStyle(fontSize: 16, color: Colors.black)),
+            backgroundColor: Colors.red,
+          ),
+        );
       });
     } catch (e) {
       throw e.toString();

@@ -45,10 +45,8 @@ class ChatServices extends ChangeNotifier {
       List<String> ids = [currentid, recivesid];
       ids.sort();
       String chat_roomid = ids.join("_");
-      await _firestore
-          .collection('chat_rooms')
-          .doc(chat_roomid)
-          .set({"senderData": cusdata, "reciveData": riderdata});
+      await _firestore.collection('chat_rooms').doc(chat_roomid).set(
+          {"senderData": cusdata, "reciveData": riderdata, "location": ""});
     } catch (e) {
       throw e.toString();
     }
@@ -76,6 +74,38 @@ class ChatServices extends ChangeNotifier {
     }
   }
 
+  Future<String> getRiderChatroomid(String chatroomid) async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection("chat_rooms").doc(chatroomid).get();
+      if (snapshot.exists) {
+        final Map<String, dynamic> data =
+            snapshot.data() as Map<String, dynamic>;
+        return data["reciveData"]["riderid"];
+      }
+
+      return "";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<String> getCustomerChatroomid(String chatroomid) async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection("chat_rooms").doc(chatroomid).get();
+      if (snapshot.exists) {
+        final Map<String, dynamic> data =
+            snapshot.data() as Map<String, dynamic>;
+        return data["senderData"]["cusid"];
+      }
+
+      return "";
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   Stream<QuerySnapshot> getMessage(String userid, String otherid) {
     List<String> ids = [userid, otherid];
     ids.sort();
@@ -89,28 +119,82 @@ class ChatServices extends ChangeNotifier {
         .snapshots();
   }
 
-  Future<void> setTrackingState(String roomId) async {
+  Future<void> setTrackingState(
+      String roomId, bool isCustomer, bool isRider) async {
     try {
       DocumentReference chatRoomRef =
           _firestore.collection('chat_rooms').doc(roomId);
       CollectionReference tracingRef = chatRoomRef.collection("tracking");
 
-      tracingRef
-          .doc(roomId)
-          .set({"trackState": 0, "timeStamp": DateTime.now(), "active": 1});
+      if (tracingRef != null) {
+        DocumentSnapshot snapshot = await tracingRef.doc(roomId).get();
+
+        if (!snapshot.exists) {
+          // Data doesn't exist, set it
+          tracingRef.doc(roomId).set({
+            "isCustomer": isCustomer,
+            "isRider": isRider,
+            "trackState": 0,
+            "timeStamp": DateTime.now(),
+            "active": 1,
+          });
+
+          print("Data set successfully");
+        } else {
+          print("Data already exists, not setting again");
+        }
+      }
     } catch (e) {
       throw e.toString();
     }
   }
 
-  Future<void> updateTRackingState(String chatroomid, int state) async {
+  Future<void> updateTRackingState(
+      String chatroomid, int state, bool isCustomer, bool isRider) async {
     try {
       DocumentReference chatRoomRef =
           _firestore.collection('chat_rooms').doc(chatroomid);
-      CollectionReference tracingRef = chatRoomRef.collection("tracking");
+      DocumentReference tracingRef =
+          chatRoomRef.collection("tracking").doc(chatroomid);
 
-      tracingRef.doc(chatroomid).update(
-          {"trackState": state, "timeStamp": DateTime.now(), "active": 1});
+      if (tracingRef != null) {
+        tracingRef.update({
+          "isCustomer": isCustomer,
+          "isRider": isRider,
+          "trackState": state,
+          "timeStamp": DateTime.now(),
+          "active": 1
+        });
+      }
+      print("update data is successfully");
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> updateStateValue(
+      String chatroomid,
+      bool isParted,
+      bool isPartedscound,
+      bool isPartedthird,
+      bool isPartedforth,
+      bool isPartedend) async {
+    try {
+      DocumentReference trackingRef = _firestore
+          .collection('chat_rooms')
+          .doc(chatroomid)
+          .collection("tracking")
+          .doc(chatroomid);
+      if (trackingRef != null) {
+        trackingRef.update({
+          "isParted": isParted,
+          "isPartedscound": isPartedscound,
+          "isPartedthird": isPartedthird,
+          "isPartedforth": isPartedforth,
+          "isPartedend": isPartedend,
+        });
+      }
+      print("set data is successfully");
     } catch (e) {
       throw e.toString();
     }

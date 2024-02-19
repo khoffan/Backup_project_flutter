@@ -1,12 +1,11 @@
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:purchaseassistant/services/delivers_services.dart';
+import 'package:purchaseassistant/services/profile_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
-
-import '../services/pickerimg.dart';
 
 class UpdatePosted extends StatefulWidget {
   UpdatePosted(
@@ -29,17 +28,22 @@ class _UpdatePostedState extends State<UpdatePosted> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _txtControllerBody = TextEditingController();
   String _image = "";
-  Uint8List? _newImage;
+  String? _newImage;
 
-  void selecImage() async {
-    Uint8List img = await pickerImage(ImageSource.gallery);
-    setState(() {
-      _newImage = img;
-    });
-    if (img == '') {
-      print("no ok");
+  void selectImage() async {
+    final pickImag = ImagePicker();
+    final pickImagURL = await pickImag.pickImage(source: ImageSource.gallery);
+    if (pickImagURL != null) {
+      final imageFile = File(pickImagURL.path);
+
+      final imageURL = await ServiceDeliver()
+          .uploadImagetoStorage('deliverImage', imageFile);
+
+      setState(() {
+        _newImage = imageURL;
+      });
     }
-    print("ok");
+    print(_newImage);
   }
 
   void updateData() async {
@@ -48,10 +52,7 @@ class _UpdatePostedState extends State<UpdatePosted> {
       String uid = widget.postedUserid;
       String Docid = widget.postedDocid;
       await ServiceDeliver().updateDeliver(
-          uid: uid,
-          Docid: Docid,
-          title: title,
-          file: _newImage ?? Uint8List(0));
+          uid: uid, Docid: Docid, title: title, file: _newImage ?? _image);
       print("update success");
       Navigator.pop(context);
     } catch (e) {
@@ -64,6 +65,8 @@ class _UpdatePostedState extends State<UpdatePosted> {
     super.initState();
     _txtControllerBody.text = widget.title;
     _image = widget.imageLink;
+    print(_image);
+    print(widget.imageLink);
   }
 
   @override
@@ -98,7 +101,7 @@ class _UpdatePostedState extends State<UpdatePosted> {
                         color: Colors.black38,
                       ),
                       onPressed: () {
-                        selecImage();
+                        selectImage();
                       },
                     ),
                   ),
@@ -119,13 +122,13 @@ class _UpdatePostedState extends State<UpdatePosted> {
                         color: Colors.black38,
                       ),
                       onPressed: () {
-                        selecImage();
+                        selectImage();
                       },
                     ),
                   ),
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: MemoryImage(_newImage!),
+                      image: NetworkImage(_newImage!),
                     ),
                   ),
                 ),

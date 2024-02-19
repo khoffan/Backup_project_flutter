@@ -3,39 +3,83 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:order_tracker_zen/order_tracker_zen.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
+import 'package:purchaseassistant/utils/my_timeline_tile.dart';
 
-class OrderTrackers extends StatefulWidget {
-  OrderTrackers({Key? key, this.chatroomid}) : super(key: key);
+class OderTrackerScreen extends StatefulWidget {
+  OderTrackerScreen({Key? key, this.chatroomid}) : super(key: key);
 
   String? chatroomid;
   @override
-  State<OrderTrackers> createState() => _OrderTrackersState();
+  State<OderTrackerScreen> createState() => _OderTrackerScreenState();
 }
 
-class _OrderTrackersState extends State<OrderTrackers> {
+class _OderTrackerScreenState extends State<OderTrackerScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   String uid = "";
-  String currid = "";
+  String riderid = "";
+  String cusid = "";
   String chatroomid = "";
+  bool? isCustomer;
+  bool isEnable = false;
+  bool? isRider;
+  bool isParted = false;
+  bool isPartedscound = false;
+  bool isPartedthird = false;
+  bool isPartedforth = false;
+  bool isPartedend = false;
+  bool isCustomerClicked = false;
+  bool dataHasBeenSet = false;
   late int checkState;
-  List<int> showState = [1, 2, 3, 4, 5];
-  int trackState = 0;
-  Timestamp timeState = Timestamp.now();
-  Color c1 = Colors.red;
+
+  void getrideridfromChatroom() async {
+    String riderid = await ChatServices().getRiderChatroomid(chatroomid);
+    String cusid = await ChatServices().getCustomerChatroomid(chatroomid);
+    setState(() {
+      riderid = riderid;
+      cusid = cusid;
+    });
+    if (dataHasBeenSet != true && mounted) {
+      checkCustomer(cusid);
+    }
+  }
+
+  void checkCustomer(String customerid) async {
+    if (uid == customerid && !dataHasBeenSet) {
+      setState(() {
+        isCustomer = true;
+        isRider = false;
+      });
+
+      await ChatServices()
+          .setTrackingState(chatroomid, isCustomer ?? false, isRider ?? false);
+      dataHasBeenSet = true;
+    }
+    await Future.delayed(Duration(seconds: 1));
+  }
 
   @override
   void initState() {
+    super.initState();
     checkState = 0;
     uid = _auth.currentUser!.uid;
     chatroomid = widget.chatroomid ?? '';
-    ChatServices().setTrackingState(chatroomid);
+
+    getrideridfromChatroom();
     print("chatroomid: $chatroomid");
     print(uid);
-    super.initState();
+
+    print(riderid);
+    print(cusid);
+  }
+
+  @override
+  void dispose() {
+    // Reset the flag when the widget is disposed (e.g., when navigating back)
+    dataHasBeenSet = true;
+    super.dispose();
   }
 
   @override
@@ -43,154 +87,188 @@ class _OrderTrackersState extends State<OrderTrackers> {
     return StreamBuilder(
         stream: ChatServices().getTrackingState(chatroomid),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
             );
           }
           if (!snapshot.hasData) {
-            return const Center(
-              child: Text("No Data"),
+            return Center(
+              child: Text("No information"),
             );
           }
 
-          final checkStatedata = snapshot.data!.data() as Map<String, dynamic>;
+          final Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
 
-          if (checkStatedata != null) {
-            int data = checkStatedata['trackState'];
-            print("checkState: $data");
-          }
+          bool? customerCheck = data["isCustomer"];
+          bool? riderCheck = data["isRider"];
 
+          print("customerCheck: $customerCheck");
+          print("riderCheck: $riderCheck");
+          print("isCustomerClicked: $isCustomerClicked");
+          int state = data["trackState"];
+          bool firstPartedCheck = data["isParted"] ?? false;
+          bool secoundPartedCheck = data["isPartedscound"] ?? false;
+          bool thridPartedCheck = data["isPartedthird"] ?? false;
+          bool forthPartedCheck = data["isPartedforth"] ?? false;
+          bool endPartedCheck = data["isPartedend"] ?? false;
+          print("state: $state");
           return Scaffold(
             appBar: AppBar(
-              title: const Text(
-                "ติดตามสถานะคำสั่งซื้อ",
+              title: Text(
+                "ติดตามการสั่งซื้อ",
                 style: TextStyle(color: Colors.black, fontSize: 18),
               ),
+              automaticallyImplyLeading: false,
               backgroundColor: themeBg,
               leading: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                  )),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+              ),
               actions: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        trackState += 1;
-                      });
-                      ChatServices()
-                          .updateTRackingState(chatroomid, trackState);
-                    },
-                    child: Text(
-                      'อัพเดทสถานะ',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusDirectional.circular(20)),
-                        backgroundColor: Colors.white38),
-                  ),
-                )
+                if (customerCheck == true &&
+                    !isCustomerClicked &&
+                    riderCheck == false &&
+                    isRider == false)
+                  buildButton(
+                      isCustomerClicked == false
+                          ? customerCheck ?? false
+                          : false, () {
+                    setState(() {
+                      isCustomer = false;
+                      isRider = true;
+                      isEnable = true;
+                      state = checkState + 1;
+                      isCustomerClicked = true;
+
+                      print("isParted: $isParted");
+                      print("customerCheck: $customerCheck");
+                      print("isRider: $isRider");
+                      print("isCustomerClicked: $isCustomerClicked");
+                      ChatServices().updateTRackingState(chatroomid, state,
+                          isCustomer ?? false, isRider ?? false);
+                      if (state == 1) {
+                        isParted = true;
+                      }
+                      ChatServices().updateStateValue(
+                        chatroomid,
+                        isParted,
+                        false,
+                        false,
+                        false,
+                        false,
+                      );
+                    });
+                  })
+                else
+                  buildButton(
+                      isCustomerClicked == true ? false : riderCheck ?? false,
+                      () {
+                    setState(() {
+                      state += 1;
+                      if (state % 6 == 0) {
+                        state = 0;
+                      }
+                      isCustomer = false;
+                      isRider = true;
+                      ChatServices().updateTRackingState(chatroomid, state,
+                          isCustomer ?? false, isRider ?? false);
+                      switch (state) {
+                        case 2:
+                          isPartedscound = true;
+                          break;
+                        case 3:
+                          isPartedthird = true;
+                          break;
+                        case 4:
+                          isPartedforth = true;
+                          break;
+                        case 5:
+                          isPartedend = true;
+                          break;
+                        default:
+                          break;
+                      }
+                      ChatServices().updateStateValue(
+                        chatroomid,
+                        true,
+                        isPartedscound,
+                        isPartedthird,
+                        isPartedforth,
+                        isPartedend,
+                      );
+                    });
+                  })
               ],
             ),
-            body: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView(
                 children: [
-                  // Add padding around the OrderTrackersZen widget for better presentation.
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                    // OrderTrackerZen is the main widget of the package which displays the order tracking information.
-                    child: OrderTrackerZen(
-                      text_primary_color: Colors.black,
-                      success_color: Colors.cyan,
-                      isShrinked: false,
-                      screen_background_color: themeBg,
-                      // Provide an array of TrackerData objects to display the order tracking information.
-                      tracker_data: [
-                        // TrackerData represents a single step in the order tracking process.
-
-                        TrackerData(
-                          title: "รอลูกค้าชำระเงินค่าธรรมเนียม",
-                          date: "Sat, 8 Apr '22",
-                          tracker_details: [
-                            showState[0] <= checkState
-                                ? TrackerDetails(
-                                    title: "ลูกค้าชำระค่าธรรมสำเร็จ",
-                                    datetime: "Sat, 8 Apr '22 - 17:17",
-                                  )
-                                : TrackerDetails(title: '', datetime: ''),
-                          ],
-                        ),
-                        // yet another TrackerData object
-                        showState[1] <= checkState
-                            ? TrackerData(
-                                title: "กำลังดำเนินการตามข้อตกลง",
-                                date: "Sat, 8 Apr '22",
-                                tracker_details: [
-                                  showState[2] <= checkState
-                                      ? TrackerDetails(
-                                          title: "ดำนเนินสำเร็จ",
-                                          datetime: "Sat, 8 Apr '22 - 17:50",
-                                        )
-                                      : TrackerDetails(title: '', datetime: ''),
-                                ],
-                              )
-                            : TrackerData(
-                                title: '',
-                                date: '',
-                                tracker_details: [
-                                    // TrackerDetails(title: '', datetime: '')
-                                  ]),
-                        showState[3] <= checkState
-                            ? // And yet another TrackerData object
-                            TrackerData(
-                                title: "กำลังจัดส่ง",
-                                date: "Sat,8 Apr '22",
-                                tracker_details: [
-                                  TrackerDetails(
-                                    title:
-                                        "กรุณาเตรียมเงินชำระค่าสินค้าให้พร้อม",
-                                    datetime: "Sat, 8 Apr '22 - 17:51",
-                                  ),
-                                ],
-                              )
-                            : TrackerData(
-                                title: '',
-                                date: '',
-                                tracker_details: [
-                                    // TrackerDetails(title: '', datetime: '')
-                                  ]),
-                        showState[4] <= checkState
-                            ? TrackerData(
-                                title: "จัดส่งสำเร็จ",
-                                date: "now",
-                                tracker_details: [
-                                  TrackerDetails(title: '', datetime: '')
-                                ],
-                              )
-                            : TrackerData(
-                                title: '',
-                                date: '',
-                                tracker_details: [
-                                    // TrackerDetails(title: '', datetime: '')
-                                  ]),
-                      ],
+                  Center(
+                    child: Text(
+                      "ติดตามการสั่งซื้อ",
+                      style: TextStyle(fontSize: 24),
                     ),
                   ),
+                  MyTimelineTile(
+                    isFirst: true,
+                    isLast: false,
+                    isPart: firstPartedCheck,
+                    eventCard: Text("จ่ายเงินสำเร็จ"),
+                  ),
+                  MyTimelineTile(
+                    isFirst: false,
+                    isLast: false,
+                    isPart: secoundPartedCheck,
+                    eventCard: Text("order data 2"),
+                  ),
+                  MyTimelineTile(
+                    isFirst: false,
+                    isLast: false,
+                    isPart: thridPartedCheck,
+                    eventCard: Text("order data 2"),
+                  ),
+                  MyTimelineTile(
+                    isFirst: false,
+                    isLast: false,
+                    isPart: forthPartedCheck,
+                    eventCard: Text("order data 2"),
+                  ),
+                  MyTimelineTile(
+                    isFirst: false,
+                    isLast: true,
+                    isPart: endPartedCheck,
+                    eventCard: Text("order data 3"),
+                  ),
+                  endPartedCheck == true
+                      ? ElevatedButton(
+                          onPressed: () {}, child: Text("เสร็จสิ้น"))
+                      : Container(),
                 ],
               ),
             ),
           );
         });
+  }
+
+  Widget buildButton(bool isEnable, VoidCallback onpressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+      child: ElevatedButton(
+        onPressed: isEnable ? onpressed : null,
+        child: Text("เพิ่มสถานะ  "),
+        style: ElevatedButton.styleFrom(
+          onPrimary: Colors.green[800],
+          backgroundColor: Colors.green[200],
+        ),
+      ),
+    );
   }
 }
