@@ -7,15 +7,15 @@ import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 import 'package:purchaseassistant/utils/my_timeline_tile.dart';
 
-class OrderTrackers extends StatefulWidget {
-  OrderTrackers({Key? key, this.chatroomid}) : super(key: key);
+class OderTrackerScreen extends StatefulWidget {
+  OderTrackerScreen({Key? key, this.chatroomid}) : super(key: key);
 
   String? chatroomid;
   @override
-  State<OrderTrackers> createState() => _OrderTrackersState();
+  State<OderTrackerScreen> createState() => _OderTrackerScreenState();
 }
 
-class _OrderTrackersState extends State<OrderTrackers> {
+class _OderTrackerScreenState extends State<OderTrackerScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   String uid = "";
@@ -26,29 +26,28 @@ class _OrderTrackersState extends State<OrderTrackers> {
   bool isEnable = false;
   bool? isRider;
   bool isParted = false;
+  bool isPartedscound = false;
+  bool isPartedthird = false;
+  bool isPartedforth = false;
+  bool isPartedend = false;
   bool isCustomerClicked = false;
+  bool dataHasBeenSet = false;
   late int checkState;
-  List<int> showState = [1, 2, 3, 4, 5];
-  int trackState = 0;
-  Timestamp timeState = Timestamp.now();
-  Color c1 = Colors.red;
 
-  void getrideridfromChatroom(Function checkCustomer) async {
+  void getrideridfromChatroom() async {
     String riderid = await ChatServices().getRiderChatroomid(chatroomid);
     String cusid = await ChatServices().getCustomerChatroomid(chatroomid);
-    print(riderid);
-    print(cusid);
     setState(() {
       riderid = riderid;
       cusid = cusid;
     });
-    print(riderid);
-    print(cusid);
-    checkCustomer(cusid);
+    if (dataHasBeenSet != true && mounted) {
+      checkCustomer(cusid);
+    }
   }
 
   void checkCustomer(String customerid) async {
-    if (uid == customerid) {
+    if (uid == customerid && !dataHasBeenSet) {
       setState(() {
         isCustomer = true;
         isRider = false;
@@ -56,6 +55,7 @@ class _OrderTrackersState extends State<OrderTrackers> {
 
       await ChatServices()
           .setTrackingState(chatroomid, isCustomer ?? false, isRider ?? false);
+      dataHasBeenSet = true;
     }
     await Future.delayed(Duration(seconds: 1));
   }
@@ -67,12 +67,19 @@ class _OrderTrackersState extends State<OrderTrackers> {
     uid = _auth.currentUser!.uid;
     chatroomid = widget.chatroomid ?? '';
 
-    getrideridfromChatroom(checkCustomer);
+    getrideridfromChatroom();
     print("chatroomid: $chatroomid");
     print(uid);
 
     print(riderid);
     print(cusid);
+  }
+
+  @override
+  void dispose() {
+    // Reset the flag when the widget is disposed (e.g., when navigating back)
+    dataHasBeenSet = true;
+    super.dispose();
   }
 
   @override
@@ -99,7 +106,14 @@ class _OrderTrackersState extends State<OrderTrackers> {
 
           print("customerCheck: $customerCheck");
           print("riderCheck: $riderCheck");
+          print("isCustomerClicked: $isCustomerClicked");
           int state = data["trackState"];
+          bool firstPartedCheck = data["isParted"] ?? false;
+          bool secoundPartedCheck = data["isPartedscound"] ?? false;
+          bool thridPartedCheck = data["isPartedthird"] ?? false;
+          bool forthPartedCheck = data["isPartedforth"] ?? false;
+          bool endPartedCheck = data["isPartedend"] ?? false;
+          print("state: $state");
           return Scaffold(
             appBar: AppBar(
               title: Text(
@@ -127,18 +141,29 @@ class _OrderTrackersState extends State<OrderTrackers> {
                           ? customerCheck ?? false
                           : false, () {
                     setState(() {
-                      isParted = !isParted;
                       isCustomer = false;
                       isRider = true;
                       isEnable = true;
-                      checkState = 1;
+                      state = checkState + 1;
                       isCustomerClicked = true;
 
+                      print("isParted: $isParted");
                       print("customerCheck: $customerCheck");
                       print("isRider: $isRider");
                       print("isCustomerClicked: $isCustomerClicked");
-                      ChatServices().updateTRackingState(chatroomid, checkState,
+                      ChatServices().updateTRackingState(chatroomid, state,
                           isCustomer ?? false, isRider ?? false);
+                      if (state == 1) {
+                        isParted = true;
+                      }
+                      ChatServices().updateStateValue(
+                        chatroomid,
+                        isParted,
+                        false,
+                        false,
+                        false,
+                        false,
+                      );
                     });
                   })
                 else
@@ -146,17 +171,38 @@ class _OrderTrackersState extends State<OrderTrackers> {
                       isCustomerClicked == true ? false : riderCheck ?? false,
                       () {
                     setState(() {
-                      isParted = !isParted;
-                      // isCustomer = false;
-                      // isRider = true;
-                      // isEnable = true;
-                      // checkState = 1;
-
-                      // print("customerCheck: $customerCheck");
-                      // print("isRider: $isRider");
-                      // print(isEnable);
-                      // ChatServices().updateTRackingState(chatroomid, checkState,
-                      //     isCustomer ?? false, isRider ?? false);
+                      state += 1;
+                      if (state % 6 == 0) {
+                        state = 0;
+                      }
+                      isCustomer = false;
+                      isRider = true;
+                      ChatServices().updateTRackingState(chatroomid, state,
+                          isCustomer ?? false, isRider ?? false);
+                      switch (state) {
+                        case 2:
+                          isPartedscound = true;
+                          break;
+                        case 3:
+                          isPartedthird = true;
+                          break;
+                        case 4:
+                          isPartedforth = true;
+                          break;
+                        case 5:
+                          isPartedend = true;
+                          break;
+                        default:
+                          break;
+                      }
+                      ChatServices().updateStateValue(
+                        chatroomid,
+                        true,
+                        isPartedscound,
+                        isPartedthird,
+                        isPartedforth,
+                        isPartedend,
+                      );
                     });
                   })
               ],
@@ -174,33 +220,37 @@ class _OrderTrackersState extends State<OrderTrackers> {
                   MyTimelineTile(
                     isFirst: true,
                     isLast: false,
-                    isPart: isParted,
+                    isPart: firstPartedCheck,
                     eventCard: Text("จ่ายเงินสำเร็จ"),
                   ),
                   MyTimelineTile(
                     isFirst: false,
                     isLast: false,
-                    isPart: isParted,
+                    isPart: secoundPartedCheck,
                     eventCard: Text("order data 2"),
                   ),
                   MyTimelineTile(
                     isFirst: false,
                     isLast: false,
-                    isPart: isParted,
+                    isPart: thridPartedCheck,
                     eventCard: Text("order data 2"),
                   ),
                   MyTimelineTile(
                     isFirst: false,
                     isLast: false,
-                    isPart: isParted,
+                    isPart: forthPartedCheck,
                     eventCard: Text("order data 2"),
                   ),
                   MyTimelineTile(
                     isFirst: false,
                     isLast: true,
-                    isPart: isParted,
+                    isPart: endPartedCheck,
                     eventCard: Text("order data 3"),
                   ),
+                  endPartedCheck == true
+                      ? ElevatedButton(
+                          onPressed: () {}, child: Text("เสร็จสิ้น"))
+                      : Container(),
                 ],
               ),
             ),

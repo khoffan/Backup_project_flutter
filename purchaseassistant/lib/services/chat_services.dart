@@ -125,17 +125,25 @@ class ChatServices extends ChangeNotifier {
       DocumentReference chatRoomRef =
           _firestore.collection('chat_rooms').doc(roomId);
       CollectionReference tracingRef = chatRoomRef.collection("tracking");
-      print(tracingRef);
+
       if (tracingRef != null) {
-        tracingRef.doc(roomId).set({
-          "isCustomer": isCustomer,
-          "isRider": isRider,
-          "trackState": 0,
-          "timeStamp": DateTime.now(),
-          "active": 1
-        });
+        DocumentSnapshot snapshot = await tracingRef.doc(roomId).get();
+
+        if (!snapshot.exists) {
+          // Data doesn't exist, set it
+          tracingRef.doc(roomId).set({
+            "isCustomer": isCustomer,
+            "isRider": isRider,
+            "trackState": 0,
+            "timeStamp": DateTime.now(),
+            "active": 1,
+          });
+
+          print("Data set successfully");
+        } else {
+          print("Data already exists, not setting again");
+        }
       }
-      print("set data is successfully");
     } catch (e) {
       throw e.toString();
     }
@@ -159,6 +167,34 @@ class ChatServices extends ChangeNotifier {
         });
       }
       print("update data is successfully");
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> updateStateValue(
+      String chatroomid,
+      bool isParted,
+      bool isPartedscound,
+      bool isPartedthird,
+      bool isPartedforth,
+      bool isPartedend) async {
+    try {
+      DocumentReference trackingRef = _firestore
+          .collection('chat_rooms')
+          .doc(chatroomid)
+          .collection("tracking")
+          .doc(chatroomid);
+      if (trackingRef != null) {
+        trackingRef.update({
+          "isParted": isParted,
+          "isPartedscound": isPartedscound,
+          "isPartedthird": isPartedthird,
+          "isPartedforth": isPartedforth,
+          "isPartedend": isPartedend,
+        });
+      }
+      print("set data is successfully");
     } catch (e) {
       throw e.toString();
     }
