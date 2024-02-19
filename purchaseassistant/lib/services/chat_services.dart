@@ -119,28 +119,46 @@ class ChatServices extends ChangeNotifier {
         .snapshots();
   }
 
-  Future<void> setTrackingState(String roomId) async {
+  Future<void> setTrackingState(
+      String roomId, bool isCustomer, bool isRider) async {
     try {
       DocumentReference chatRoomRef =
           _firestore.collection('chat_rooms').doc(roomId);
       CollectionReference tracingRef = chatRoomRef.collection("tracking");
-
-      tracingRef
-          .doc(roomId)
-          .set({"trackState": 0, "timeStamp": DateTime.now(), "active": 1});
+      print(tracingRef);
+      if (tracingRef != null) {
+        tracingRef.doc(roomId).set({
+          "isCustomer": isCustomer,
+          "isRider": isRider,
+          "trackState": 0,
+          "timeStamp": DateTime.now(),
+          "active": 1
+        });
+      }
+      print("set data is successfully");
     } catch (e) {
       throw e.toString();
     }
   }
 
-  Future<void> updateTRackingState(String chatroomid, int state) async {
+  Future<void> updateTRackingState(
+      String chatroomid, int state, bool isCustomer, bool isRider) async {
     try {
       DocumentReference chatRoomRef =
           _firestore.collection('chat_rooms').doc(chatroomid);
-      CollectionReference tracingRef = chatRoomRef.collection("tracking");
+      DocumentReference tracingRef =
+          chatRoomRef.collection("tracking").doc(chatroomid);
 
-      tracingRef.doc(chatroomid).update(
-          {"trackState": state, "timeStamp": DateTime.now(), "active": 1});
+      if (tracingRef != null) {
+        tracingRef.update({
+          "isCustomer": isCustomer,
+          "isRider": isRider,
+          "trackState": state,
+          "timeStamp": DateTime.now(),
+          "active": 1
+        });
+      }
+      print("update data is successfully");
     } catch (e) {
       throw e.toString();
     }

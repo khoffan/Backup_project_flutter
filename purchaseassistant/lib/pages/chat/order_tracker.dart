@@ -26,6 +26,7 @@ class _OrderTrackersState extends State<OrderTrackers> {
   bool isEnable = false;
   bool? isRider;
   bool isParted = false;
+  bool isCustomerClicked = false;
   late int checkState;
   List<int> showState = [1, 2, 3, 4, 5];
   int trackState = 0;
@@ -50,31 +51,13 @@ class _OrderTrackersState extends State<OrderTrackers> {
     if (uid == customerid) {
       setState(() {
         isCustomer = true;
+        isRider = false;
       });
-      print("isCustomer: $isCustomer");
-      print("isRider: $isRider");
-    } else {
-      setState(() {
-        isRider = true;
-      });
-      print("isCustomer: $isCustomer");
-      print("isRider: $isRider");
-      print("isEnable: $isEnable");
+
+      await ChatServices()
+          .setTrackingState(chatroomid, isCustomer ?? false, isRider ?? false);
     }
     await Future.delayed(Duration(seconds: 1));
-    setState(() {
-      // if (isCustomer == true && isRider == false) {
-      //   isEnable = true;
-      // } else {
-      //   isEnable = false;
-      // }
-      // if (isRider == true && isCustomer == true) {
-      //   isEnable = false;
-      //   print("isEnable: $isEnable");
-      // } else {
-      //   isEnable = false;
-      // }
-    });
   }
 
   @override
@@ -83,7 +66,7 @@ class _OrderTrackersState extends State<OrderTrackers> {
     checkState = 0;
     uid = _auth.currentUser!.uid;
     chatroomid = widget.chatroomid ?? '';
-    ChatServices().setTrackingState(chatroomid);
+
     getrideridfromChatroom(checkCustomer);
     print("chatroomid: $chatroomid");
     print(uid);
@@ -94,93 +77,148 @@ class _OrderTrackersState extends State<OrderTrackers> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "ติดตามการสั่งซื้อ",
-          style: TextStyle(color: Colors.black, fontSize: 18),
-        ),
-        automaticallyImplyLeading: false,
-        backgroundColor: themeBg,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
-        actions: [
-          buildButton(context,
-              isEnable == false ? isCustomer ?? false : isRider ?? false, () {
-            setState(() {
-              isParted = !isParted;
-              isEnable = true;
+    return StreamBuilder(
+        stream: ChatServices().getTrackingState(chatroomid),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+          if (!snapshot.hasData) {
+            return Center(
+              child: Text("No information"),
+            );
+          }
 
-              print("isEnable: $isEnable");
-            });
-          }),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: [
-            Center(
-              child: Text(
+          final Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+
+          bool? customerCheck = data["isCustomer"];
+          bool? riderCheck = data["isRider"];
+
+          print("customerCheck: $customerCheck");
+          print("riderCheck: $riderCheck");
+          int state = data["trackState"];
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
                 "ติดตามการสั่งซื้อ",
-                style: TextStyle(fontSize: 24),
+                style: TextStyle(color: Colors.black, fontSize: 18),
+              ),
+              automaticallyImplyLeading: false,
+              backgroundColor: themeBg,
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+              ),
+              actions: [
+                if (customerCheck == true &&
+                    !isCustomerClicked &&
+                    riderCheck == false &&
+                    isRider == false)
+                  buildButton(
+                      isCustomerClicked == false
+                          ? customerCheck ?? false
+                          : false, () {
+                    setState(() {
+                      isParted = !isParted;
+                      isCustomer = false;
+                      isRider = true;
+                      isEnable = true;
+                      checkState = 1;
+                      isCustomerClicked = true;
+
+                      print("customerCheck: $customerCheck");
+                      print("isRider: $isRider");
+                      print("isCustomerClicked: $isCustomerClicked");
+                      ChatServices().updateTRackingState(chatroomid, checkState,
+                          isCustomer ?? false, isRider ?? false);
+                    });
+                  })
+                else
+                  buildButton(
+                      isCustomerClicked == true ? false : riderCheck ?? false,
+                      () {
+                    setState(() {
+                      isParted = !isParted;
+                      // isCustomer = false;
+                      // isRider = true;
+                      // isEnable = true;
+                      // checkState = 1;
+
+                      // print("customerCheck: $customerCheck");
+                      // print("isRider: $isRider");
+                      // print(isEnable);
+                      // ChatServices().updateTRackingState(chatroomid, checkState,
+                      //     isCustomer ?? false, isRider ?? false);
+                    });
+                  })
+              ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView(
+                children: [
+                  Center(
+                    child: Text(
+                      "ติดตามการสั่งซื้อ",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                  MyTimelineTile(
+                    isFirst: true,
+                    isLast: false,
+                    isPart: isParted,
+                    eventCard: Text("จ่ายเงินสำเร็จ"),
+                  ),
+                  MyTimelineTile(
+                    isFirst: false,
+                    isLast: false,
+                    isPart: isParted,
+                    eventCard: Text("order data 2"),
+                  ),
+                  MyTimelineTile(
+                    isFirst: false,
+                    isLast: false,
+                    isPart: isParted,
+                    eventCard: Text("order data 2"),
+                  ),
+                  MyTimelineTile(
+                    isFirst: false,
+                    isLast: false,
+                    isPart: isParted,
+                    eventCard: Text("order data 2"),
+                  ),
+                  MyTimelineTile(
+                    isFirst: false,
+                    isLast: true,
+                    isPart: isParted,
+                    eventCard: Text("order data 3"),
+                  ),
+                ],
               ),
             ),
-            MyTimelineTile(
-              isFirst: true,
-              isLast: false,
-              isPart: isParted,
-              eventCard: Text("จ่ายเงินสำเร็จ"),
-            ),
-            MyTimelineTile(
-              isFirst: false,
-              isLast: false,
-              isPart: isParted,
-              eventCard: Text("order data 2"),
-            ),
-            MyTimelineTile(
-              isFirst: false,
-              isLast: false,
-              isPart: isParted,
-              eventCard: Text("order data 2"),
-            ),
-            MyTimelineTile(
-              isFirst: false,
-              isLast: false,
-              isPart: isParted,
-              eventCard: Text("order data 2"),
-            ),
-            MyTimelineTile(
-              isFirst: false,
-              isLast: true,
-              isPart: isParted,
-              eventCard: Text("order data 3"),
-            ),
-          ],
+          );
+        });
+  }
+
+  Widget buildButton(bool isEnable, VoidCallback onpressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+      child: ElevatedButton(
+        onPressed: isEnable ? onpressed : null,
+        child: Text("เพิ่มสถานะ  "),
+        style: ElevatedButton.styleFrom(
+          onPrimary: Colors.green[800],
+          backgroundColor: Colors.green[200],
         ),
       ),
     );
   }
-}
-
-Widget buildButton(
-    BuildContext context, bool isEnable, VoidCallback onpressed) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-    child: ElevatedButton(
-      onPressed: isEnable ? onpressed : null,
-      child: Text("เพิ่มสถานะ  "),
-      style: ElevatedButton.styleFrom(
-        onPrimary: Colors.green[800],
-        backgroundColor: Colors.green[200],
-      ),
-    ),
-  );
 }

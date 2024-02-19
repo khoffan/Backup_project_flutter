@@ -195,7 +195,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 );
                 print(chatroomid);
-                ChatServices().setTrackingState(chatroomid);
               },
               child: Text(
                 "คำสั่งซื้อ",

@@ -73,9 +73,6 @@ class _ShowPostState extends State<ShowPost> {
   }
 
   @override
-  bool get wantKeepAlive => true;
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
@@ -95,9 +92,11 @@ class _ShowPostState extends State<ShowPost> {
             fetchData(snapshot.data!);
             isDataFetched = true; // Set the flag to true once data is fetched
           }
-          return KeyedSubtree(
-            child: buildWidgetList(),
-          );
+          return RefreshIndicator(
+              child: buildWidgetList(),
+              onRefresh: () async {
+                await fetchData(snapshot.data!);
+              });
         },
       ),
     );
@@ -180,9 +179,7 @@ class _ShowPostState extends State<ShowPost> {
     // Use savedWidgets or fallback to the original widgets list
     List<Widget> displayWidgets = savedWidgets ?? widgets;
     if (widgets.isEmpty) {
-      return Center(
-        child: Text("No data"),
-      );
+      return Center(child: CircularProgressIndicator());
     }
 
     return ListView(
