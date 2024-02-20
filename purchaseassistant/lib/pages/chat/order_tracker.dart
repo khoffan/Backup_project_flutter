@@ -221,35 +221,35 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
                     isFirst: true,
                     isLast: false,
                     isPart: firstPartedCheck,
-                    eventCard: Text("จ่ายเงินสำเร็จ"),
+                    eventCard: Text("ยืนยันคำสั่งซื้อโดยลูกค้า"),
                   ),
                   MyTimelineTile(
                     isFirst: false,
                     isLast: false,
                     isPart: secoundPartedCheck,
-                    eventCard: Text("order data 2"),
+                    eventCard: Text("ไรเดอร์กำลังดำเนินตามคำสั่งซื้อ"),
                   ),
                   MyTimelineTile(
                     isFirst: false,
                     isLast: false,
                     isPart: thridPartedCheck,
-                    eventCard: Text("order data 2"),
+                    eventCard: Text("ซื้อสินค้าสำเร็จ"),
                   ),
                   MyTimelineTile(
                     isFirst: false,
                     isLast: false,
                     isPart: forthPartedCheck,
-                    eventCard: Text("order data 2"),
+                    eventCard: Text("ไรเดอร์กำลังนำส่งสินค้าไปยังผู้รับ"),
                   ),
                   MyTimelineTile(
                     isFirst: false,
                     isLast: true,
                     isPart: endPartedCheck,
-                    eventCard: Text("order data 3"),
+                    eventCard: Text("รอส่งสินค้า"),
                   ),
                   endPartedCheck == true
                       ? ElevatedButton(
-                          onPressed: () {}, child: Text("เสร็จสิ้น"))
+                          onPressed: () {}, child: Text("ส่งสินค้าสำเร็จ"))
                       : Container(),
                 ],
               ),
