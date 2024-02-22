@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
+import 'package:purchaseassistant/services/matching_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
 
 import 'chat_screen.dart';
@@ -17,6 +18,10 @@ class _ListUserchatState extends State<ListUserchat> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
+
+  Future<bool> getStatusrider(String senderid) async {
+    return await APIMatiching().geyStatusRider(senderid);
+  }
 
   @override
   void initState() {
@@ -53,6 +58,7 @@ class _ListUserchatState extends State<ListUserchat> {
             child: CircularProgressIndicator(),
           );
         }
+
         return ListView(
           children: snapshot.data!.docs.map((docs) => _listUser(docs)).toList(),
         );
@@ -65,13 +71,15 @@ class _ListUserchatState extends State<ListUserchat> {
     String revicedId = data["reciveData"]["riderid"];
     String senderid = data["senderData"]["cusid"];
     String senderName = data["senderData"]["cusname"];
+    final riderStatus = getStatusrider(senderid);
 
-    if (uid.trim() == revicedId.trim() && uid.trim() != senderid.trim()) {
+    if (uid.trim() == revicedId.trim() &&
+        uid.trim() != senderid.trim() &&
+        riderStatus == true) {
       return Card(
         child: ListTile(
           title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
           subtitle: Text("ผู้รับ${data["reciveData"]["ridername"]}"),
-          trailing: Text("${data[""]}"),
           onTap: () {
             Navigator.push(
               context,
@@ -83,8 +91,10 @@ class _ListUserchatState extends State<ListUserchat> {
           },
         ),
       );
-    } else if (uid.trim() != revicedId.trim() &&
-        uid.trim() == senderid.trim()) {
+    }
+    if (uid.trim() != revicedId.trim() &&
+        uid.trim() == senderid.trim() &&
+        riderStatus == true) {
       return Card(
         child: ListTile(
           title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
@@ -101,7 +111,6 @@ class _ListUserchatState extends State<ListUserchat> {
         ),
       );
     }
-
     return Container();
   }
 }

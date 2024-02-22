@@ -40,7 +40,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
   String reciveuid = "";
   String name = "";
   bool? isLoading;
-  bool? isMatch;
   bool valueFirst = false;
   bool valueSecond = false;
   bool valueThird = false;
@@ -127,20 +126,15 @@ class _ServiceScreenState extends State<ServiceScreen> {
               if ((name, reciveuid) != "") {
                 setState(() {
                   isLoading = true;
-                  isMatch = false;
                 });
                 APIMatiching().updateStatusChatCustomer(uid);
                 APIMatiching().updateStatusCustomer(uid);
               }
-              // Future.delayed(Duration(seconds: 30), () {
-              //   _showAlertDelay();
-              // });
             } else if (snapshotData["rider_status"] == false &&
                 isLoading == false) {
               setState(() {
                 setState(() {
                   isLoading = false;
-                  isMatch = true;
                 });
               });
             }
@@ -170,35 +164,35 @@ class _ServiceScreenState extends State<ServiceScreen> {
     }
   }
 
-  getAmount(BuildContext context, String uid) {
-    try {
-      if (uid != "") {
-        subscription = ServiceWallet().getTotalAmount(uid).listen(
-          (double totalAmount) {
-            if (totalAmount == 0.00) {
-              Future.delayed(Duration(seconds: 1), () {
-                alertNOtAmout(context);
-              });
-            }
-            setState(() {
-              amount = totalAmount;
-            });
-            print('Total Amount: $totalAmount');
-          },
-          onError: (dynamic error) {
-            // Handle errors
-            print('Error: $error');
-          },
-          onDone: () {
-            // Handle when the stream is closed
-            print('Stream is closed');
-          },
-        );
-      }
-    } catch (e) {
-      throw e.toString();
-    }
-  }
+  // getAmount(BuildContext context, String uid) {
+  //   try {
+  //     if (uid != "") {
+  //       subscription = ServiceWallet().getTotalAmount(uid).listen(
+  //         (double totalAmount) {
+  //           if (totalAmount == 0.00) {
+  //             Future.delayed(Duration(seconds: 1), () {
+  //               alertNOtAmout(context);
+  //             });
+  //           }
+  //           setState(() {
+  //             amount = totalAmount;
+  //           });
+  //           print('Total Amount: $totalAmount');
+  //         },
+  //         onError: (dynamic error) {
+  //           // Handle errors
+  //           print('Error: $error');
+  //         },
+  //         onDone: () {
+  //           // Handle when the stream is closed
+  //           print('Stream is closed');
+  //         },
+  //       );
+  //     }
+  //   } catch (e) {
+  //     throw e.toString();
+  //   }
+  // }
 
   void _overlayPopup() {
     OverlayEntry entry = OverlayEntry(
@@ -242,7 +236,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
     if (isLoading == true) {
       entry.remove();
     }
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(Duration(seconds: 10), () {
       entry.remove();
     });
   }
@@ -254,7 +248,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
       isLoading = false;
     });
     uid = _auth.currentUser!.uid;
-    getAmount(context, uid);
+    // getAmount(context, uid);
 
     connectMatchingResult();
   }
@@ -379,15 +373,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 child: InkWell(
                   onTap: () {
                     if (((valueFirst == true || valueSecond == true) &&
-                            valueThird != true) &&
-                        amount > 10.00) {
+                        valueThird != true)) {
                       sendData2api(uid);
                       _overlayPopup();
                     } else {
                       String msgErr = "";
-                      if (amount < 50.00) {
-                        msgErr = "เงินในวอลเล็ตของคุณไม่เพียงพอ";
-                      } else if ((valueFirst == false ||
+                      if ((valueFirst == false ||
                           valueSecond == false ||
                           valueThird == false)) {
                         msgErr = "กรุณาเลือกสถานที่ที่ต้องการใช้บริการ";
@@ -461,9 +452,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                       child: TextButton(
                         onPressed: () {
                           if ((valueFirst == true ||
-                                  valueSecond == true ||
-                                  valueThird == true) &&
-                              amount > 10.00) {
+                              valueSecond == true ||
+                              valueThird == true)) {
                             delCustomertoRider(uid);
                             Navigator.push(
                               context,
@@ -475,9 +465,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                             );
                           } else {
                             String msgErr2 = "";
-                            if (amount < 10.00) {
-                              msgErr2 = "เงินในวอลเล็ตของคุณไม่เพียงพอ";
-                            } else if (valueFirst == false ||
+                            if (valueFirst == false ||
                                 valueSecond == false ||
                                 valueThird == false) {
                               msgErr2 = "กรุณาเลือกสถานที่ที่ต้องการรับส่ง";

@@ -202,6 +202,23 @@ class APIMatiching {
     }
   }
 
+  Future<bool> geyStatusRider(String cusid) async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection("Matchings").doc(cusid).get();
+      if (snapshot.exists) {
+        final Map<String, dynamic> data =
+            snapshot.data() as Map<String, dynamic>;
+        return data["rider_status"];
+      } else {
+        print("ไม่มีสถานะของผู้ใช้");
+        return false;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   // del document for user to rider
   Future<void> delCustomertoRider(String uid) async {
     try {

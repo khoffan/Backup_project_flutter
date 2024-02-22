@@ -89,6 +89,10 @@ class _ChatScreenState extends State<ChatScreen> {
         APIMatiching().updateRiderData(id);
         APIMatiching().updateStatusChatCustomer(id);
         Navigator.pop(context);
+      } else {
+        APIMatiching().updateRiderData(id);
+        APIMatiching().updateStatusChatCustomer(id);
+        Navigator.pop(context);
       }
     } catch (e) {
       throw e.toString();
@@ -169,7 +173,6 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: IconButton(
             onPressed: () {
               closeChatState(otherid!);
-              Navigator.pop(context);
             },
             icon: const Icon(
               Icons.arrow_back,
