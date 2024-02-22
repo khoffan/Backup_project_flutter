@@ -178,12 +178,12 @@ class _ShowPostState extends State<ShowPost> {
 
     // Use savedWidgets or fallback to the original widgets list
     List<Widget> displayWidgets = savedWidgets ?? widgets;
-    if (widgets.isEmpty) {
+    if (displayWidgets.isEmpty) {
       return Center(child: CircularProgressIndicator());
     }
 
     return ListView(
-      children: widgets,
+      children: displayWidgets,
     );
   }
 

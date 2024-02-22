@@ -18,15 +18,21 @@ class _ListUserchatState extends State<ListUserchat> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String uid = "";
+  bool isRiderStatus = false;
 
-  Future<bool> getStatusrider(String senderid) async {
-    return await APIMatiching().geyStatusRider(senderid);
+  void getStatusrider(String senderid) async {
+    bool isStatus = await APIMatiching().geyStatusRider(senderid);
+    setState(() {
+      isRiderStatus = isStatus;
+    });
+    print(isRiderStatus);
   }
 
   @override
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
+    getStatusrider(uid);
   }
 
   @override
@@ -71,8 +77,8 @@ class _ListUserchatState extends State<ListUserchat> {
     String revicedId = data["reciveData"]["riderid"];
     String senderid = data["senderData"]["cusid"];
     String senderName = data["senderData"]["cusname"];
-    final riderStatus = getStatusrider(senderid);
-
+    final riderStatus = isRiderStatus;
+    print(riderStatus);
     if (uid.trim() == revicedId.trim() &&
         uid.trim() != senderid.trim() &&
         riderStatus == true) {
