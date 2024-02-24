@@ -137,12 +137,46 @@ class ChatServices extends ChangeNotifier {
             "trackState": 0,
             "timeStamp": DateTime.now(),
             "active": 1,
+            "isParted": false,
+            "isPartedscound": false,
+            "isPartedthird": false,
+            "isPartedforth": false,
+            "isPartedend": false,
           });
 
           print("Data set successfully");
-        } else {
-          print("Data already exists, not setting again");
+        } else if ((snapshot["isCustomer"] && snapshot["isRider"]) == false) {
+          tracingRef.doc(roomId).update({
+            "isCustomer": isCustomer,
+            "isRider": isRider,
+          });
         }
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> setDefulttracking(
+      String chatroomid, bool isCustomer, bool isRider) async {
+    try {
+      DocumentReference chatRoomRef =
+          _firestore.collection('chat_rooms').doc(chatroomid);
+      DocumentReference tracingRef =
+          chatRoomRef.collection("tracking").doc(chatroomid);
+      if (tracingRef != null) {
+        tracingRef.set({
+          "isCustomer": isCustomer,
+          "isRider": isRider,
+          "trackState": 0,
+          "timeStamp": DateTime.now(),
+          "active": 1,
+          "isParted": false,
+          "isPartedscound": false,
+          "isPartedthird": false,
+          "isPartedforth": false,
+          "isPartedend": false,
+        });
       }
     } catch (e) {
       throw e.toString();

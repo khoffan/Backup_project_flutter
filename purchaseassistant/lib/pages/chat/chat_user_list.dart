@@ -77,11 +77,7 @@ class _ListUserchatState extends State<ListUserchat> {
     String revicedId = data["reciveData"]["riderid"];
     String senderid = data["senderData"]["cusid"];
     String senderName = data["senderData"]["cusname"];
-    final riderStatus = isRiderStatus;
-    print(riderStatus);
-    if (uid.trim() == revicedId.trim() &&
-        uid.trim() != senderid.trim() &&
-        riderStatus == true) {
+    if (uid.trim() == revicedId.trim() && uid.trim() != senderid.trim()) {
       return Card(
         child: ListTile(
           title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
@@ -98,9 +94,7 @@ class _ListUserchatState extends State<ListUserchat> {
         ),
       );
     }
-    if (uid.trim() != revicedId.trim() &&
-        uid.trim() == senderid.trim() &&
-        riderStatus == true) {
+    if (uid.trim() != revicedId.trim() && uid.trim() == senderid.trim()) {
       return Card(
         child: ListTile(
           title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),

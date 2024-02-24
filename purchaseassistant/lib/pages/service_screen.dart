@@ -39,14 +39,16 @@ class _ServiceScreenState extends State<ServiceScreen> {
   String currid = "";
   String reciveuid = "";
   String name = "";
+  String statusChat = "";
   bool? isLoading;
   bool valueFirst = false;
   bool valueSecond = false;
   bool valueThird = false;
+  bool _shouldNavigateToChat = false;
   Map<String, dynamic> responseData = {};
   Map<String, dynamic> responseDatariders = {};
-  late StreamSubscription<double> subscription;
   late StreamSubscription<Map<String, dynamic>> streamData;
+  // Declare a stream controller
 
   void setLocationData(String title) {
     if (title != "") {
@@ -100,15 +102,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
       };
 
       await APIMatiching().setCustomerData(userData);
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (_) => LoadingCustomerScreen(
-      //       riderid: uid,
-      //     ),
-      //   ),
-      // );
-      // DeliverHistory(cusid: cusid, riderid: riderid,);
     } catch (e) {
       print("Error connect: ${e}");
     }
@@ -123,20 +116,19 @@ class _ServiceScreenState extends State<ServiceScreen> {
             if (snapshotData["rider_status"] == true && isLoading == false) {
               name = snapshotData["ridername"];
               reciveuid = snapshotData["riderid"];
+
               if ((name, reciveuid) != "") {
                 setState(() {
                   isLoading = true;
                 });
-                APIMatiching().updateStatusChatCustomer(uid);
-                APIMatiching().updateStatusCustomer(uid);
-              }
-            } else if (snapshotData["rider_status"] == false &&
-                isLoading == false) {
-              setState(() {
+                await APIMatiching().updateStatusChatCustomer(uid);
+                await APIMatiching().updateStatusCustomer(uid, null);
+                alertRiderConfrime(context);
+              } else {
                 setState(() {
                   isLoading = false;
                 });
-              });
+              }
             }
           },
           onError: (dynamic error) {
@@ -149,8 +141,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
       } else {
         print("Document not updated");
       }
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
+    } catch (e) {
+      throw e.toString();
     }
   }
 
@@ -164,78 +156,49 @@ class _ServiceScreenState extends State<ServiceScreen> {
     }
   }
 
-  // getAmount(BuildContext context, String uid) {
-  //   try {
-  //     if (uid != "") {
-  //       subscription = ServiceWallet().getTotalAmount(uid).listen(
-  //         (double totalAmount) {
-  //           if (totalAmount == 0.00) {
-  //             Future.delayed(Duration(seconds: 1), () {
-  //               alertNOtAmout(context);
-  //             });
-  //           }
-  //           setState(() {
-  //             amount = totalAmount;
-  //           });
-  //           print('Total Amount: $totalAmount');
-  //         },
-  //         onError: (dynamic error) {
-  //           // Handle errors
-  //           print('Error: $error');
-  //         },
-  //         onDone: () {
-  //           // Handle when the stream is closed
-  //           print('Stream is closed');
-  //         },
-  //       );
-  //     }
-  //   } catch (e) {
-  //     throw e.toString();
-  //   }
-  // }
-
   void _overlayPopup() {
+    // Show Overlay
     OverlayEntry entry = OverlayEntry(
       builder: (context) {
         return Positioned(
-            bottom: MediaQuery.of(context).size.height / 8,
-            left: MediaQuery.of(context).size.width / 3,
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
-                color: Colors.black12,
-              ),
-              child: Row(
-                children: [
-                  CircularProgressIndicator(
-                    strokeWidth: 4,
-                    color: Colors.amber,
-                    backgroundColor: Colors.white,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        'กำลังจับคู่',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
+          bottom: MediaQuery.of(context).size.height / 8,
+          left: MediaQuery.of(context).size.width / 3,
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              color: Colors.black12,
+            ),
+            child: Row(
+              children: [
+                CircularProgressIndicator(
+                  strokeWidth: 4,
+                  color: Colors.amber,
+                  backgroundColor: Colors.white,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      'กำลังจับคู่',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ],
-              ),
-            ));
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
+
     Overlay.of(context).insert(entry);
 
-    if (isLoading == true) {
-      entry.remove();
-    }
     Future.delayed(Duration(seconds: 10), () {
       entry.remove();
     });
@@ -249,43 +212,37 @@ class _ServiceScreenState extends State<ServiceScreen> {
     });
     uid = _auth.currentUser!.uid;
     // getAmount(context, uid);
-
     connectMatchingResult();
   }
 
   @override
   void dispose() {
     super.dispose();
+    // _streamController.close();
     streamData.cancel();
-    subscription.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    return showScreen(context);
-  }
-
-  Widget showScreen(BuildContext context) {
-    return isLoading != true
-        ? Scaffold(
-            appBar: AppBar(
-              backgroundColor: themeBg,
-              title: const Text(
-                "เลือกบริการ",
-                style: TextStyle(color: Colors.black, fontSize: 18),
-              ),
-              leading: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                  )),
-            ),
-            body: _ShowContent(),
-          )
-        : ChatScreen(reciveuid: reciveuid, name: name);
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: themeBg,
+        title: const Text(
+          "เลือกบริการ",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      body: _ShowContent(),
+    );
   }
 
   Widget _ShowContent() {
@@ -535,18 +492,22 @@ class _ServiceScreenState extends State<ServiceScreen> {
       ],
     );
   }
-}
 
-alertNOtAmout(BuildContext context) {
-  return QuickAlert.show(
-    context: context,
-    type: QuickAlertType.confirm,
-    title: 'เงินคงเหลือไม่เพียงพอ',
-    text: "กรุณาเติมเงินก่อนทำรายการ",
-    confirmBtnText: 'เติมเงิน',
-    onConfirmBtnTap: () =>
-        Navigator.pushReplacementNamed(context, AppRoute.wallet),
-    confirmBtnColor: Colors.blue,
-    cancelBtnText: 'ยกเลิก',
-  );
+  alertRiderConfrime(BuildContext context) {
+    return QuickAlert.show(
+      context: context,
+      type: QuickAlertType.confirm,
+      title: 'จับคู่สำเร็จ',
+      text: "ทำการจับคู่สำเร็จ",
+      confirmBtnText: 'ตกลง',
+      onConfirmBtnTap: () async {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ChatScreen(reciveuid: reciveuid, name: name)));
+      },
+      confirmBtnColor: Colors.blue,
+      cancelBtnText: 'ยกเลิก',
+    );
+  }
 }

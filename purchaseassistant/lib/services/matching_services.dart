@@ -77,11 +77,11 @@ class APIMatiching {
   }
 
   // update data
-  Future<void> updateStatusCustomer(String uid) async {
+  Future<void> updateStatusCustomer(String uid, bool? status) async {
     try {
       if (uid != "") {
         await _firestore.collection("Matchings").doc(uid).update({
-          "cus_status": false,
+          "cus_status": status ?? false,
         });
       } else {
         return;
@@ -166,8 +166,22 @@ class APIMatiching {
       throw e.toString();
     }
   }
-  // get rider id
 
+  Future<void> updateRiderStatus(String uid) async {
+    try {
+      if (uid != "") {
+        await _firestore.collection("Matchings").doc(uid).update({
+          "rider_status": false,
+        });
+      } else {
+        return;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  // get rider id
   Future<String> getRiderid(String uid) async {
     try {
       QuerySnapshot snapshot = await _firestore.collection("Matchings").get();

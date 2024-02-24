@@ -60,6 +60,11 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
     await Future.delayed(Duration(seconds: 1));
   }
 
+  void setDefuiltData() async {
+    await ChatServices()
+        .setDefulttracking(chatroomid, isCustomer ?? false, isRider ?? false);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -247,10 +252,9 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
                     isPart: endPartedCheck,
                     eventCard: Text("รอส่งสินค้า"),
                   ),
-                  endPartedCheck == true
-                      ? ElevatedButton(
-                          onPressed: () {}, child: Text("ส่งสินค้าสำเร็จ"))
-                      : Container(),
+                  ElevatedButton(
+                      onPressed: riderCheck ?? false ? () {} : null,
+                      child: Text("ส่งสินค้าสำเร็จ"))
                 ],
               ),
             ),

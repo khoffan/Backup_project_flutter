@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purchaseassistant/pages/auth/login_screen.dart';
+import 'package:purchaseassistant/pages/service_screen.dart';
 import 'package:purchaseassistant/pages/testPage.dart';
 import 'package:purchaseassistant/routes/routes.dart';
 import '../pages/chat/chat_user_list.dart';
@@ -86,7 +87,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
             // } else {
             //   Navigator.pushNamed(context, AppRoute.service);
             // }
-            Navigator.pushNamed(context, AppRoute.service);
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => ServiceScreen()));
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

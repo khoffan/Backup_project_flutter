@@ -86,13 +86,16 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       anotherid = await APIMatiching().getRiderid(id);
       if (uid.trim() == anotherid.trim()) {
-        APIMatiching().updateRiderData(id);
-        APIMatiching().updateStatusChatCustomer(id);
-        Navigator.pop(context);
+        await APIMatiching().updateRiderData(id);
+        await APIMatiching().updateStatusChatCustomer(id);
       }
     } catch (e) {
       throw e.toString();
     }
+  }
+
+  void backwarChatScreen() async {
+    await APIMatiching().updateRiderStatus(uid);
   }
 
   void checkStatusrider() async {
@@ -168,7 +171,8 @@ class _ChatScreenState extends State<ChatScreen> {
         backgroundColor: themeBg,
         leading: IconButton(
             onPressed: () {
-              closeChatState(otherid!);
+              // closeChatState(otherid!);
+              backwarChatScreen();
               Navigator.pop(context);
             },
             icon: const Icon(
