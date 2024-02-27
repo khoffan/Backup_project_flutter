@@ -171,8 +171,7 @@ class _ChatScreenState extends State<ChatScreen> {
         backgroundColor: themeBg,
         leading: IconButton(
             onPressed: () {
-              // closeChatState(otherid!);
-              backwarChatScreen();
+              closeChatState(otherid!);
               Navigator.pop(context);
             },
             icon: const Icon(

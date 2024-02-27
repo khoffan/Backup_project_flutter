@@ -40,14 +40,15 @@ class _ServiceScreenState extends State<ServiceScreen> {
   String reciveuid = "";
   String name = "";
   String statusChat = "";
-  bool? isLoading;
   bool valueFirst = false;
   bool valueSecond = false;
   bool valueThird = false;
   bool _shouldNavigateToChat = false;
+  bool hasNavigate = false;
   Map<String, dynamic> responseData = {};
   Map<String, dynamic> responseDatariders = {};
   late StreamSubscription<Map<String, dynamic>> streamData;
+
   // Declare a stream controller
 
   void setLocationData(String title) {
@@ -77,6 +78,15 @@ class _ServiceScreenState extends State<ServiceScreen> {
       print('Error: $e');
     }
     return {};
+  }
+
+  void connectoChatScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatScreen(reciveuid: reciveuid, name: name),
+      ),
+    );
   }
 
   void sendData2api(String uid) async {
@@ -113,22 +123,30 @@ class _ServiceScreenState extends State<ServiceScreen> {
         streamData = APIMatiching().getData(uid).listen(
           (Map<String, dynamic> snapshotData) async {
             print(snapshotData["rider_status"]);
-            if (snapshotData["rider_status"] == true && isLoading == false) {
+            if (!mounted) {
+              streamData
+                  .cancel(); // Cancel the stream subscription if the widget is disposed
+              return;
+            }
+            if (snapshotData["rider_status"] == true && hasNavigate == false) {
               name = snapshotData["ridername"];
               reciveuid = snapshotData["riderid"];
 
               if ((name, reciveuid) != "") {
-                setState(() {
-                  isLoading = true;
-                });
                 await APIMatiching().updateStatusChatCustomer(uid);
                 await APIMatiching().updateStatusCustomer(uid, null);
-                alertRiderConfrime(context);
-              } else {
                 setState(() {
-                  isLoading = false;
+                  hasNavigate = true;
                 });
+                if (mounted && hasNavigate == true) {
+                  print(hasNavigate);
+                  connectoChatScreen();
+                }
               }
+            } else {
+              setState(() {
+                hasNavigate = false;
+              });
             }
           },
           onError: (dynamic error) {
@@ -142,7 +160,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
         print("Document not updated");
       }
     } catch (e) {
-      throw e.toString();
+      if (mounted) {
+        throw e.toString();
+      }
     }
   }
 
@@ -171,11 +191,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
             ),
             child: Row(
               children: [
-                CircularProgressIndicator(
-                  strokeWidth: 4,
-                  color: Colors.amber,
-                  backgroundColor: Colors.white,
-                ),
+                Text("..."),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Material(
@@ -198,33 +214,44 @@ class _ServiceScreenState extends State<ServiceScreen> {
     );
 
     Overlay.of(context).insert(entry);
-
-    Future.delayed(Duration(seconds: 10), () {
+    Future.delayed(Duration(seconds: 3), () {
       entry.remove();
     });
   }
 
+  // Future<void> _initstateScreen() async {
+  //   connectMatchingResult();
+  //   _overlayPopup();
+  // }
+
   @override
   void initState() {
     super.initState();
-    setState(() {
-      isLoading = false;
-    });
     uid = _auth.currentUser!.uid;
+    setState(() {
+      hasNavigate = false;
+    });
     // getAmount(context, uid);
     connectMatchingResult();
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
   void dispose() {
     super.dispose();
-    // _streamController.close();
     streamData.cancel();
   }
+
+  int numbercheck = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: themeBg,
         title: const Text(
@@ -241,7 +268,14 @@ class _ServiceScreenState extends State<ServiceScreen> {
           ),
         ),
       ),
-      body: _ShowContent(),
+      body: Stack(
+        children: [
+          // Overlay(
+          //   initialEntries: entry != null ? [entry] : [],
+          // ),
+          _ShowContent(),
+        ],
+      ),
     );
   }
 
@@ -485,29 +519,20 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 )),
           ],
         ),
-        // Spacer(),
-        // Column(
-        //   children: [Text("${amount}")],
-        // )
+        Spacer(),
+        Column(
+          children: [
+            ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    numbercheck += 1;
+                  });
+                  print("numbercheck before refresh: $numbercheck");
+                },
+                child: Text("click"))
+          ],
+        )
       ],
-    );
-  }
-
-  alertRiderConfrime(BuildContext context) {
-    return QuickAlert.show(
-      context: context,
-      type: QuickAlertType.confirm,
-      title: 'จับคู่สำเร็จ',
-      text: "ทำการจับคู่สำเร็จ",
-      confirmBtnText: 'ตกลง',
-      onConfirmBtnTap: () async {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => ChatScreen(reciveuid: reciveuid, name: name)));
-      },
-      confirmBtnColor: Colors.blue,
-      cancelBtnText: 'ยกเลิก',
     );
   }
 }

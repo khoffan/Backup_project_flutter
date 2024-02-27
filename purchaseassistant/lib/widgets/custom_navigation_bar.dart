@@ -7,7 +7,7 @@ import 'package:purchaseassistant/routes/routes.dart';
 import '../pages/chat/chat_user_list.dart';
 import '../pages/dashboard_screen.dart';
 import '../pages/profile/profile_screen.dart';
-import '../pages/qrScreen.dart';
+
 import '../services/auth_service.dart';
 import '../services/user_provider.dart';
 
@@ -60,7 +60,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       _widgetOptions = <Widget>[
         DashboardScreen(),
         ListUserchat(),
-        PullToRefreshApp(),
+        const TestScreen(),
         ProfileScreenApp(myNavigate: _NavigateTohome),
       ];
     }
@@ -79,14 +79,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
           ),
           backgroundColor: Colors.green,
           onPressed: () {
-            // if (amout < 20.00) {
-            //   Fluttertoast.showToast(
-            //     msg: "เงินคงเหลือไม่เพียงพอ กรุณาเติมเงิน",
-            //   );
-            //   amout += 5;
-            // } else {
-            //   Navigator.pushNamed(context, AppRoute.service);
-            // }
             Navigator.push(
                 context, MaterialPageRoute(builder: (_) => ServiceScreen()));
           },
@@ -150,27 +142,27 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // MaterialButton(
-                    //   minWidth: 50,
-                    //   onPressed: () {
-                    //     _onItemTapped(2);
-                    //   },
-                    //   child: Column(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       children: [
-                    //         Icon(Icons.qr_code_scanner_rounded,
-                    //             color: _selectedIndex == 2
-                    //                 ? Colors.green
-                    //                 : Colors.grey),
-                    //         Text(
-                    //           'Scan',
-                    //           style: TextStyle(
-                    //               color: _selectedIndex == 2
-                    //                   ? Colors.green
-                    //                   : Colors.grey),
-                    //         ),
-                    //       ]),
-                    // ),
+                    MaterialButton(
+                      minWidth: 50,
+                      onPressed: () {
+                        _onItemTapped(2);
+                      },
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.qr_code_scanner_rounded,
+                                color: _selectedIndex == 2
+                                    ? Colors.green
+                                    : Colors.grey),
+                            Text(
+                              'Scan',
+                              style: TextStyle(
+                                  color: _selectedIndex == 2
+                                      ? Colors.green
+                                      : Colors.grey),
+                            ),
+                          ]),
+                    ),
                     MaterialButton(
                       minWidth: 50,
                       onPressed: () {
