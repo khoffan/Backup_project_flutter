@@ -19,7 +19,7 @@ class AppRoute {
         login: (context) => const LoginScreen(),
         register: (context) => const RegisterScreen(),
         widget_navigation: (context) => const BottomNavigation(),
-        // service: (context) => ServiceScreen(),
+        service: (context) => ServiceScreen(),
         wallet: (context) => const WalletScreenApp(),
         // test: (context) => const TestPage(),
       };

@@ -43,7 +43,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
   bool valueFirst = false;
   bool valueSecond = false;
   bool valueThird = false;
-  bool _shouldNavigateToChat = false;
   bool hasNavigate = false;
   Map<String, dynamic> responseData = {};
   Map<String, dynamic> responseDatariders = {};
@@ -80,68 +79,78 @@ class _ServiceScreenState extends State<ServiceScreen> {
     return {};
   }
 
-  void connectoChatScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChatScreen(reciveuid: reciveuid, name: name),
-      ),
-    );
-  }
+  Future<void> sendData2api(String userid) async {
+    if (!mounted) {
+      return; // Avoid processing if the widget is already disposed
+    }
 
-  void sendData2api(String uid) async {
     String name = "";
     Timestamp datenow = Timestamp.now();
     Map<String, dynamic> profileData = {};
     String locate = "";
-    // Check if uid is not empty or null
 
     try {
-      if (uid != "") {
-        profileData = await getProfileData(uid);
+      if (userid != "") {
+        profileData = await getProfileData(userid);
       }
+
       if (profileData.isNotEmpty) {
         name = profileData['name'];
-      }
-      locate = getLocateData();
-      Map<String, dynamic> userData = <String, dynamic>{
-        "id": uid,
-        'name': name,
-        "location": locate,
-        "date": FormatDate.date(datenow),
-      };
+        locate = getLocateData();
+        Map<String, dynamic> userData = <String, dynamic>{
+          "id": userid,
+          'name': name,
+          "location": locate,
+          "date": FormatDate.date(datenow),
+        };
 
-      await APIMatiching().setCustomerData(userData);
+        await APIMatiching().setCustomerData(userData);
+      }
     } catch (e) {
-      print("Error connect: ${e}");
+      if (mounted) {
+        // Handle errors only if the widget is still mounted
+        print('Error: $e');
+      }
     }
   }
 
-  void connectMatchingResult() {
+  bool checkData() {
+    // Add your custom logic to check if data is valid
+    return name.isNotEmpty && reciveuid.isNotEmpty;
+  }
+
+  void navigateToChatScreen() {
+    // set timer 2 secound
+    Timer(const Duration(seconds: 2), () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(reciveuid: reciveuid, name: name),
+        ),
+      );
+    });
+  }
+
+  Future<void> connectMatchingResult() async {
     try {
       if (uid != "") {
         streamData = APIMatiching().getData(uid).listen(
           (Map<String, dynamic> snapshotData) async {
             print(snapshotData["rider_status"]);
-            if (!mounted) {
-              streamData
-                  .cancel(); // Cancel the stream subscription if the widget is disposed
-              return;
-            }
+
             if (snapshotData["rider_status"] == true && hasNavigate == false) {
+              setState(() {
+                hasNavigate = true;
+              });
               name = snapshotData["ridername"];
               reciveuid = snapshotData["riderid"];
 
-              if ((name, reciveuid) != "") {
+              if ((name, reciveuid) != "" && mounted) {
                 await APIMatiching().updateStatusChatCustomer(uid);
                 await APIMatiching().updateStatusCustomer(uid, null);
-                setState(() {
-                  hasNavigate = true;
-                });
-                if (mounted && hasNavigate == true) {
-                  print(hasNavigate);
-                  connectoChatScreen();
-                }
+              }
+              if (hasNavigate == true && checkData()) {
+                navigateToChatScreen();
               }
             } else {
               setState(() {
@@ -177,7 +186,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
   }
 
   void _overlayPopup() {
-    // Show Overlay
     OverlayEntry entry = OverlayEntry(
       builder: (context) {
         return Positioned(
@@ -214,15 +222,11 @@ class _ServiceScreenState extends State<ServiceScreen> {
     );
 
     Overlay.of(context).insert(entry);
+
     Future.delayed(Duration(seconds: 3), () {
       entry.remove();
     });
   }
-
-  // Future<void> _initstateScreen() async {
-  //   connectMatchingResult();
-  //   _overlayPopup();
-  // }
 
   @override
   void initState() {
@@ -231,13 +235,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
     setState(() {
       hasNavigate = false;
     });
-    // getAmount(context, uid);
-    connectMatchingResult();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+    if (mounted) {
+      connectMatchingResult();
+    }
   }
 
   @override
@@ -362,11 +362,11 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 width: 170,
                 height: 100,
                 child: InkWell(
-                  onTap: () {
+                  onTap: () async {
                     if (((valueFirst == true || valueSecond == true) &&
                         valueThird != true)) {
-                      sendData2api(uid);
                       _overlayPopup();
+                      sendData2api(uid);
                     } else {
                       String msgErr = "";
                       if ((valueFirst == false ||

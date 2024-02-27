@@ -29,11 +29,13 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController _messageController = TextEditingController();
   FirebaseAuth _auth = FirebaseAuth.instance;
-  late StreamSubscription<bool>? _stremSub;
+  late StreamSubscription<bool> _stremSub;
+
   String uid = "";
   String? otherid;
   String anotherid = "";
   bool isRiderStatus = true;
+  bool isCustomerStatus = false;
   Timestamp? _lastMessageTimestamp;
   FocusNode _focusNode = FocusNode();
   String chatroomid = "";
@@ -95,7 +97,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void backwarChatScreen() async {
-    await APIMatiching().updateRiderStatus(uid);
+    await APIMatiching().updateStatusCustomer(uid, true);
   }
 
   void checkStatusrider() async {
@@ -105,9 +107,8 @@ class _ChatScreenState extends State<ChatScreen> {
           setState(() {
             isRiderStatus = isStatus;
           });
-          print(isRiderStatus);
           if (isRiderStatus == false) {
-            Navigator.pop(context);
+            Navigator.pop(context, ModalRoute.withName(AppRoute.service));
           }
         },
         onError: (dynamic e) {
@@ -156,7 +157,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     _focusNode.dispose();
-    _stremSub?.cancel();
+    _stremSub.cancel();
+
     super.dispose();
   }
 
@@ -172,7 +174,8 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: IconButton(
             onPressed: () {
               closeChatState(otherid!);
-              Navigator.pop(context);
+
+              Navigator.pop(context, ModalRoute.withName(AppRoute.service));
             },
             icon: const Icon(
               Icons.arrow_back,

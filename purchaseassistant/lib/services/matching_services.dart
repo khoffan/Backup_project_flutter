@@ -281,6 +281,8 @@ class APIMatiching {
     }
   }
 
+  //TEST getdata future
+
   Stream<bool> getRiderStatus(String uid) async* {
     StreamController<bool> _streamController = StreamController<bool>();
     try {
@@ -300,6 +302,45 @@ class APIMatiching {
           (DocumentSnapshot quryData) {
             final data = quryData.data() as Map<String, dynamic>;
             bool newStatus = data["rider_status"];
+            _streamController.add(newStatus);
+          },
+          onError: (dynamic error) {
+            _streamController.addError(error);
+          },
+          onDone: () {
+            _streamController.close();
+          },
+        );
+        _streamController.done.then((_) {
+          subscription.cancel();
+        });
+      }
+      yield* _streamController.stream;
+    } catch (e) {
+      _streamController.addError(e.toString());
+      _streamController.close();
+    }
+  }
+
+  Stream<bool> getCustomerStatus(String uid) async* {
+    StreamController<bool> _streamController = StreamController<bool>();
+    try {
+      CollectionReference collectionRef = _firestore.collection("Matchings");
+
+      Query query = collectionRef.where("cusid", isEqualTo: uid);
+
+      QuerySnapshot querySnap = await query.get();
+
+      if (querySnap.docs.isNotEmpty) {
+        DocumentSnapshot docSnap = querySnap.docs.first;
+
+        final data = docSnap.data() as Map<String, dynamic>;
+        _streamController.add(data["cus_status"]);
+
+        var subscription = docSnap.reference.snapshots().listen(
+          (DocumentSnapshot quryData) {
+            final data = quryData.data() as Map<String, dynamic>;
+            bool newStatus = data["cus_status"];
             _streamController.add(newStatus);
           },
           onError: (dynamic error) {
