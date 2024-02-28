@@ -108,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
             isRiderStatus = isStatus;
           });
           if (isRiderStatus == false) {
-            Navigator.pop(context, ModalRoute.withName(AppRoute.service));
+            Navigator.maybePop(context);
           }
         },
         onError: (dynamic e) {
@@ -174,8 +174,8 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: IconButton(
             onPressed: () {
               closeChatState(otherid!);
-
-              Navigator.pop(context, ModalRoute.withName(AppRoute.service));
+              backwarChatScreen();
+              Navigator.maybePop(context);
             },
             icon: const Icon(
               Icons.arrow_back,

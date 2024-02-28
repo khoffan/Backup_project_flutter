@@ -122,12 +122,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
   void navigateToChatScreen() {
     // set timer 2 secound
     Timer(const Duration(seconds: 2), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChatScreen(reciveuid: reciveuid, name: name),
-        ),
-      );
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatScreen(reciveuid: reciveuid, name: name),
+          ),
+          ModalRoute.withName(AppRoute.widget_navigation));
     });
   }
 
@@ -137,7 +137,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
         streamData = APIMatiching().getData(uid).listen(
           (Map<String, dynamic> snapshotData) async {
             print(snapshotData["rider_status"]);
-
+            bool cusStatus = snapshotData["cusStatus"];
             if (snapshotData["rider_status"] == true && hasNavigate == false) {
               setState(() {
                 hasNavigate = true;
@@ -149,7 +149,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 await APIMatiching().updateStatusChatCustomer(uid);
                 await APIMatiching().updateStatusCustomer(uid, null);
               }
-              if (hasNavigate == true && checkData()) {
+              if (hasNavigate == true && checkData() && cusStatus == true) {
                 navigateToChatScreen();
               }
             } else {
@@ -268,20 +268,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          // Overlay(
-          //   initialEntries: entry != null ? [entry] : [],
-          // ),
-          _ShowContent(),
-        ],
-      ),
+      body: _ShowContent(),
     );
   }
 
   Widget _ShowContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return ListView(
       children: [
         Container(
           padding: const EdgeInsets.all(22.0),
@@ -519,19 +511,19 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 )),
           ],
         ),
-        Spacer(),
-        Column(
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    numbercheck += 1;
-                  });
-                  print("numbercheck before refresh: $numbercheck");
-                },
-                child: Text("click"))
-          ],
-        )
+        // Spacer(),
+        // Column(
+        //   children: [
+        //     ElevatedButton(
+        //         onPressed: () {
+        //           setState(() {
+        //             numbercheck += 1;
+        //           });
+        //           print("numbercheck before refresh: $numbercheck");
+        //         },
+        //         child: Text("click"))
+        //   ],
+        // )
       ],
     );
   }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:purchaseassistant/models/message.dart';
@@ -145,11 +146,6 @@ class ChatServices extends ChangeNotifier {
           });
 
           print("Data set successfully");
-        } else if ((snapshot["isCustomer"] && snapshot["isRider"]) == false) {
-          tracingRef.doc(roomId).update({
-            "isCustomer": isCustomer,
-            "isRider": isRider,
-          });
         }
       }
     } catch (e) {
@@ -234,12 +230,50 @@ class ChatServices extends ChangeNotifier {
     }
   }
 
-  Stream<DocumentSnapshot> getTrackingState(String roomid) {
-    return _firestore
+  Stream<DocumentSnapshot> getTrackingState(String roomid) async* {
+    try {
+      yield* _firestore
+          .collection('chat_rooms')
+          .doc(roomid)
+          .collection("tracking")
+          .doc(roomid)
+          .snapshots();
+    } catch (e) {
+      // ตรวจสอบว่าเกิด error เพราะไม่มี collection
+      if (e is FirebaseException) {
+        print(e.code);
+        // สร้าง collection ใหม่
+        await _firestore
+            .collection('chat_rooms')
+            .doc(roomid)
+            .collection("tracking")
+            .doc(roomid)
+            .set({
+          // กำหนดข้อมูลเริ่มต้น
+          'last_message_time': Timestamp.now(),
+          'unread_messages': 0,
+        });
+        // เริ่ม stream อีกครั้ง
+        yield* getTrackingState(roomid);
+      } else {
+        // แสดง error อื่น ๆ
+        rethrow;
+      }
+    }
+  }
+
+  //check collection is null
+  Future<bool> checkCollectionTracking(String roomid) async {
+    DocumentSnapshot snapshot = await _firestore
         .collection('chat_rooms')
         .doc(roomid)
         .collection("tracking")
         .doc(roomid)
-        .snapshots();
+        .get();
+    if (snapshot.exists) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

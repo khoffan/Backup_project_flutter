@@ -255,6 +255,7 @@ class APIMatiching {
         (DocumentSnapshot quryData) {
           final data = quryData.data() as Map<String, dynamic>;
           Map<String, dynamic> riderDatas = {
+            "cusStatus": data["cus_status"],
             "riderid": data["riderid"],
             "ridername": data["ridername"],
             "rider_status": data["rider_status"],
@@ -275,9 +276,9 @@ class APIMatiching {
       throw e.message.toString();
     } finally {
       // Close the StreamController when it's no longer needed
-      _snapshotController.close();
-      // Cancel the subscription when it's no longer needed
-      subscription?.cancel();
+      // _snapshotController.close();
+      // // Cancel the subscription when it's no longer needed
+      // subscription?.cancel();
     }
   }
 

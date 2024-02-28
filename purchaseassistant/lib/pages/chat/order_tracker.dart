@@ -22,6 +22,7 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
   String riderid = "";
   String cusid = "";
   String chatroomid = "";
+  bool isCollection = false;
   bool? isCustomer;
   bool isEnable = false;
   bool? isRider;
@@ -34,20 +35,20 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
   bool dataHasBeenSet = false;
   late int checkState;
 
-  void getrideridfromChatroom() async {
-    String riderid = await ChatServices().getRiderChatroomid(chatroomid);
-    String cusid = await ChatServices().getCustomerChatroomid(chatroomid);
+  Future<void> getrideridfromChatroom() async {
+    String rider = await ChatServices().getRiderChatroomid(chatroomid);
+    String cus = await ChatServices().getCustomerChatroomid(chatroomid);
     setState(() {
-      riderid = riderid;
-      cusid = cusid;
+      riderid = rider;
+      cusid = cus;
     });
-    if (dataHasBeenSet != true && mounted) {
+    if (mounted) {
       checkCustomer(cusid);
     }
   }
 
-  void checkCustomer(String customerid) async {
-    if (uid == customerid && !dataHasBeenSet) {
+  Future<void> checkCustomer(String customerid) async {
+    if (uid == cusid) {
       setState(() {
         isCustomer = true;
         isRider = false;
@@ -55,14 +56,20 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
 
       await ChatServices()
           .setTrackingState(chatroomid, isCustomer ?? false, isRider ?? false);
-      dataHasBeenSet = true;
     }
     await Future.delayed(Duration(seconds: 1));
   }
 
-  void setDefuiltData() async {
-    await ChatServices()
-        .setDefulttracking(chatroomid, isCustomer ?? false, isRider ?? false);
+  Future<void> initializeData() async {
+    // Set data before using StreamBuilder
+    await ChatServices().checkCollectionTracking(chatroomid).then((value) {
+      setState(() {
+        isCollection = value;
+      });
+      if (isCollection == false) {
+        getrideridfromChatroom();
+      }
+    });
   }
 
   @override
@@ -71,8 +78,19 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
     checkState = 0;
     uid = _auth.currentUser!.uid;
     chatroomid = widget.chatroomid ?? '';
-
     getrideridfromChatroom();
+    // ChatServices().checkCollectionTracking(chatroomid).then((value) {
+    //   setState(() {
+    //     isCollection = value;
+    //   });
+    //   if (isCollection) {
+    //     print("collection is exists");
+    //   } else {
+    //     getrideridfromChatroom();
+    //   }
+    // });
+    print("isCollection: $isCollection");
+
     print("chatroomid: $chatroomid");
     print(uid);
 
@@ -89,177 +107,200 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: ChatServices().getTrackingState(chatroomid),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-          if (!snapshot.hasData) {
-            return Center(
-              child: Text("No information"),
-            );
-          }
+    return FutureBuilder(
+      future: ChatServices()
+          .setTrackingState(chatroomid, isCustomer ?? false, isRider ?? false),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return StreamBuilder(
+            stream: ChatServices().getTrackingState(chatroomid),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              }
+              if (!snapshot.hasData || snapshot.data == null) {
+                return Center(
+                  child: Text("No information"),
+                );
+              }
 
-          final Map<String, dynamic> data =
-              snapshot.data!.data() as Map<String, dynamic>;
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
 
-          bool? customerCheck = data["isCustomer"];
-          bool? riderCheck = data["isRider"];
+              final Map<String, dynamic>? data =
+                  snapshot.data!.data() as Map<String, dynamic>;
+              if (data == null) {
+                getrideridfromChatroom();
+              }
 
-          print("customerCheck: $customerCheck");
-          print("riderCheck: $riderCheck");
-          print("isCustomerClicked: $isCustomerClicked");
-          int state = data["trackState"];
-          bool firstPartedCheck = data["isParted"] ?? false;
-          bool secoundPartedCheck = data["isPartedscound"] ?? false;
-          bool thridPartedCheck = data["isPartedthird"] ?? false;
-          bool forthPartedCheck = data["isPartedforth"] ?? false;
-          bool endPartedCheck = data["isPartedend"] ?? false;
-          print("state: $state");
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                "ติดตามการสั่งซื้อ",
-                style: TextStyle(color: Colors.black, fontSize: 18),
-              ),
-              automaticallyImplyLeading: false,
-              backgroundColor: themeBg,
-              leading: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                ),
-              ),
-              actions: [
-                if (customerCheck == true &&
-                    !isCustomerClicked &&
-                    riderCheck == false &&
-                    isRider == false)
-                  buildButton(
-                      isCustomerClicked == false
-                          ? customerCheck ?? false
-                          : false, () {
-                    setState(() {
-                      isCustomer = false;
-                      isRider = true;
-                      isEnable = true;
-                      state = checkState + 1;
-                      isCustomerClicked = true;
+              bool? customerCheck = data?["isCustomer"];
+              bool? riderCheck = data?["isRider"];
 
-                      print("isParted: $isParted");
-                      print("customerCheck: $customerCheck");
-                      print("isRider: $isRider");
-                      print("isCustomerClicked: $isCustomerClicked");
-                      ChatServices().updateTRackingState(chatroomid, state,
-                          isCustomer ?? false, isRider ?? false);
-                      if (state == 1) {
-                        isParted = true;
-                      }
-                      ChatServices().updateStateValue(
-                        chatroomid,
-                        isParted,
-                        false,
-                        false,
-                        false,
-                        false,
-                      );
-                    });
-                  })
-                else
-                  buildButton(
-                      isCustomerClicked == true ? false : riderCheck ?? false,
-                      () {
-                    setState(() {
-                      state += 1;
-                      if (state % 6 == 0) {
-                        state = 0;
-                      }
-                      isCustomer = false;
-                      isRider = true;
-                      ChatServices().updateTRackingState(chatroomid, state,
-                          isCustomer ?? false, isRider ?? false);
-                      switch (state) {
-                        case 2:
-                          isPartedscound = true;
-                          break;
-                        case 3:
-                          isPartedthird = true;
-                          break;
-                        case 4:
-                          isPartedforth = true;
-                          break;
-                        case 5:
-                          isPartedend = true;
-                          break;
-                        default:
-                          break;
-                      }
-                      ChatServices().updateStateValue(
-                        chatroomid,
-                        true,
-                        isPartedscound,
-                        isPartedthird,
-                        isPartedforth,
-                        isPartedend,
-                      );
-                    });
-                  })
-              ],
-            ),
-            body: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView(
-                children: [
-                  Center(
-                    child: Text(
-                      "ติดตามการสั่งซื้อ",
-                      style: TextStyle(fontSize: 24),
+              print("customerCheck: $customerCheck");
+              print("riderCheck: $riderCheck");
+              print("isCustomerClicked: $isCustomerClicked");
+              int state = data?["trackState"] ?? 0;
+              bool firstPartedCheck = data?["isParted"] ?? false;
+              bool secoundPartedCheck = data?["isPartedscound"] ?? false;
+              bool thridPartedCheck = data?["isPartedthird"] ?? false;
+              bool forthPartedCheck = data?["isPartedforth"] ?? false;
+              bool endPartedCheck = data?["isPartedend"] ?? false;
+              print("state: $state");
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text(
+                    "ติดตามการสั่งซื้อ",
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                  ),
+                  automaticallyImplyLeading: false,
+                  backgroundColor: themeBg,
+                  leading: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Colors.black,
                     ),
                   ),
-                  MyTimelineTile(
-                    isFirst: true,
-                    isLast: false,
-                    isPart: firstPartedCheck,
-                    eventCard: Text("ยืนยันคำสั่งซื้อโดยลูกค้า"),
+                  actions: [
+                    if (customerCheck == true &&
+                        !isCustomerClicked &&
+                        riderCheck == false &&
+                        isRider == false)
+                      buildButton(
+                          isCustomerClicked == false
+                              ? customerCheck ?? false
+                              : false, () {
+                        setState(() {
+                          isCustomer = false;
+                          isRider = true;
+                          isEnable = true;
+                          state = checkState + 1;
+                          isCustomerClicked = true;
+
+                          print("isParted: $isParted");
+                          print("customerCheck: $customerCheck");
+                          print("isRider: $isRider");
+                          print("isCustomerClicked: $isCustomerClicked");
+                          ChatServices().updateTRackingState(chatroomid, state,
+                              isCustomer ?? false, isRider ?? false);
+                          if (state == 1) {
+                            isParted = true;
+                          }
+                          ChatServices().updateStateValue(
+                            chatroomid,
+                            isParted,
+                            false,
+                            false,
+                            false,
+                            false,
+                          );
+                        });
+                      })
+                    else
+                      buildButton(
+                          isCustomerClicked == true
+                              ? false
+                              : riderCheck ?? false, () {
+                        setState(() {
+                          state += 1;
+                          if (state % 6 == 0) {
+                            state = 0;
+                          }
+                          isCustomer = false;
+                          isRider = true;
+                          ChatServices().updateTRackingState(chatroomid, state,
+                              isCustomer ?? false, isRider ?? false);
+                          switch (state) {
+                            case 2:
+                              isPartedscound = true;
+                              break;
+                            case 3:
+                              isPartedthird = true;
+                              break;
+                            case 4:
+                              isPartedforth = true;
+                              break;
+                            case 5:
+                              isPartedend = true;
+                              break;
+                            default:
+                              break;
+                          }
+                          ChatServices().updateStateValue(
+                            chatroomid,
+                            true,
+                            isPartedscound,
+                            isPartedthird,
+                            isPartedforth,
+                            isPartedend,
+                          );
+                        });
+                      })
+                  ],
+                ),
+                body: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView(
+                    children: [
+                      Center(
+                        child: Text(
+                          "ติดตามการสั่งซื้อ",
+                          style: TextStyle(fontSize: 24),
+                        ),
+                      ),
+                      MyTimelineTile(
+                        isFirst: true,
+                        isLast: false,
+                        isPart: firstPartedCheck,
+                        eventCard: Text("ยืนยันคำสั่งซื้อโดยลูกค้า"),
+                      ),
+                      MyTimelineTile(
+                        isFirst: false,
+                        isLast: false,
+                        isPart: secoundPartedCheck,
+                        eventCard: Text("ไรเดอร์กำลังดำเนินตามคำสั่งซื้อ"),
+                      ),
+                      MyTimelineTile(
+                        isFirst: false,
+                        isLast: false,
+                        isPart: thridPartedCheck,
+                        eventCard: Text("ซื้อสินค้าสำเร็จ"),
+                      ),
+                      MyTimelineTile(
+                        isFirst: false,
+                        isLast: false,
+                        isPart: forthPartedCheck,
+                        eventCard: Text("ไรเดอร์กำลังนำส่งสินค้าไปยังผู้รับ"),
+                      ),
+                      MyTimelineTile(
+                        isFirst: false,
+                        isLast: true,
+                        isPart: endPartedCheck,
+                        eventCard: Text("รอส่งสินค้า"),
+                      ),
+                      ElevatedButton(
+                          onPressed: riderCheck ?? false ? () {} : null,
+                          child: Text("ส่งสินค้าสำเร็จ"))
+                    ],
                   ),
-                  MyTimelineTile(
-                    isFirst: false,
-                    isLast: false,
-                    isPart: secoundPartedCheck,
-                    eventCard: Text("ไรเดอร์กำลังดำเนินตามคำสั่งซื้อ"),
-                  ),
-                  MyTimelineTile(
-                    isFirst: false,
-                    isLast: false,
-                    isPart: thridPartedCheck,
-                    eventCard: Text("ซื้อสินค้าสำเร็จ"),
-                  ),
-                  MyTimelineTile(
-                    isFirst: false,
-                    isLast: false,
-                    isPart: forthPartedCheck,
-                    eventCard: Text("ไรเดอร์กำลังนำส่งสินค้าไปยังผู้รับ"),
-                  ),
-                  MyTimelineTile(
-                    isFirst: false,
-                    isLast: true,
-                    isPart: endPartedCheck,
-                    eventCard: Text("รอส่งสินค้า"),
-                  ),
-                  ElevatedButton(
-                      onPressed: riderCheck ?? false ? () {} : null,
-                      child: Text("ส่งสินค้าสำเร็จ"))
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           );
-        });
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
   }
 
   Widget buildButton(bool isEnable, VoidCallback onpressed) {
