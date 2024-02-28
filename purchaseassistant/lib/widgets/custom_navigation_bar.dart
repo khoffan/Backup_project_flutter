@@ -142,27 +142,27 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    MaterialButton(
-                      minWidth: 50,
-                      onPressed: () {
-                        _onItemTapped(2);
-                      },
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.qr_code_scanner_rounded,
-                                color: _selectedIndex == 2
-                                    ? Colors.green
-                                    : Colors.grey),
-                            Text(
-                              'Scan',
-                              style: TextStyle(
-                                  color: _selectedIndex == 2
-                                      ? Colors.green
-                                      : Colors.grey),
-                            ),
-                          ]),
-                    ),
+                    // MaterialButton(
+                    //   minWidth: 50,
+                    //   onPressed: () {
+                    //     _onItemTapped(2);
+                    //   },
+                    //   child: Column(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       children: [
+                    //         Icon(Icons.qr_code_scanner_rounded,
+                    //             color: _selectedIndex == 2
+                    //                 ? Colors.green
+                    //                 : Colors.grey),
+                    //         Text(
+                    //           'Scan',
+                    //           style: TextStyle(
+                    //               color: _selectedIndex == 2
+                    //                   ? Colors.green
+                    //                   : Colors.grey),
+                    //         ),
+                    //       ]),
+                    // ),
                     MaterialButton(
                       minWidth: 50,
                       onPressed: () {

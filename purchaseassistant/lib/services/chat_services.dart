@@ -121,7 +121,7 @@ class ChatServices extends ChangeNotifier {
   }
 
   Future<void> setTrackingState(
-      String roomId, bool isCustomer, bool isRider) async {
+      String roomId, bool? isCustomer, bool? isRider) async {
     try {
       DocumentReference chatRoomRef =
           _firestore.collection('chat_rooms').doc(roomId);
@@ -133,8 +133,8 @@ class ChatServices extends ChangeNotifier {
         if (!snapshot.exists) {
           // Data doesn't exist, set it
           tracingRef.doc(roomId).set({
-            "isCustomer": isCustomer,
-            "isRider": isRider,
+            "isCustomer": isCustomer ?? true,
+            "isRider": isRider ?? false,
             "trackState": 0,
             "timeStamp": DateTime.now(),
             "active": 1,
@@ -154,7 +154,7 @@ class ChatServices extends ChangeNotifier {
   }
 
   Future<void> setDefulttracking(
-      String chatroomid, bool isCustomer, bool isRider) async {
+      String chatroomid, bool? isCustomer, bool? isRider) async {
     try {
       DocumentReference chatRoomRef =
           _firestore.collection('chat_rooms').doc(chatroomid);
@@ -162,8 +162,8 @@ class ChatServices extends ChangeNotifier {
           chatRoomRef.collection("tracking").doc(chatroomid);
       if (tracingRef != null) {
         tracingRef.set({
-          "isCustomer": isCustomer,
-          "isRider": isRider,
+          "isCustomer": isCustomer ?? true,
+          "isRider": isRider ?? false,
           "trackState": 0,
           "timeStamp": DateTime.now(),
           "active": 1,

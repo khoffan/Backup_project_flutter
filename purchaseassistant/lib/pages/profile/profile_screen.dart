@@ -254,91 +254,91 @@ class _ProfileScreenAppState extends State<ProfileScreenApp> {
                                 )
                               ],
                             ),
-                            StreamBuilder(
-                              stream: _firestore
-                                  .collection('Profile')
-                                  .doc(uid)
-                                  .collection("transaction")
-                                  .orderBy("totalAmount", descending: true)
-                                  .snapshots(),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasError) {
-                                  return Container(
-                                    alignment: Alignment.center,
-                                    child: Text("${snapshot.error}"),
-                                  );
-                                } else if (snapshot.hasData &&
-                                    snapshot.data!.docs.isNotEmpty) {
-                                  QueryDocumentSnapshot doc =
-                                      snapshot.data!.docs.first;
-                                  Map<String, dynamic> data =
-                                      doc.data() as Map<String, dynamic>;
-                                  return Row(
-                                    children: [
-                                      OutlinedButton(
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.wallet,
-                                              color: Colors.black,
-                                            ),
-                                            Text(
-                                              '  ยอดเงินคงเหลือ ${data["totalAmount"]} บาท',
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16),
-                                            ),
-                                            Icon(
-                                              Icons.arrow_right_outlined,
-                                              color: Colors.black,
-                                            )
-                                          ],
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pushNamed(
-                                              context, AppRoute.wallet);
-                                        },
-                                      ),
-                                      const SizedBox(
-                                        height: 40,
-                                      )
-                                    ],
-                                  );
-                                } else {
-                                  return Row(
-                                    children: [
-                                      OutlinedButton(
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.wallet,
-                                              color: Colors.black,
-                                            ),
-                                            Text(
-                                              '  ยอดเงินคงเหลือ 0.00 บาท',
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16),
-                                            ),
-                                            Icon(
-                                              Icons.arrow_right_outlined,
-                                              color: Colors.black,
-                                            )
-                                          ],
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pushNamed(
-                                              context, AppRoute.wallet);
-                                        },
-                                      ),
-                                      const SizedBox(
-                                        height: 40,
-                                      )
-                                    ],
-                                  );
-                                }
-                              },
-                            )
+                            // StreamBuilder(
+                            //   stream: _firestore
+                            //       .collection('Profile')
+                            //       .doc(uid)
+                            //       .collection("transaction")
+                            //       .orderBy("totalAmount", descending: true)
+                            //       .snapshots(),
+                            //   builder: (context, snapshot) {
+                            //     if (snapshot.hasError) {
+                            //       return Container(
+                            //         alignment: Alignment.center,
+                            //         child: Text("${snapshot.error}"),
+                            //       );
+                            //     } else if (snapshot.hasData &&
+                            //         snapshot.data!.docs.isNotEmpty) {
+                            //       QueryDocumentSnapshot doc =
+                            //           snapshot.data!.docs.first;
+                            //       Map<String, dynamic> data =
+                            //           doc.data() as Map<String, dynamic>;
+                            //       return Row(
+                            //         children: [
+                            //           OutlinedButton(
+                            //             child: Row(
+                            //               children: [
+                            //                 Icon(
+                            //                   Icons.wallet,
+                            //                   color: Colors.black,
+                            //                 ),
+                            //                 Text(
+                            //                   '  ยอดเงินคงเหลือ ${data["totalAmount"]} บาท',
+                            //                   style: TextStyle(
+                            //                       color: Colors.black,
+                            //                       fontSize: 16),
+                            //                 ),
+                            //                 Icon(
+                            //                   Icons.arrow_right_outlined,
+                            //                   color: Colors.black,
+                            //                 )
+                            //               ],
+                            //             ),
+                            //             onPressed: () {
+                            //               Navigator.pushNamed(
+                            //                   context, AppRoute.wallet);
+                            //             },
+                            //           ),
+                            //           const SizedBox(
+                            //             height: 40,
+                            //           )
+                            //         ],
+                            //       );
+                            //     } else {
+                            //       return Row(
+                            //         children: [
+                            //           OutlinedButton(
+                            //             child: Row(
+                            //               children: [
+                            //                 Icon(
+                            //                   Icons.wallet,
+                            //                   color: Colors.black,
+                            //                 ),
+                            //                 Text(
+                            //                   '  ยอดเงินคงเหลือ 0.00 บาท',
+                            //                   style: TextStyle(
+                            //                       color: Colors.black,
+                            //                       fontSize: 16),
+                            //                 ),
+                            //                 Icon(
+                            //                   Icons.arrow_right_outlined,
+                            //                   color: Colors.black,
+                            //                 )
+                            //               ],
+                            //             ),
+                            //             onPressed: () {
+                            //               Navigator.pushNamed(
+                            //                   context, AppRoute.wallet);
+                            //             },
+                            //           ),
+                            //           const SizedBox(
+                            //             height: 40,
+                            //           )
+                            //         ],
+                            //       );
+                            //     }
+                            //   },
+                            // )
                           ],
                         ),
                       )),

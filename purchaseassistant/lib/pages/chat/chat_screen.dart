@@ -88,7 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       anotherid = await APIMatiching().getRiderid(id);
       if (uid.trim() == anotherid.trim()) {
-        await APIMatiching().updateRiderData(id);
+        // await APIMatiching().updateRiderData(id);
         await APIMatiching().updateStatusChatCustomer(id);
       }
     } catch (e) {
@@ -107,9 +107,9 @@ class _ChatScreenState extends State<ChatScreen> {
           setState(() {
             isRiderStatus = isStatus;
           });
-          if (isRiderStatus == false) {
-            Navigator.maybePop(context);
-          }
+          // if (isRiderStatus == false) {
+          //   Navigator.maybePop(context);
+          // }
         },
         onError: (dynamic e) {
           print(e.toString());

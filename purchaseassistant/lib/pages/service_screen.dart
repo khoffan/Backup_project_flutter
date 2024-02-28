@@ -44,6 +44,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   bool valueSecond = false;
   bool valueThird = false;
   bool hasNavigate = false;
+  bool cusstatuslocal = true;
   Map<String, dynamic> responseData = {};
   Map<String, dynamic> responseDatariders = {};
   late StreamSubscription<Map<String, dynamic>> streamData;
@@ -121,7 +122,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
   void navigateToChatScreen() {
     // set timer 2 secound
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 1), () {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -141,7 +142,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
             if (snapshotData["rider_status"] == true && hasNavigate == false) {
               setState(() {
                 hasNavigate = true;
+                cusstatuslocal = cusStatus;
               });
+              print(cusstatuslocal);
               name = snapshotData["ridername"];
               reciveuid = snapshotData["riderid"];
 
@@ -199,7 +202,14 @@ class _ServiceScreenState extends State<ServiceScreen> {
             ),
             child: Row(
               children: [
-                Text("..."),
+                // LinearProgressIndicator(),
+                Text(
+                  "...",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                      decoration: TextDecoration.none),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Material(
@@ -222,8 +232,10 @@ class _ServiceScreenState extends State<ServiceScreen> {
     );
 
     Overlay.of(context).insert(entry);
-
-    Future.delayed(Duration(seconds: 3), () {
+    if (cusstatuslocal == false) {
+      entry.remove();
+    }
+    Future.delayed(Duration(seconds: 10), () {
       entry.remove();
     });
   }

@@ -71,50 +71,50 @@ class _DelivererScreenState extends State<DelivererScreen> {
     }
   }
 
-  getAmount(BuildContext context, String uid) {
-    try {
-      if (uid != "") {
-        subscription = ServiceWallet().getTotalAmount(uid).listen(
-          (double totalAmount) {
-            if (totalAmount == 0.00) {
-              // Future.delayed(Duration(seconds: 1), () {
-              //   alertNOtAmout(context);
-              // });
-            }
-            setState(() {
-              amount = totalAmount;
-            });
-            print('Total Amount: $totalAmount');
-          },
-          onError: (dynamic error) {
-            // Handle errors
-            print('Error: $error');
-          },
-          onDone: () {
-            // Handle when the stream is closed
-            print('Stream is closed');
-          },
-        );
-      }
-    } catch (e) {
-      throw e.toString();
-    }
-  }
+  // getAmount(BuildContext context, String uid) {
+  //   try {
+  //     if (uid != "") {
+  //       subscription = ServiceWallet().getTotalAmount(uid).listen(
+  //         (double totalAmount) {
+  //           if (totalAmount == 0.00) {
+  //             // Future.delayed(Duration(seconds: 1), () {
+  //             //   alertNOtAmout(context);
+  //             // });
+  //           }
+  //           setState(() {
+  //             amount = totalAmount;
+  //           });
+  //           print('Total Amount: $totalAmount');
+  //         },
+  //         onError: (dynamic error) {
+  //           // Handle errors
+  //           print('Error: $error');
+  //         },
+  //         onDone: () {
+  //           // Handle when the stream is closed
+  //           print('Stream is closed');
+  //         },
+  //       );
+  //     }
+  //   } catch (e) {
+  //     throw e.toString();
+  //   }
+  // }
 
-  void exchangePost() async {
-    try {
-      print("dischange: $dischange");
-      await ServiceWallet().setExchangeAmount(uid, dischange, amount);
-    } catch (e) {
-      throw e.toString();
-    }
-  }
+  // void exchangePost() async {
+  //   try {
+  //     print("dischange: $dischange");
+  //     await ServiceWallet().setExchangeAmount(uid, dischange, amount);
+  //   } catch (e) {
+  //     throw e.toString();
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
     uid = _auth.currentUser?.uid ?? '';
-    getAmount(context, uid);
+    // getAmount(context, uid);
     print(amount);
   }
 
@@ -254,7 +254,7 @@ class _DelivererScreenState extends State<DelivererScreen> {
                 if (isChecked7day) dayDuration = "7วัน";
                 saveData(dayDuration);
 
-                exchangePost();
+                // exchangePost();
               },
               child: Text(
                 'อัปโหลด',

@@ -23,9 +23,10 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
   String cusid = "";
   String chatroomid = "";
   bool isCollection = false;
-  bool? isCustomer;
+  bool setDefuilt = false;
+  bool isCustomer = false;
   bool isEnable = false;
-  bool? isRider;
+  bool isRider = false;
   bool isParted = false;
   bool isPartedscound = false;
   bool isPartedthird = false;
@@ -42,20 +43,18 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
       riderid = rider;
       cusid = cus;
     });
-    if (mounted) {
-      checkCustomer(cusid);
-    }
   }
 
-  Future<void> checkCustomer(String customerid) async {
+  Future<void> checkCustomer() async {
     if (uid == cusid) {
       setState(() {
-        isCustomer = true;
+        isCustomer = !isCustomer;
         isRider = false;
       });
 
-      await ChatServices()
-          .setTrackingState(chatroomid, isCustomer ?? false, isRider ?? false);
+      await ChatServices().setTrackingState(chatroomid, isCustomer, isRider);
+    } else {
+      await ChatServices().setTrackingState(chatroomid, isCustomer, isRider);
     }
     await Future.delayed(Duration(seconds: 1));
   }
@@ -72,6 +71,19 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
     });
   }
 
+  Future<void> setDefuiltData() async {
+    if (uid == riderid) {
+      setState(() {
+        setDefuilt = !setDefuilt;
+        isCustomer = !isCustomer;
+        isRider = !isRider;
+        isCustomerClicked = !isCustomerClicked;
+      });
+
+      await ChatServices().setDefulttracking(chatroomid, isCustomer, isRider);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -79,6 +91,7 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
     uid = _auth.currentUser!.uid;
     chatroomid = widget.chatroomid ?? '';
     getrideridfromChatroom();
+    checkCustomer();
     // ChatServices().checkCollectionTracking(chatroomid).then((value) {
     //   setState(() {
     //     isCollection = value;
@@ -89,6 +102,7 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
     //     getrideridfromChatroom();
     //   }
     // });
+    print("setDefuilt: $setDefuilt");
     print("isCollection: $isCollection");
 
     print("chatroomid: $chatroomid");
@@ -108,9 +122,27 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: ChatServices()
-          .setTrackingState(chatroomid, isCustomer ?? false, isRider ?? false),
+      future: setDefuilt != true
+          ? checkCustomer()
+          : ChatServices().setDefulttracking(chatroomid, isCustomer, isRider),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 10),
+                Text(
+                  'กำลังอัพเดตข้อมูล...',
+                  style:
+                      TextStyle(fontSize: 16, decoration: TextDecoration.none),
+                ),
+              ],
+            ),
+          );
+        }
         if (snapshot.connectionState == ConnectionState.done) {
           return StreamBuilder(
             stream: ChatServices().getTrackingState(chatroomid),
@@ -120,36 +152,44 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
                   child: Text('Error: ${snapshot.error}'),
                 );
               }
-              if (!snapshot.hasData || snapshot.data == null) {
-                return Center(
-                  child: Text("No information"),
-                );
-              }
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Container(
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 10),
+                        Text(
+                          'อัพเดตสำเร็จ',
+                          style: TextStyle(
+                              fontSize: 16, decoration: TextDecoration.none),
+                        ),
+                      ],
+                    ));
+              }
+              if (!snapshot.hasData) {
+                return Container(
+                  alignment: Alignment.center,
                   child: CircularProgressIndicator(),
                 );
               }
-
-              final Map<String, dynamic>? data =
+              final Map<String, dynamic> data =
                   snapshot.data!.data() as Map<String, dynamic>;
-              if (data == null) {
-                getrideridfromChatroom();
-              }
 
-              bool? customerCheck = data?["isCustomer"];
-              bool? riderCheck = data?["isRider"];
+              bool customerCheck = data["isCustomer"];
+              bool riderCheck = data["isRider"];
 
               print("customerCheck: $customerCheck");
               print("riderCheck: $riderCheck");
               print("isCustomerClicked: $isCustomerClicked");
-              int state = data?["trackState"] ?? 0;
-              bool firstPartedCheck = data?["isParted"] ?? false;
-              bool secoundPartedCheck = data?["isPartedscound"] ?? false;
-              bool thridPartedCheck = data?["isPartedthird"] ?? false;
-              bool forthPartedCheck = data?["isPartedforth"] ?? false;
-              bool endPartedCheck = data?["isPartedend"] ?? false;
+              int state = data["trackState"];
+              bool firstPartedCheck = data["isParted"] ?? false;
+              bool secoundPartedCheck = data["isPartedscound"] ?? false;
+              bool thridPartedCheck = data["isPartedthird"] ?? false;
+              bool forthPartedCheck = data["isPartedforth"] ?? false;
+              bool endPartedCheck = data["isPartedend"] ?? false;
               print("state: $state");
               return Scaffold(
                 appBar: AppBar(
@@ -171,25 +211,21 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
                   actions: [
                     if (customerCheck == true &&
                         !isCustomerClicked &&
-                        riderCheck == false &&
-                        isRider == false)
-                      buildButton(
-                          isCustomerClicked == false
-                              ? customerCheck ?? false
-                              : false, () {
+                        riderCheck == false)
+                      buildButton(uid == cusid ? customerCheck : false, () {
                         setState(() {
-                          isCustomer = false;
-                          isRider = true;
+                          isCustomer = !isCustomer;
+                          isRider = !isRider;
                           isEnable = true;
                           state = checkState + 1;
-                          isCustomerClicked = true;
+                          isCustomerClicked = !isCustomerClicked;
 
                           print("isParted: $isParted");
                           print("customerCheck: $customerCheck");
                           print("isRider: $isRider");
                           print("isCustomerClicked: $isCustomerClicked");
-                          ChatServices().updateTRackingState(chatroomid, state,
-                              isCustomer ?? false, isRider ?? false);
+                          ChatServices().updateTRackingState(
+                              chatroomid, state, isCustomer, isRider);
                           if (state == 1) {
                             isParted = true;
                           }
@@ -205,9 +241,7 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
                       })
                     else
                       buildButton(
-                          isCustomerClicked == true
-                              ? false
-                              : riderCheck ?? false, () {
+                          uid == riderid && state < 5 ? riderCheck : false, () {
                         setState(() {
                           state += 1;
                           if (state % 6 == 0) {
@@ -215,8 +249,8 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
                           }
                           isCustomer = false;
                           isRider = true;
-                          ChatServices().updateTRackingState(chatroomid, state,
-                              isCustomer ?? false, isRider ?? false);
+                          ChatServices().updateTRackingState(
+                              chatroomid, state, isCustomer, isRider);
                           switch (state) {
                             case 2:
                               isPartedscound = true;
@@ -286,7 +320,11 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
                         eventCard: Text("รอส่งสินค้า"),
                       ),
                       ElevatedButton(
-                          onPressed: riderCheck ?? false ? () {} : null,
+                          onPressed: riderCheck ?? false
+                              ? () {
+                                  setDefuiltData();
+                                }
+                              : null,
                           child: Text("ส่งสินค้าสำเร็จ"))
                     ],
                   ),
