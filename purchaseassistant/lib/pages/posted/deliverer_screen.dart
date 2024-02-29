@@ -53,18 +53,15 @@ class _DelivererScreenState extends State<DelivererScreen> {
     try {
       String title = _txtControllerBody.text;
 
-      if (amount > 50.00) {
-        ServiceDeliver().saveDeliverPosts(
-          title: title,
-          imageurl: _image!,
-          uid: uid,
-          duration: duration,
-        );
-        _txtControllerBody.clear();
-        Navigator.pop(context);
-      } else {
-        Fluttertoast.showToast(msg: "กรุณาเติมเงิน");
-      }
+      ServiceDeliver().saveDeliverPosts(
+        title: title,
+        imageurl: _image!,
+        uid: uid,
+        duration: duration,
+      );
+      _txtControllerBody.clear();
+      Navigator.pop(context);
+
       print('success');
     } catch (e) {
       throw e.toString();
