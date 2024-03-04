@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purchaseassistant/pages/auth/login_screen.dart';
 import 'package:purchaseassistant/pages/service_screen.dart';
 import 'package:purchaseassistant/pages/testPage.dart';
 import 'package:purchaseassistant/routes/routes.dart';
+import 'package:purchaseassistant/services/profile_services.dart';
 import '../pages/chat/chat_user_list.dart';
 import '../pages/dashboard_screen.dart';
 import '../pages/profile/profile_screen.dart';
@@ -26,6 +28,33 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   void _NavigateTohome() {
     _onItemTapped(0);
+  }
+
+  void showDialogData() async {
+    bool isProfile = await ProfileService().checkProfile();
+    if (isProfile == false) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("ไม่มีข้อมูลส่วนตัว"),
+            content: const Text("กรุณาเพิ่มข้อมูลส่วนตัว"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  _onItemTapped(3);
+                  Navigator.pop(context);
+                },
+                child: const Text("ตกลง"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (_) => ServiceScreen()));
+    }
   }
 
   List<Widget> _widgetOptions = [];
@@ -79,8 +108,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           ),
           backgroundColor: Colors.green,
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (_) => ServiceScreen()));
+            showDialogData();
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

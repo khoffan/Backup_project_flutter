@@ -216,6 +216,23 @@ class APIMatiching {
     }
   }
 
+  // Stream<bool> checkDataRider(String cusid) {
+  //   try {
+  //     StreamController<bool> _streamController = StreamController<bool>();
+  //     bool checkData = false;
+  //     _firestore.collection("Matchings").doc(cusid).snapshots().listen(
+  //         (DocumentSnapshot data) {
+  //       if (data["riderid"] == "null") {
+  //         checkData = true;
+  //         _streamController.add(checkData);
+  //       }
+  //     }, onDone: () {});
+  //     return _streamController.stream;
+  //   } catch (e) {
+  //     throw e.toString();
+  //   }
+  // }
+
   Future<bool> geyStatusRider(String cusid) async {
     try {
       DocumentSnapshot snapshot =

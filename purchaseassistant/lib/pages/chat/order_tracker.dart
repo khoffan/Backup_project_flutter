@@ -319,13 +319,16 @@ class _OderTrackerScreenState extends State<OderTrackerScreen> {
                         isPart: endPartedCheck,
                         eventCard: Text("รอส่งสินค้า"),
                       ),
-                      ElevatedButton(
-                          onPressed: riderCheck ?? false
-                              ? () {
-                                  setDefuiltData();
-                                }
-                              : null,
-                          child: Text("ส่งสินค้าสำเร็จ"))
+                      if (riderCheck == true && endPartedCheck == true)
+                        ElevatedButton(
+                          onPressed: () {
+                            setDefuiltData();
+                          },
+                          child: Text("ส่งสินค้าสำเร็จ"),
+                        )
+                      else
+                        ElevatedButton(
+                            onPressed: null, child: Text("ส่งสินค้าสำเร็จ"))
                     ],
                   ),
                 ),

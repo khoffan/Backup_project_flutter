@@ -271,7 +271,7 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'ชื่อ') {
     return Container(
-      width: 180,
+      width: MediaQuery.of(context).size.width / 2,
       // width: MediaQuery.of(context).size.width / 2.2,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
@@ -338,10 +338,11 @@ Widget _buildTextFieldOrder(
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            hintText: title),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          hintText: title,
+        ),
         controller: roomController,
         validator: (val) {
           if (val == null || val.isEmpty) {
@@ -385,9 +386,10 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'โทรศัพท์') {
     return Container(
-      width: 190,
+      width: 180,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
+        keyboardType: TextInputType.phone,
         decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),

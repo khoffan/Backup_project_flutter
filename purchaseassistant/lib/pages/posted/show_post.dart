@@ -75,30 +75,39 @@ class _ShowPostState extends State<ShowPost> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder(
-        stream: ServiceDeliver().streamPosts(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
+      body: FutureBuilder(
+          future: Future.delayed(Duration(seconds: 3)),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(snapshot.error.toString()),
+              );
+            }
+            return StreamBuilder(
+              stream: ServiceDeliver().streamPosts(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(snapshot.error.toString()),
+                  );
+                }
+                if (!isDataFetched && widgets.isEmpty) {
+                  // Call fetchData function only if data is not fetched
+                  fetchData(snapshot.data!);
+                  isDataFetched =
+                      true; // Set the flag to true once data is fetched
+                }
+                return RefreshIndicator(
+                    child: buildWidgetList(),
+                    onRefresh: () async {
+                      await fetchData(snapshot.data!);
+                    });
+              },
             );
-          }
-          if (!isDataFetched && widgets.isEmpty) {
-            // Call fetchData function only if data is not fetched
-            fetchData(snapshot.data!);
-            isDataFetched = true; // Set the flag to true once data is fetched
-          }
-          return RefreshIndicator(
-              child: buildWidgetList(),
-              onRefresh: () async {
-                await fetchData(snapshot.data!);
-              });
-        },
-      ),
+          }),
     );
   }
 
@@ -178,7 +187,7 @@ class _ShowPostState extends State<ShowPost> {
 
     // Use savedWidgets or fallback to the original widgets list
     List<Widget> displayWidgets = savedWidgets ?? widgets;
-    if (displayWidgets.isEmpty) {
+    if (displayWidgets.isEmpty || displayWidgets.length <= 0) {
       return Center(child: Text("ไม่มีรายการโพสต์"));
     }
 

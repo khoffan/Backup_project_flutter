@@ -53,59 +53,36 @@ class _DelivererScreenState extends State<DelivererScreen> {
     try {
       String title = _txtControllerBody.text;
 
-      ServiceDeliver().saveDeliverPosts(
-        title: title,
-        imageurl: _image!,
-        uid: uid,
-        duration: duration,
-      );
-      _txtControllerBody.clear();
-      Navigator.pop(context);
+      if (title.isEmpty) {
+        Fluttertoast.showToast(msg: "กรุณากรอกข้อมูลให้ครบถ้วน");
+        return;
+      }
+
+      if (duration.isEmpty) {
+        Fluttertoast.showToast(msg: "กรุณาเลือกวันเวลาที่ต้องการ");
+        return;
+      }
+
+      if (_image == null) {
+        Fluttertoast.showToast(msg: "กรุณาเลือกรูปภาพสินค้า");
+        return;
+      }
+      if (duration.isNotEmpty && _image != null) {
+        ServiceDeliver().saveDeliverPosts(
+          title: title,
+          imageurl: _image!,
+          uid: uid,
+          duration: duration,
+        );
+        _txtControllerBody.clear();
+        Navigator.pop(context);
+      }
 
       print('success');
     } catch (e) {
       throw e.toString();
     }
   }
-
-  // getAmount(BuildContext context, String uid) {
-  //   try {
-  //     if (uid != "") {
-  //       subscription = ServiceWallet().getTotalAmount(uid).listen(
-  //         (double totalAmount) {
-  //           if (totalAmount == 0.00) {
-  //             // Future.delayed(Duration(seconds: 1), () {
-  //             //   alertNOtAmout(context);
-  //             // });
-  //           }
-  //           setState(() {
-  //             amount = totalAmount;
-  //           });
-  //           print('Total Amount: $totalAmount');
-  //         },
-  //         onError: (dynamic error) {
-  //           // Handle errors
-  //           print('Error: $error');
-  //         },
-  //         onDone: () {
-  //           // Handle when the stream is closed
-  //           print('Stream is closed');
-  //         },
-  //       );
-  //     }
-  //   } catch (e) {
-  //     throw e.toString();
-  //   }
-  // }
-
-  // void exchangePost() async {
-  //   try {
-  //     print("dischange: $dischange");
-  //     await ServiceWallet().setExchangeAmount(uid, dischange, amount);
-  //   } catch (e) {
-  //     throw e.toString();
-  //   }
-  // }
 
   @override
   void initState() {

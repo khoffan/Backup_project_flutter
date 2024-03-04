@@ -24,6 +24,20 @@ class ProfileService {
     }
   }
 
+  Future<bool> checkProfile() async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection("Profile").doc(_user.uid).get();
+      if (snapshot.exists) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   Future<String> saveProfile(Map<String, dynamic> profile) async {
     String resp = "some Error";
     try {

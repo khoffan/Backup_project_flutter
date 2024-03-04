@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,10 @@ class ListUserchat extends StatefulWidget {
 class _ListUserchatState extends State<ListUserchat> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late StreamSubscription<bool> _stremCheckData;
   String uid = "";
   bool isRiderStatus = false;
+  bool isData = false;
 
   void getStatusrider(String senderid) async {
     bool isStatus = await APIMatiching().geyStatusRider(senderid);
@@ -28,11 +32,29 @@ class _ListUserchatState extends State<ListUserchat> {
     print(isRiderStatus);
   }
 
+  void streamCheckData() {
+    _stremCheckData =
+        APIMatiching().getRiderStatus(uid).listen((bool isStatus) {
+      setState(() {
+        isData = isStatus;
+      });
+      print(isData);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     uid = _auth.currentUser!.uid;
     getStatusrider(uid);
+    streamCheckData();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _stremCheckData.cancel();
   }
 
   @override
@@ -77,24 +99,28 @@ class _ListUserchatState extends State<ListUserchat> {
     String revicedId = data["reciveData"]["riderid"];
     String senderid = data["senderData"]["cusid"];
     String senderName = data["senderData"]["cusname"];
-    if (uid.trim() == revicedId.trim() && uid.trim() != senderid.trim()) {
-      return Card(
-        child: ListTile(
-          title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
-          subtitle: Text("ผู้รับ${data["reciveData"]["ridername"]}"),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) =>
-                    ChatScreen(reciveuid: senderid, name: senderName),
-              ),
-            );
-          },
-        ),
-      );
-    }
-    if (uid.trim() != revicedId.trim() && uid.trim() == senderid.trim()) {
+    // if (uid.trim() == revicedId.trim() &&
+    //     uid.trim() != senderid.trim() &&
+    //     isData == true) {
+    //   return Card(
+    //     child: ListTile(
+    //       title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),
+    //       subtitle: Text("ผู้รับ${data["reciveData"]["ridername"]}"),
+    //       onTap: () {
+    //         Navigator.push(
+    //           context,
+    //           MaterialPageRoute(
+    //             builder: (_) =>
+    //                 ChatScreen(reciveuid: senderid, name: senderName),
+    //           ),
+    //         );
+    //       },
+    //     ),
+    //   );
+    // }
+    if (uid.trim() != revicedId.trim() &&
+        uid.trim() == senderid.trim() &&
+        isData == true) {
       return Card(
         child: ListTile(
           title: Text("ผู้ส่ง${data["senderData"]["cusname"]}"),

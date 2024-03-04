@@ -135,6 +135,17 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void _connect2Order() async {
+    print(chatroomid);
+    await ChatServices().setTrackingState(chatroomid, null, null);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OderTrackerScreen(chatroomid: chatroomid),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -194,12 +205,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   minimumSize: Size(30, 2),
                   backgroundColor: Colors.white38),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => OderTrackerScreen(chatroomid: chatroomid),
-                  ),
-                );
+                _connect2Order();
+
                 print(chatroomid);
               },
               child: Text(
