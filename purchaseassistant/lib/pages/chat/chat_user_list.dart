@@ -87,7 +87,10 @@ class _ListUserchatState extends State<ListUserchat> {
     return StremChecingData(
         hasdata: hasdata,
         widget: StreamBuilder(
-          stream: _firestore.collection('chat_rooms').snapshots(),
+          stream: _firestore
+              .collection('chat_rooms')
+              .where("senderData.id", isEqualTo: uid)
+              .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -132,6 +135,7 @@ class _ListUserchatState extends State<ListUserchat> {
     String revicedId = data["reciveData"]["riderid"];
     String senderid = data["senderData"]["cusid"];
     String senderName = data["senderData"]["cusname"];
+    print(data.length);
     // if (uid.trim() == revicedId.trim() &&
     //     uid.trim() != senderid.trim() &&
     //     isData == true) {
