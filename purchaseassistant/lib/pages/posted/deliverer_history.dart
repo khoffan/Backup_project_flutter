@@ -543,52 +543,13 @@ class _DeliverHistoryState extends State<DeliverHistory> {
     bool hasData = true;
     if (locaterider != "รับทุกงาน") {
       return StremChecingData(
-          widget: StreamBuilder(
-            stream: firestore
-                .collection("Matchings")
-                .where("location", isEqualTo: locaterider)
-                .where("cusIsonline", isEqualTo: "online")
-                .where("cus_status", isEqualTo: true)
-                .orderBy("date", descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text("Error: ${snapshot.error}"),
-                );
-              }
-              if (!snapshot.hasData) {
-                hasData = false;
-                return Center(
-                  child: Text("No data in collection"),
-                );
-              }
-              final customerDocs = snapshot.data!.docs;
-              if (snapshot.hasData && customerDocs.isNotEmpty) {
-                return ListView(
-                    children: customerDocs.map((customerDoc) {
-                  final customerdata =
-                      customerDoc.data() as Map<String, dynamic>;
-                  return buildContent(customerdata, customerDoc.id);
-                }).toList());
-              } else {
-                return Center(
-                  child: Text(
-                    !hasData ? "ไม่มีรายการของลูกค้า" : "ไม่มีรายการของลูกค้า",
-                    style: TextStyle(fontSize: 25),
-                  ),
-                );
-              }
-            },
-          ),
-          hasdata: hasData);
-    }
-    return StremChecingData(
         widget: StreamBuilder(
           stream: firestore
               .collection("Matchings")
+              .where("location", isEqualTo: locaterider)
               .where("cusIsonline", isEqualTo: "online")
               .where("cus_status", isEqualTo: true)
+              .where("status", isEqualTo: "inActive")
               .orderBy("date", descending: true)
               .snapshots(),
           builder: (context, snapshot) {
@@ -604,7 +565,6 @@ class _DeliverHistoryState extends State<DeliverHistory> {
               );
             }
             final customerDocs = snapshot.data!.docs;
-
             if (snapshot.hasData && customerDocs.isNotEmpty) {
               return ListView(
                   children: customerDocs.map((customerDoc) {
@@ -621,6 +581,49 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             }
           },
         ),
-        hasdata: hasData);
+        hasdata: hasData,
+      );
+    }
+    return StremChecingData(
+      widget: StreamBuilder(
+        stream: firestore
+            .collection("Matchings")
+            .where("cusIsonline", isEqualTo: "online")
+            .where("cus_status", isEqualTo: true)
+            .where("status", isEqualTo: "inActive")
+            .orderBy("date", descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("Error: ${snapshot.error}"),
+            );
+          }
+          if (!snapshot.hasData) {
+            hasData = false;
+            return Center(
+              child: Text("No data in collection"),
+            );
+          }
+          final customerDocs = snapshot.data!.docs;
+
+          if (snapshot.hasData && customerDocs.isNotEmpty) {
+            return ListView(
+                children: customerDocs.map((customerDoc) {
+              final customerdata = customerDoc.data() as Map<String, dynamic>;
+              return buildContent(customerdata, customerDoc.id);
+            }).toList());
+          } else {
+            return Center(
+              child: Text(
+                !hasData ? "ไม่มีรายการของลูกค้า" : "ไม่มีรายการของลูกค้า",
+                style: TextStyle(fontSize: 25),
+              ),
+            );
+          }
+        },
+      ),
+      hasdata: hasData,
+    );
   }
 }

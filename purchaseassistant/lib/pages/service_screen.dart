@@ -149,7 +149,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
               reciveuid = snapshotData["riderid"];
 
               if ((name, reciveuid) != "" && mounted) {
-                await APIMatiching().updateStatusChatCustomer(uid);
+                await APIMatiching().updateStatusChatCustomer(uid, "Active");
                 await APIMatiching().updateStatusCustomer(uid, null);
               }
               if (hasNavigate == true && checkData() && cusStatus == true) {

@@ -113,11 +113,11 @@ class APIMatiching {
   }
 
   // update status chat customer
-  Future<void> updateStatusChatCustomer(String uid) async {
+  Future<void> updateStatusChatCustomer(String uid, String? isChatroom) async {
     try {
       if (uid != "") {
         await _firestore.collection("Matchings").doc(uid).update({
-          "status": "Active",
+          "status": isChatroom ?? "InActive",
         });
       } else {
         return;

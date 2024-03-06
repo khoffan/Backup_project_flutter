@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:purchaseassistant/models/stremCheckingData.dart';
 import 'package:purchaseassistant/services/chat_services.dart';
 import 'package:purchaseassistant/services/matching_services.dart';
 import 'package:purchaseassistant/utils/constants.dart';
@@ -57,6 +58,15 @@ class _ListUserchatState extends State<ListUserchat> {
     _stremCheckData.cancel();
   }
 
+  Widget showCOntentUsechat() {
+    final StremChecingData streamDatauser = _buildShowUser(context);
+    return streamDatauser.hasdata != false
+        ? streamDatauser.widget
+        : Center(
+            child: Text("nodata"),
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,34 +78,57 @@ class _ListUserchatState extends State<ListUserchat> {
         automaticallyImplyLeading: false,
         backgroundColor: themeBg,
       ),
-      body: _buildShowUser(),
+      body: showCOntentUsechat(),
     );
   }
 
-  Widget _buildShowUser() {
-    return StreamBuilder(
-      stream: _firestore.collection('chat_rooms').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text("${snapshot.error}"),
-          );
-        }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+  StremChecingData _buildShowUser(BuildContext context) {
+    bool hasdata = true;
+    return StremChecingData(
+        hasdata: hasdata,
+        widget: StreamBuilder(
+          stream: _firestore.collection('chat_rooms').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text("${snapshot.error}"),
+              );
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-        return ListView(
-          children: snapshot.data!.docs.map((docs) => _listUser(docs)).toList(),
-        );
-      },
-    );
+            if (!snapshot.hasData) {
+              hasdata = false;
+              return Center(
+                child: Text("No data in collection"),
+              );
+            }
+
+            final contentChatDocs = snapshot.data!.docs;
+            if (snapshot.hasData && contentChatDocs.isNotEmpty) {
+              return ListView(
+                children: contentChatDocs.map((contentChatDoc) {
+                  Map<String, dynamic> contentChatData =
+                      contentChatDoc.data() as Map<String, dynamic>;
+                  return _listUser(contentChatData);
+                }).toList(),
+              );
+            } else {
+              return Center(
+                child: Text(
+                  !hasdata ? "ไม่มีรายการห้องแชต" : "ไม่มีรายการห้องแชต",
+                  style: TextStyle(fontSize: 25),
+                ),
+              );
+            }
+          },
+        ));
   }
 
-  Widget _listUser(DocumentSnapshot docs) {
-    Map<String, dynamic> data = docs.data() as Map<String, dynamic>;
+  Widget _listUser(Map<String, dynamic> data) {
     String revicedId = data["reciveData"]["riderid"];
     String senderid = data["senderData"]["cusid"];
     String senderName = data["senderData"]["cusname"];

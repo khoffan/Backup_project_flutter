@@ -89,7 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
       anotherid = await APIMatiching().getRiderid(id);
       if (uid.trim() == anotherid.trim()) {
         // await APIMatiching().updateRiderData(id);
-        await APIMatiching().updateStatusChatCustomer(id);
+        // await APIMatiching().updateStatusChatCustomer(id, null);
       }
     } catch (e) {
       throw e.toString();
@@ -98,6 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void backwarChatScreen() async {
     await APIMatiching().updateStatusCustomer(uid, true);
+    await APIMatiching().updateStatusChatCustomer(uid, "Active");
   }
 
   void checkStatusrider() async {
