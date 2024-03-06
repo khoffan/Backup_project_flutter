@@ -89,6 +89,13 @@ class _ShowPostState extends State<ShowPost> {
             return StreamBuilder(
               stream: ServiceDeliver().streamPosts(),
               builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(snapshot.error.toString()),

@@ -153,7 +153,7 @@ class _AddProfilesState extends State<AddProfiles> {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   _buildTextFieldOrder(
                                       context, "รหัสนักศึกษา", valueItem),
@@ -164,7 +164,7 @@ class _AddProfilesState extends State<AddProfiles> {
                               ),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   _buildTextFieldOrder(
                                       context, "ชื่อ", valueItem),
@@ -177,7 +177,7 @@ class _AddProfilesState extends State<AddProfiles> {
                               ),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   _buildTextFieldOrder(
                                       context, "หอ", valueItem),
@@ -190,7 +190,7 @@ class _AddProfilesState extends State<AddProfiles> {
                               ),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   _buildTextFieldOrder(
                                       context, "เพศ", valueItem),
@@ -249,9 +249,11 @@ class _AddProfilesState extends State<AddProfiles> {
 
 Widget _buildTextFieldOrder(
     context, String title, Function(String) valueItemCallback) {
+  double sizeLayout = 2.3;
   if (title == 'รหัสนักศึกษา') {
     return Container(
-      width: MediaQuery.of(context).size.width - 20,
+      width: MediaQuery.of(context).size.width - 50,
+      // width: MediaQuery.of(context).size.width / 2.2,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -271,7 +273,7 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'ชื่อ') {
     return Container(
-      width: MediaQuery.of(context).size.width / 2,
+      width: MediaQuery.of(context).size.width / sizeLayout,
       // width: MediaQuery.of(context).size.width / 2.2,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
@@ -292,8 +294,8 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'นามสกุล') {
     return Container(
-      width: 190,
-      // width: MediaQuery.of(context).size.width / 2.1,
+      // width: 190,
+      width: MediaQuery.of(context).size.width / sizeLayout,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -314,7 +316,7 @@ Widget _buildTextFieldOrder(
 
   if (title == 'หอ') {
     return Container(
-      width: 180,
+      width: MediaQuery.of(context).size.width / sizeLayout,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -334,7 +336,7 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'หมายเลขห้อง') {
     return Container(
-      width: 190,
+      width: MediaQuery.of(context).size.width / sizeLayout,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         decoration: InputDecoration(
@@ -355,13 +357,15 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'เพศ') {
     return Container(
-      width: 180,
+      width: MediaQuery.of(context).size.width / sizeLayout,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(10),
       ),
       height: 60,
       child: DropdownButton<String>(
+        isDense: false,
+        underline: const SizedBox(),
         value: dropdownValue,
         elevation: 10,
         isExpanded: true,
@@ -386,7 +390,7 @@ Widget _buildTextFieldOrder(
   }
   if (title == 'โทรศัพท์') {
     return Container(
-      width: 180,
+      width: MediaQuery.of(context).size.width / sizeLayout,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: TextFormField(
         keyboardType: TextInputType.phone,
