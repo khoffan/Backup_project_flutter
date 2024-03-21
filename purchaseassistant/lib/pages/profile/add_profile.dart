@@ -1,0 +1,414 @@
+import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:purchaseassistant/models/profile.dart';
+import 'package:purchaseassistant/services/delivers_services.dart';
+import 'package:purchaseassistant/utils/constants.dart';
+
+import '../../services/profile_services.dart';
+
+class AddProfiles extends StatefulWidget {
+  const AddProfiles({super.key});
+
+  @override
+  State<AddProfiles> createState() => _AddProfilesState();
+}
+
+TextEditingController nameController = TextEditingController();
+TextEditingController lastnameController = TextEditingController();
+TextEditingController roomController = TextEditingController();
+TextEditingController stdidController = TextEditingController();
+TextEditingController dormController = TextEditingController();
+TextEditingController genderController = TextEditingController();
+TextEditingController phoneController = TextEditingController();
+TextEditingController activeController = TextEditingController();
+TextEditingController statusController = TextEditingController();
+
+List<String> list = <String>['ชาย', 'หญิง'];
+
+String dropdownValue = list.first; // Default value for dropdown
+
+class _AddProfilesState extends State<AddProfiles> {
+  final Future<FirebaseApp> firebase = Firebase.initializeApp();
+  final _formKey = GlobalKey<FormState>();
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void valueItem(value) {
+    setState(() {
+      dropdownValue = value;
+    });
+  }
+
+  String? _image;
+  void selectImage() async {
+    final picker = ImagePicker();
+    final pickImageURL = await picker.pickImage(source: ImageSource.gallery);
+    if (pickImageURL != null) {
+      final img = File(pickImageURL.path);
+
+      final imgurl =
+          await ProfileService().uploadImagetoStorage('/profileImage', img);
+      setState(() {
+        _image = imgurl;
+      });
+    }
+  }
+
+  void saveFile(BuildContext context, String uid) async {
+    String name = nameController.text;
+    String room = roomController.text;
+    String stdid = stdidController.text;
+    String dorm = dormController.text;
+    String phone = phoneController.text;
+    String lname = lastnameController.text;
+    Profiles? profile;
+    if ((name, room, stdid, dorm, phone, lname, dropdownValue, _image) != "") {
+      profile = Profiles(
+          name, lname, dorm, dropdownValue, _image, room, phone, stdid);
+    }
+
+    if (!profile!.checkIsEmpty()) {
+      await ProfileService().saveProfile(profile.toMap());
+      await ServiceDeliver().setData(uid);
+      Navigator.pop(context);
+      nameController.clear();
+      roomController.clear();
+      stdidController.clear();
+      dormController.clear();
+      lastnameController.clear();
+      phoneController.clear();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: FutureBuilder(
+        future: firebase,
+        builder: (context, snap) {
+          if (snap.hasError) {
+            return Scaffold(
+              appBar: AppBar(title: Text("Error")),
+              body: Center(child: Text("${snap.error}")),
+            );
+          }
+          if (snap.hasData) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  'สร้างโปรไฟล์',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500),
+                ),
+                backgroundColor: themeBg,
+                automaticallyImplyLeading: false,
+              ),
+              body: Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: ListView(
+                      children: [
+                        Stack(
+                          alignment: AlignmentDirectional.bottomCenter,
+                          children: [
+                            _image != null
+                                ? CircleAvatar(
+                                    radius: 64,
+                                    backgroundImage: NetworkImage(_image!),
+                                  )
+                                : const CircleAvatar(
+                                    radius: 64,
+                                    backgroundImage: NetworkImage(
+                                        'https://i.pinimg.com/564x/37/c6/ee/37c6ee12369d470152c3cbe592477703.jpg'),
+                                  ),
+                            Positioned(
+                              child: IconButton(
+                                onPressed: () {
+                                  selectImage();
+                                },
+                                icon: const Icon(
+                                  Icons.add_a_photo,
+                                  size: 28,
+                                ),
+                              ),
+                              bottom: -10,
+                              left: 210,
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          width: double.infinity,
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildTextFieldOrder(
+                                      context, "รหัสนักศึกษา", valueItem),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildTextFieldOrder(
+                                      context, "ชื่อ", valueItem),
+                                  _buildTextFieldOrder(
+                                      context, "นามสกุล", valueItem),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildTextFieldOrder(
+                                      context, "หอ", valueItem),
+                                  _buildTextFieldOrder(
+                                      context, "หมายเลขห้อง", valueItem),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildTextFieldOrder(
+                                      context, "เพศ", valueItem),
+                                  _buildTextFieldOrder(
+                                      context, "โทรศัพท์", valueItem),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          width: 150,
+                          padding: const EdgeInsets.symmetric(horizontal: 100),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: themeBg, // Background color
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                if (_image != null) {
+                                  saveFile(context, _auth.currentUser!.uid);
+                                } else {
+                                  const Text("no data");
+                                }
+                              }
+                            },
+                            child: const Text(
+                              "Save profile",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+Widget _buildTextFieldOrder(
+    context, String title, Function(String) valueItemCallback) {
+  double sizeLayout = 2.3;
+  if (title == 'รหัสนักศึกษา') {
+    return Container(
+      width: MediaQuery.of(context).size.width - 50,
+      // width: MediaQuery.of(context).size.width / 2.2,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: stdidController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "กรุณาใส่ข้อมูล";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'ชื่อ') {
+    return Container(
+      width: MediaQuery.of(context).size.width / sizeLayout,
+      // width: MediaQuery.of(context).size.width / 2.2,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: nameController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "กรุณาใส่ข้อมูล";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'นามสกุล') {
+    return Container(
+      // width: 190,
+      width: MediaQuery.of(context).size.width / sizeLayout,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: lastnameController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "กรุณาใส่ข้อมูล";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  if (title == 'หอ') {
+    return Container(
+      width: MediaQuery.of(context).size.width / sizeLayout,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: dormController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "กรุณาใส่ข้อมูล";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'หมายเลขห้อง') {
+    return Container(
+      width: MediaQuery.of(context).size.width / sizeLayout,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          hintText: title,
+        ),
+        controller: roomController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "กรุณาใส่ข้อมูล";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+  if (title == 'เพศ') {
+    return Container(
+      width: MediaQuery.of(context).size.width / sizeLayout,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      height: 60,
+      child: DropdownButton<String>(
+        isDense: false,
+        underline: const SizedBox(),
+        value: dropdownValue,
+        elevation: 10,
+        isExpanded: true,
+        onChanged: (String? value) {
+          if (value != null) {
+            valueItemCallback(value);
+            print(
+                list.indexOf(value).toString()); // You don't need to use ! here
+          }
+        },
+        items: list.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              "  " + value,
+              style: TextStyle(color: Colors.black54),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+  if (title == 'โทรศัพท์') {
+    return Container(
+      width: MediaQuery.of(context).size.width / sizeLayout,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      child: TextFormField(
+        keyboardType: TextInputType.phone,
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            hintText: title),
+        controller: phoneController,
+        validator: (val) {
+          if (val == null || val.isEmpty) {
+            return "กรุณาใส่ข้อมูล";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  return Container();
+}

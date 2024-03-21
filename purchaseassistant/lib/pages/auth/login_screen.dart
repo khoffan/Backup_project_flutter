@@ -2,13 +2,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:form_validation/form_validation.dart';
-import 'package:purchaseassistant/backend/login.dart';
-import 'package:purchaseassistant/pages/home_screen.dart';
-import '../utils/constants.dart';
-// import '../widgets/custom_button_login.dart';
-// import '../widgets/text_field_title.dart';
-import './register_screen.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:purchaseassistant/services/auth_service.dart';
+import 'package:purchaseassistant/services/delivers_services.dart';
+import 'package:purchaseassistant/services/profile_services.dart';
+import 'package:purchaseassistant/services/user_provider.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import '../../models/login.dart';
+import '../../routes/routes.dart';
+import '../../utils/constants.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,30 +24,49 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final formKey = GlobalKey<FormState>();
+  ConnectivityResult _connectivity = ConnectivityResult.none;
   Login login = Login();
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: firebase,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text("Error"),
-            ),
-            body: Center(
-              child: Text("${snapshot.error}"),
-            ),
-          );
-        }
+  void initState() {
+    super.initState();
+    _updateConnection();
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() {
+        _connectivity = result;
+      });
+    });
+  }
 
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Scaffold(
-            resizeToAvoidBottomInset: false,
-            backgroundColor: themeBg,
-            body: SafeArea(
-              child: Padding(
+  void _updateConnection() async {
+    ConnectivityResult result = await Connectivity().checkConnectivity();
+    setState(() {
+      _connectivity = result;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: FutureBuilder(
+        future: firebase,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text("Error"),
+              ),
+              body: Center(
+                child: Text("${snapshot.error}"),
+              ),
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Scaffold(
+              resizeToAvoidBottomInset: false,
+              backgroundColor: themeBg,
+              body: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 30.0,
                   vertical: 10.0,
@@ -52,15 +75,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Image.asset(
                       "assets/logo.png",
-                      height: 200,
-                      width: 200,
+                      height: 280,
+                      width: 280,
                       fit: BoxFit.scaleDown,
                     ),
                     const Center(
-                      // padding: EdgeInsets.only(
-                      //   top: 4.0,
-                      //   bottom: 2.0,
-                      // ),
                       child: Text(
                         "Login now",
                         style: TextStyle(
@@ -98,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
                                   return "กรุณาใส่ Username";
-                                } else if (!value.contains('@')) {
+                                } else if (!EmailValidator.validate(value)) {
                                   return "กรุณากรอก Email ให้ถูกต้อง";
                                 } else {
                                   return null;
@@ -125,38 +144,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                     : null;
                               },
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 10.0,
-                                bottom: 15.0,
-                              ),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: const Text(
-                                    "Forgot password",
-                                    style: TextStyle(
-                                      color: Color(0xFFDA3340),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(),
-                            SizedBox(
+                            const Padding(
+                                padding:
+                                    EdgeInsets.only(top: 10.0, bottom: 15.0)),
+                            Container(
                               height: 40.0,
+                              width: 160,
                               child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
                                           20), // <-- Radius
                                     ),
-                                    backgroundColor: Colors.red,
-                                    padding:
-                                        const EdgeInsetsDirectional.symmetric(
-                                      horizontal: 150,
-                                    ),
+                                    backgroundColor: Colors.green,
                                     textStyle: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -166,41 +166,52 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (formKey.currentState!.validate()) {
                                       formKey.currentState?.save();
                                       try {
-                                        await FirebaseAuth.instance
-                                            .signInWithEmailAndPassword(
-                                          email: login.email!,
-                                          password: login.password!,
-                                        )
-                                            .then((value) {
+                                        if (_connectivity !=
+                                            ConnectivityResult.none) {
+                                          bool? sts;
+                                          await AuthServices()
+                                              .SigninwithEmailandPassword(
+                                                  login.email, login.password);
                                           formKey.currentState?.reset();
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) {
-                                                return const HomeScreen();
-                                              },
-                                            ),
+                                          Navigator.pushReplacementNamed(
+                                              context,
+                                              AppRoute.widget_navigation);
+
+                                          ProfileService().updateRole(
+                                              FirebaseAuth
+                                                  .instance.currentUser!.uid,
+                                              "customer");
+
+                                          UserLogin.setLogin(true);
+                                          sts = await UserLogin.getLogin();
+                                          await ProfileService()
+                                              .updateStatusUser(
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
                                           );
-                                        });
+                                          ServiceDeliver().updateUser(
+                                              FirebaseAuth
+                                                  .instance.currentUser!.uid,
+                                              sts);
+                                        } else {
+                                          Fluttertoast.showToast(
+                                              msg:
+                                                  "กรุณาเชื่อมต่ออินเตอร์เน็ต");
+                                        }
                                       } on FirebaseException catch (e) {
-                                        Fluttertoast.showToast(
-                                            msg: e.message!,
-                                            gravity: ToastGravity.CENTER);
+                                        print("ecode: ${e.code}");
+                                        String message = _getMessageError(e);
+
+                                        showAlert(context, message);
                                       }
-                                      //   print(
-                                      //       "email = ${login.email} password = ${login.password}");
-                                      //   formKey.currentState?.reset();
                                     }
                                   },
-                                  child: const Text("Login")),
+                                  child: Text("Login")),
                             ),
                           ],
                         )),
 
                     // const SizedBox(height: 20.0),
-
-                    const Spacer(),
-
                     // Register button
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -208,17 +219,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Text("Don't have an account?"),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (ctx) => const RegisterScreen(),
-                              ),
-                            );
+                            Navigator.pushReplacementNamed(
+                                context, AppRoute.register);
                           },
                           child: Text(
                             "Register",
                             style: TextStyle(
-                              color: themeError,
+                              color: Colors.green,
                             ),
                           ),
                         )
@@ -227,15 +234,37 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
+            );
+          }
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
             ),
           );
-        }
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
+}
+
+String _getMessageError(FirebaseException e) {
+  switch (e.code) {
+    case "wrong-password":
+      return "username หรือ password ไม่ถูกต้อง";
+    case "user-not-found":
+      return "username หรือ password ไม่ถูกต้อง";
+    case "network-request-failed":
+      return "กรุณาตรวจสอบการเชื่อมต่ออินเตอร์เน็ต";
+    default:
+      return "กรุณาลองใหม่อีกครั้ง";
+  }
+}
+
+void showAlert(BuildContext context, String message) {
+  QuickAlert.show(
+    context: context,
+    type: QuickAlertType.error,
+    title: "Error",
+    text: message,
+  );
 }

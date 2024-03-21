@@ -39,6 +39,23 @@ dependencies:
   firebase_core: ^2.14.0
   firebase_auth: ^4.7.0
   fluttertoast: ^8.2.2
+  image_picker: ^1.0.1
+  firebase_storage: ^11.2.5
+  cloud_firestore: ^4.8.3
+  email_validator: ^2.1.17
+  never_behind_keyboard: ^1.0.2
+  qrscan: ^0.3.3
+  qr_flutter: ^4.1.0
+  permission_handler: ^10.4.3
+  url_launcher: ^6.1.12
+  http: ^1.1.0
+  order_tracker_zen: ^1.0.0+4
+  quickalert: ^1.0.2
+  provider: ^6.1.1
+  font_awesome_flutter: ^10.6.0
+  shared_preferences: ^2.2.2
+  connectivity_plus: ^5.0.2
+  timeline_tile: ^2.0.0
 
 dev_dependencies:
   flutter_test:
