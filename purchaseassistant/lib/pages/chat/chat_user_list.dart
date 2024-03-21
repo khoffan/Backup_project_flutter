@@ -89,7 +89,7 @@ class _ListUserchatState extends State<ListUserchat> {
         widget: StreamBuilder(
           stream: _firestore
               .collection('chat_rooms')
-              .where("senderData.id", isEqualTo: uid)
+              .where("senderData.cusid", isEqualTo: uid)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {

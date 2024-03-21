@@ -549,7 +549,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
               .where("location", isEqualTo: locaterider)
               .where("cusIsonline", isEqualTo: "online")
               .where("cus_status", isEqualTo: true)
-              .where("status", isEqualTo: "inActive")
+              .where("status", isEqualTo: "InActive")
               .orderBy("date", descending: true)
               .snapshots(),
           builder: (context, snapshot) {
@@ -590,7 +590,7 @@ class _DeliverHistoryState extends State<DeliverHistory> {
             .collection("Matchings")
             .where("cusIsonline", isEqualTo: "online")
             .where("cus_status", isEqualTo: true)
-            .where("status", isEqualTo: "inActive")
+            .where("status", isEqualTo: "InActive")
             .orderBy("date", descending: true)
             .snapshots(),
         builder: (context, snapshot) {
